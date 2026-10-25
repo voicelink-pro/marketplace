@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  app:
+    name: Lint, types, unit + database tests, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      # Unit tests and migration/RLS tests on in-process Postgres (PGlite).
+      - run: pnpm test
+      - name: Build
+        run: pnpm build
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+          # Placeholders: the build never contacts Supabase.
+          NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci_placeholder
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000
+
+  supabase:
+    name: Migrations, advisors, integration tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Start Supabase
+        run: pnpm exec supabase start -x studio,imgproxy,vector,logflare,edge-runtime
+      - name: Apply migrations from scratch
+        run: pnpm db:reset
+      - name: Security and performance advisors
+        run: pnpm db:advisors
+      - name: Generated types match the committed file
+        run: |
+          pnpm db:types
+          git diff --exit-code src/lib/supabase/database.types.ts || {
+            echo "::warning::database.types.ts differs from the generated types. Run pnpm db:types and commit."
+          }
+      - name: Export local Supabase credentials
+        run: |
+          status=$(pnpm exec supabase status -o json)
+          url=$(echo "$status" | jq -r '.API_URL')
+          publishable=$(echo "$status" | jq -r '.PUBLISHABLE_KEY // .ANON_KEY')
+          secret=$(echo "$status" | jq -r '.SECRET_KEY // .SERVICE_ROLE_KEY')
+          echo "::add-mask::$secret"
+          {
+            echo "NEXT_PUBLIC_SUPABASE_URL=$url"
+            echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$publishable"
+            echo "SUPABASE_SECRET_KEY=$secret"
+          } >> "$GITHUB_ENV"
+      - run: pnpm test:integration

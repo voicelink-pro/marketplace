@@ -1,0 +1,197 @@
+# Decyzje projektowe
+
+Źródło prawdy produktowej: `MARKETPLACE_BRIEF_I_PROMPTY.md` (wersja po rozmowie z założycielami, 24.10.2026).
+Przy sprzeczności ze starszymi materiałami obowiązuje brief.
+
+Dokument ma trzy rozłączne kategorie. Nie przenoś pozycji między nimi bez jawnej zmiany statusu i daty.
+
+| Kategoria | Kto decyduje | Czy można zmienić samodzielnie |
+|---|---|---|
+| **W — ustalenia właścicieli** | Założyciele (brief A1) | Nie. Zmiana tylko po decyzji właścicieli. |
+| **P — propozycje do zatwierdzenia** | Propozycja zespołu, decyzja należy do właścicieli (brief A2) | Wartości działają wyłącznie w sandbox/fixtures. Live zablokowane do zatwierdzenia. |
+| **T — decyzje techniczne** | Zespół implementacyjny | Tak, z wpisem w tym pliku. |
+
+---
+
+## W — Ustalenia właścicieli (brief A1)
+
+Skrót dla śledzenia w kodzie i testach. Pełne brzmienie: brief, sekcja A1.
+
+### Marketplace publiczny
+- **W-01** `/` jest od razu katalogiem z wyszukiwarką; brak landing page przed katalogiem.
+- **W-02** Bez konta można przeglądać cały katalog, profile aplikacji i warunki prowizji.
+- **W-03** Kafelki: duża grafika, nazwa, krótki opis, prowizja.
+- **W-04** Filtry: kategoria, prowizja, platforma, język aplikacji. **Bez** filtra ceny abonamentu.
+- **W-05** Każda aplikacja ma pełną stronę pod własnym adresem `/apps/[slug]` (nie modal).
+- **W-06** Strona aplikacji: opis, warunki prowizji, screeny, film.
+- **W-07** Przy różnych stawkach karta pokazuje zakres (np. „15–25% recurring”), szczegóły pełną tabelę. Najwyższa stawka nie jest przedstawiana jako zawsze obowiązująca.
+
+### Twórca
+- **W-10** Przed promowaniem musi podać co najmniej jeden URL profilu społecznościowego.
+- **W-11** W MVP URL wystarcza; profil **nie** jest oznaczany jako zweryfikowany.
+- **W-12** Dołącza do aktywnego programu natychmiast, bez zgody firmy.
+- **W-13** Po dołączeniu: wspólne wprowadzenie „jak promować”, potem link i kod.
+- **W-14** Może tworzyć wiele nazwanych linków do tej samej aplikacji.
+- **W-15** Brak obowiązkowego zgłaszania/uploadu publikacji i ich zatwierdzania.
+- **W-16** Po zalogowaniu: podsumowanie zarobków i wyników, skróty do programów, propozycje podobnych aplikacji.
+- **W-17** Metryki: kliknięcia, zarejestrowani klienci, klienci z płatnością, aktywni płacący subskrybenci, porównanie linków.
+- **W-18** Historia poleconego klienta pod pseudonimem typu `Customer #A821`, z płatnościami i prowizjami, bez danych osobowych.
+- **W-19** Polecenia samym kodem to osobne źródło; nie przypisujemy ich sztucznie do linku.
+
+### Firma
+- **W-20** W MVP jedna aplikacja na firmę; wiele aplikacji w V1.
+- **W-21** Baza od początku rozdziela organizację i aplikację.
+- **W-22** Firma przygotowuje profil, screeny, film, opis i warunki programu.
+- **W-23** Różne procenty prowizji dla różnych abonamentów.
+- **W-24** Oferta przechodzi przegląd administratora przed publikacją; poprawny formularz ≠ publikacja.
+- **W-25** Firma wpłaca środki z góry, ustawia próg i kwotę automatycznego doładowania.
+- **W-26** Nieudane auto-doładowanie wstrzymuje nowe polecenia; istniejących klientów i należności nie usuwamy.
+- **W-27** Przy braku środków naliczamy prowizje od odnowień, ale ich wypłata czeka na finansowanie.
+- **W-28** Firma dostaje miesięczne zestawienie rozliczeń; nie zastępuje ono finansowania z góry.
+
+### Prowizje i wypłaty
+- **W-30** Prowizja przez cały czas płacenia abonamentu przez poleconego klienta, bez limitu miesięcy.
+- **W-31** Platforma pobiera jeden wspólny procent od prowizji twórcy (wartość nieustalona → P-01).
+- **W-32** Zmiana stawek dotyczy nowych poleceń; wcześniej pozyskani klienci zachowują stawki.
+- **W-33** Zarobki naliczają się w miesiącu, stają się dostępne po jego zamknięciu, jeśli są sfinansowane i spełniają wymagania operatora.
+- **W-34** Twórca sam zleca wypłatę przyciskiem.
+- **W-35** Brak własnego minimum wypłaty; respektujemy minimum operatora.
+- **W-36** Brak osobnego 30-dniowego holda; granicą jest zamknięcie miesiąca.
+
+### Zakres i kierunek (brief A3, D)
+- **W-40** MVP to responsywny serwis web; brak własnej natywnej aplikacji marketplace.
+- **W-41** Integracje MVP: link/kod + API backendu aplikacji, adapter Stripe (web/SaaS), RevenueCat (mobile). Własny SDK i atrybucja po instalacji — później.
+- **W-42** Mobile w MVP wymaga kodu i mapowania konta klienta; przekierowanie do sklepu nie zachowuje polecenia.
+- **W-43** V1 (po pilotażu): wiele aplikacji na firmę, potwierdzanie własności profili.
+
+---
+
+## P — Propozycje wymagające zatwierdzenia (brief A2)
+
+**Zasada ogólna:** każda wartość poniżej działa tylko w sandboxie, fixtures lub danych demo. Kod live odmawia wykonania zależnej operacji (fail closed), dopóki właściciel nie zatwierdzi wartości. Wartości są w jednym module polityk/konfiguracji, nie rozproszone w kodzie.
+
+| ID | Kwestia | Propozycja / zachowanie sandbox | Warunek uruchomienia live | Status |
+|---|---|---|---|---|
+| P-01 | Procent platformy | `10%` wyłącznie w oznaczonych fixtures. Konfiguracja produkcyjna **bez wartości domyślnej**; brak wartości blokuje naliczanie live. | Właściciel podaje stawkę | Otwarte |
+| P-02 | Podstawa prowizji | Fixture: kwota zapłacona po rabacie, z podatkiem. Kalkulator przyjmuje jawne `commission_basis_minor`, nie zgaduje go. | Wybrana podstawa + poprawne mapowanie z operatora | Otwarte |
+| P-03 | Pierwszy czy ostatni link | Ostatni ważny link przed rejestracją klienta | Jawne warunki programu przed publikacją | Otwarte |
+| P-04 | Okno przypisania | 30 dni od kliknięcia do rejestracji | Jawne warunki programu przed publikacją | Otwarte |
+| P-05 | Kod kontra link | Świadomie wpisany kod wygrywa, dopóki przypisanie nie zostało utrwalone | Jawne warunki programu przed publikacją | Otwarte |
+| P-06 | Zwrot po wypłacie twórcy | Tworzy sprawę „wymaga rozpatrzenia”; brak automatycznego przypisania kosztu firmie, twórcy ani platformie | Uzgodniona polityka przed realnymi wypłatami | Otwarte |
+| P-07 | Zmiana planu klienta | Snapshot całej tabeli stawek przy przypisaniu; stawka kupionego planu z tego snapshotu; nieznany nowy plan → sprawa do sprawdzenia | Uzgodniona polityka historycznych stawek i nowych planów | Otwarte |
+| P-08 | Waluty i kraje wypłat | Model wielowalutowy; demo w EUR; brak automatycznego FX; brak sumowania różnych walut | Lista krajów/walut dostępna u wybranego operatora i dla podmiotu | Otwarte |
+| P-09 | Miesiąc rozliczeniowy | Miesiąc kalendarzowy UTC; odblokowanie po wykonaniu zamknięcia i uzgodnienia | Zatwierdzona strefa czasowa i proces zamknięcia | Otwarte |
+| P-10 | Język interfejsu | Angielski jako propozycja startowa (brief A3) | Potwierdzenie przy pilotażu | Propozycja briefu |
+| P-11 | Układ UI | Katalog 3/2/1 kolumny; panele z sidebarem na desktopie i menu mobilnym (brief A3) | — (zwykła decyzja UI) | Propozycja briefu |
+
+Dodatkowe propozycje, które pojawią się w trakcie prac (np. reguły zaokrągleń kwot, P-12+), dopisujemy tutaj, jeżeli wpływają na podział realnych pieniędzy.
+
+---
+
+## T — Decyzje techniczne
+
+Status: **Przyjęte** = obowiązuje; **Do potwierdzenia w etapie N** = kierunek przyjęty, szczegóły po weryfikacji dokumentacji/wersji w danym etapie.
+
+### Stos i struktura
+
+- **T-01 Stos.** Next.js (App Router) + React + TypeScript `strict`, Supabase (Auth, Postgres, Storage), Tailwind CSS, shadcn/ui. Jedno repozytorium, jedna aplikacja modułowa, bez mikroserwisów i monorepo. *Przyjęte.*
+- **T-02 Wersje.** Zależności przypinane do dokładnych wersji z lockfile. Przed instalacją sprawdzamy aktualną dokumentację i kompatybilność (npm z 24.10.2026 wskazuje `next@16.4.3`, `supabase` CLI `2.122.0`). E1: wszystkie zależności w `package.json` mają dokładne wersje (`save-exact` w `.npmrc`), m.in. `next@16.4.3`, `react@19.3.0`, `@supabase/ssr@0.12.7`, `@supabase/supabase-js@2.118.0`, `zod@4.6.7`, `vitest@5.0.5`, `typescript@5.9.3`. *Przyjęte.*
+- **T-03 Menedżer pakietów.** `pnpm` (zainstalowany 10.33.4). Supabase CLI jako przypięta zależność deweloperska, uruchamiana przez `pnpm exec`, nie globalnie. *Przyjęte.*
+- **T-04 Node.** Lokalnie jest Node 25.9 (wydanie nieparzyste, bez LTS). Projekt deklaruje w `engines` i CI aktywną wersję LTS zgodną z Next.js. E1: `engines.node >=24`, `.nvmrc` = 24 (CI używa Node 24). *Przyjęte.*
+- **T-05 Podział modułów.** Kierunek:
+  - `src/app/` — trasy: grupy `(public)`, `creator/`, `company/`, `admin/`, `api/` (webhooki, API integracji);
+  - `src/modules/<domena>/` — logika domenowa (np. `accounts`, `catalog`, `programs`, `attribution`, `payments`, `commissions`, `ledger`, `funding`, `payouts`, `integrations`, `admin`); każdy moduł ma schematy walidacji, zapytania serwerowe i akcje;
+  - `src/lib/` — wspólne: klienci Supabase, `env`, `money`, walidacja, błędy;
+  - `src/components/` — UI współdzielone (shadcn/ui + własne);
+  - `supabase/migrations/`, `supabase/seed/` (wyłącznie demo/lokalne);
+  - `tests/db/` (migracje + RLS na PGlite), `tests/integration/` (prawdziwy Supabase przez Data API), testy jednostkowe obok kodu (`*.test.ts`).
+  *Przyjęte (E1).*
+- **T-06 Migracje.** Imperatywne migracje SQL w `supabase/migrations/`, tworzone przez `supabase migration new`. Każda migracja jest odwracalnie przemyślana i testowana lokalnie. *Przyjęte.*
+
+### Bezpieczeństwo i dostęp
+
+- **T-10 Walidacja.** Każde wejście na serwerze (Server Actions, Route Handlers, webhooki) walidowane schematem Zod 4 (wybrany w E1). Walidacja klienta jest tylko wygodą UX. *Przyjęte.*
+- **T-11 RLS.** RLS włączone na każdej tabeli w schematach wystawionych przez Data API. Polityki łączą `TO authenticated` z warunkiem własności/członkostwa (bez samego `TO authenticated`). UPDATE ma `USING` i `WITH CHECK`. Bez `auth.role()`. *Przyjęte.*
+- **T-12 Minimalne granty.** Domyślnie odbieramy uprawnienia `anon`/`authenticated` i nadajemy jawnie tylko potrzebne operacje. Tabele finansowe i dzienniki nie mają grantów zapisu dla ról klienckich; zapis wyłącznie przez backend. *Przyjęte.*
+- **T-13 Funkcje uprzywilejowane.** `SECURITY DEFINER` tylko w niewystawionym schemacie (np. `private`), z `set search_path = ''`, sprawdzeniem `auth.uid()` w ciele i odebranym `EXECUTE` od `PUBLIC`. Widoki z `security_invoker = true`. *Przyjęte.*
+- **T-14 Rola administratora.** Uprawnienie admina przechowywane w osobnej tabeli bez żadnych grantów zapisu dla ról klienckich (nadawane migracją/skryptem operacyjnym). Nigdy z `user_metadata`/profilu. Brak ścieżki uzyskania admina przez rejestrację lub edycję profilu. *Przyjęte.*
+- **T-15 Konteksty użytkownika.** Jedna tożsamość (`auth.users`) może mieć kontekst twórcy i firmy jednocześnie. Kontekst firmy wynika z członkostwa w organizacji, nie z flagi w profilu. *Przyjęte.*
+- **T-16 Sekrety.** Klucze `service_role`/secret, sekrety webhooków i operatorów tylko w zmiennych serwerowych (bez prefiksu `NEXT_PUBLIC_`). Moduł `env` waliduje zmienne przy starcie i oddziela publiczne od serwerowych. Logi nie zawierają sekretów, tokenów ani danych osobowych klientów końcowych. *Przyjęte.*
+- **T-17 Publiczny katalog.** Osobna bezpieczna projekcja (widok/funkcja) zawierająca tylko zatwierdzone, opublikowane wersje ofert. Drafty i dane wewnętrzne niedostępne dla `anon`. *Przyjęte; implementacja w E2–E3.*
+- **T-18 Dane klientów końcowych.** Marketplace przechowuje identyfikator klienta aplikacji i identyfikatory operatora; twórcy widzą wyłącznie pseudonim (`Customer #XXXX`). Brak imion, e-maili i telefonów w danych widocznych dla twórcy. *Przyjęte.*
+
+### Pieniądze i finanse
+
+- **T-20 Kwoty.** Kwoty jako liczby całkowite w najmniejszej jednostce waluty (`bigint` w Postgres, `*_minor`) z kodem waluty ISO 4217. Brak `float`/`numeric` z ułamkami dla kwot. W TypeScript dedykowany typ i funkcje modułu `money`; brak arytmetyki zmiennoprzecinkowej. *Przyjęte.*
+- **T-21 Stawki.** Procenty jako liczby całkowite w punktach bazowych (1500 = 15,00%). *Przyjęte.*
+- **T-22 Zaokrąglanie.** Jedna jawna funkcja zaokrąglania w module `money`. Kwota twórcy liczona jako `prowizja_brutto − opłata_platformy`, więc suma zawsze się zgadza. Kierunek zaokrąglania prowizji brutto i opłaty dzieli realne pieniądze, dlatego zostanie dopisany jako propozycja P-12 w E7. *Do potwierdzenia w E7.*
+- **T-23 Dziennik rozliczeń.** Niezmienny, bilansowany dziennik (append-only, zapisy podwójne, suma = 0 per transakcja i waluta). Korekty to nowe zapisy. Brak edytowalnego pola salda użytkownika; salda są projekcją dziennika. *Przyjęte; implementacja w E7.*
+- **T-24 Idempotencja.** Zdarzenia zewnętrzne deduplikowane po (dostawca, środowisko, id zdarzenia) **oraz** po transakcji, której dotyczą. Operacje finansowe inicjowane przez użytkownika mają klucz idempotencji z ograniczeniem unikalności w bazie. Zapis finansowy i zmiana stanu w jednej transakcji DB. *Przyjęte.*
+- **T-25 Snapshoty stawek.** Warunki programu są wersjonowane (nowa wersja zamiast edycji). Przypisanie klienta przechowuje odniesienie do wersji/snapshotu tabeli stawek z chwili przypisania. *Przyjęte; implementacja w E3/E5/E7.*
+- **T-26 Współbieżność.** Limity (np. jedna aplikacja na firmę, jedno członkostwo w programie, jedno przypisanie klienta) egzekwowane ograniczeniami unikalności lub blokadami w bazie, nie tylko sprawdzeniem w aplikacji. Testy obejmują równoległe żądania. *Przyjęte.*
+- **T-27 Czas.** Znaczniki czasu jako `timestamptz`, przetwarzanie w UTC. Okresy rozliczeniowe zgodnie z P-09. *Przyjęte.*
+
+### Środowiska i integracje
+
+- **T-30 Sandbox vs live.** Rekordy integracji i finansów mają jawne pole środowiska (`sandbox`/`live`), osobne klucze i sekrety. Operacje live są wyłączone globalnym przełącznikiem serwerowym (domyślnie wyłączone) i dodatkowo blokowane, dopóki odpowiednie pozycje P nie są zatwierdzone. *Przyjęte.*
+- **T-31 Adaptery.** Wspólny wewnętrzny format zdarzeń płatniczych; adaptery Stripe, RevenueCat i Generic API. Status integracji rozróżnia `configured` od `verified` (verified dopiero po rzeczywistym przejściu zdarzenia). Bez kluczy dostawcy testy na jawnych fixtures, a test z dostawcą oznaczony `blocked`. *Przyjęte; implementacja w E6.*
+- **T-32 Operator wypłat.** Adapter operatora płatniczego; Stripe Connect jako kandydat, nie założenie. Bez własnego portfela i własnego KYC. *Do potwierdzenia w E8.*
+- **T-33 Fixtures i demo.** Dane demo tylko w seedzie lokalnym/testowym, wyraźnie oznaczone. Produkcja bez danych pokazuje uczciwe stany puste. *Przyjęte.*
+
+### Jakość
+
+- **T-40 Testy.** Trzy warstwy, wszystkie w Vitest:
+  - jednostkowe (`src/**/*.test.ts`) — reguły domenowe, walidacja, przekierowania;
+  - bazy (`tests/db/`) — prawdziwe migracje na PGlite (Postgres w WASM) z minimalną zaślepką Supabase (role `anon`/`authenticated`/`service_role`, `auth.uid()`, `auth.jwt()`); testują RLS, granty, wyzwalacze, limity i izolację bez Dockera. PGlite ma jedno połączenie, więc nie testuje prawdziwej współbieżności ani PostgREST;
+  - integracyjne (`tests/integration/`) — prawdziwy Supabase przez Data API: izolacja, eskalacja do admina, równoległe żądania. Pomijane (i raportowane jako `blocked`), gdy brak zmiennych środowiska.
+  E2E (Playwright) odłożone do etapu z pełnym przepływem katalog → dołączenie. *Przyjęte.*
+- **T-41 CI.** `.github/workflows/ci.yml`, dwa zadania: (1) lint, typecheck, `pnpm test` (jednostkowe + PGlite), build z zastępczymi zmiennymi publicznymi; (2) `supabase start`, `db reset`, `db advisors --fail-on warn`, porównanie typów, testy integracyjne. *Przyjęte; zadanie 2 nie było jeszcze uruchomione (brak Dockera lokalnie, brak zdalnego repo).*
+- **T-42 Repozytorium.** Git zainicjowany w E1; `.gitignore` wyklucza `.env*` poza `.env.example` oraz stan CLI Supabase. *Przyjęte.*
+
+### Etap 1 — konta, konteksty, layouty
+
+- **T-43 Next.js 16 `cacheComponents`.** Włączone (domyślne w szablonie). Wszystko, co czyta ciasteczka/sesję, renderuje się w `<Suspense>`; strażnicy obszarów (`CreatorGate`, `CompanyGate`, `AdminGate`) są w layoutach wewnątrz `<Suspense>`, a strony i Server Actions ponownie wywołują `requireViewer`. Statyczna powłoka (sidebar, nagłówek) jest prerenderowana. *Przyjęte.*
+- **T-44 Sesja.** `src/proxy.ts` (następca `middleware.ts` w Next 16) odświeża token przez `getClaims()` i wykonuje tylko optymistyczne przekierowania. Granicą autoryzacji są strony/akcje (`getClaims`) oraz RLS. `getSession()` nie jest używane na serwerze. *Przyjęte.*
+- **T-45 Potwierdzanie e-maila.** `enable_confirmations = true`. Szablony e-maili kierują na `/auth/confirm?token_hash=…&type=…` (działa na innym urządzeniu niż rejestracja, w przeciwieństwie do samego PKCE); trasa obsługuje też `code`. Parametr `next` przechodzi przez `safeRedirectPath` (tylko ścieżki w tej samej domenie). *Przyjęte.*
+- **T-46 Hasła.** Minimum 10 znaków, litery i cyfry (Supabase + Zod). `secure_password_change = true`: zmiana hasła z panelu wymaga świeżego logowania. Reset hasła nie ujawnia, czy konto istnieje. *Przyjęte.*
+- **T-47 Organizacje.** Tworzenie wyłącznie przez RPC `create_organization` (SECURITY DEFINER): w jednej transakcji organizacja + członkostwo `owner`. W MVP jeden użytkownik posiada jedną organizację; powtórne/równoległe wywołanie zwraca istniejącą (blokada doradcza na użytkownika). Brak grantów INSERT na `organizations` i `organization_members` dla klientów. Członkostwo `member` jest w modelu, ale zapraszanie nie jest jeszcze zbudowane. *Przyjęte.*
+- **T-48 Limit aplikacji.** Kolumna `organizations.max_apps` (domyślnie 1, bez grantu UPDATE dla klientów) + wyzwalacz `enforce_app_limit` z `SELECT … FOR UPDATE` na wierszu organizacji. Limit działa też dla zapisów uprzywilejowanych. V1 podniesie limit bez zmiany schematu. Aplikacje tworzy tylko właściciel przez RPC `create_app`; `organization_id` aplikacji jest niezmienne. Status aplikacji w E1 to tylko `draft`; dalsze statusy w E3. *Przyjęte.*
+- **T-49 Linki społecznościowe.** Tylko `https://` (normalizacja `http`→`https`, odrzucanie danych logowania w URL), rozpoznanie platformy po domenie (domeny podobne → `other`), dla znanych platform wymagana ścieżka profilu. Maks. 10 linków na twórcę (wyzwalacz z blokadą wiersza twórcy), unikalność (`creator_id`, `url`). Brak kolumny „zweryfikowany” (W-11). Gotowość do promowania: `creator_is_ready_to_promote()` = co najmniej jeden link; egzekwowana przy dołączaniu do programu w E4. *Przyjęte.*
+- **T-50 Admin.** Tabela `platform_admins` (kto nadał, notatka, kiedy). Klient może odczytać tylko własny wiersz; zapis wyłącznie `service_role` przez `pnpm admin:grant`. Obszar `/admin` zwraca 404 dla nie-adminów (nie ujawnia istnienia). Admin widzi wszystkie profile, organizacje, członkostwa i aplikacje przez polityki RLS z `private.is_platform_admin()`. *Przyjęte.*
+- **T-51 Wybór kontekstu.** `/dashboard` kieruje do ostatnio używanego kontekstu (ciasteczko `mp_last_context`, httpOnly, ustawiane w proxy), potem twórca → firma → admin → `/onboarding`. Ciasteczko to tylko preferencja; uprawnienia zawsze z bazy. Przełącznik kontekstu w topbarze pojawia się, gdy użytkownik ma oba. *Przyjęte.*
+- **T-52 Typy bazy.** `src/lib/supabase/database.types.ts` napisany ręcznie zgodnie z migracją, bo generator wymaga działającej bazy. Po uruchomieniu Supabase zastąpić wynikiem `pnpm db:types`; CI ostrzega o różnicy. *Tymczasowe.*
+- **T-53 Formularze i stany.** Server Actions + `useActionState` z jednym typem `FormState` (idle / error z błędami pól i zachowanymi wartościami / success). Przycisk pokazuje stan wysyłania; sukces → toast lub przekierowanie; błędy → komunikat + pola. Stany puste modułów opisują, co się pojawi i kiedy, bez przykładowych liczb. Komunikaty błędów nie zdradzają szczegółów technicznych; logi zawierają tylko kod i treść błędu. *Przyjęte.*
+- **T-54 Wygląd.** Kierunek: spokojne, chłodne neutralne tło, białe karty, jeden akcent (zieleń „prowizji”), font Instrument Sans (łaciński + rozszerzony), bez gradientów i etykiet wersalikami. Komponenty shadcn/ui (Radix, styl nova). Robocza nazwa marki „Referral Market” w `src/config/site.ts` — do zastąpienia, gdy właściciele ją ustalą. Interfejs po angielsku (P-10 nadal otwarte). *Przyjęte; nazwa robocza.*
+- **T-55 Zmienne środowiskowe.** Publiczne: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `NEXT_PUBLIC_SITE_URL`, walidowane leniwie przez Zod; aplikacja odmawia startu, jeśli w zmiennej publicznej jest klucz sekretny (`sb_secret_…` lub JWT `service_role`). `SUPABASE_SECRET_KEY` tylko w skryptach i testach; aplikacja webowa go w E1 nie czyta. *Przyjęte.*
+
+### Etap 2 — publiczny katalog, plany i wersje warunków
+
+- **T-56 Projekcja publiczna (`app_releases`, `catalog_listings`, `catalog_plan_rates`).** Wiersze robocze (`public.apps`, `public.app_plans`) pozostają prywatne dla organizacji i admina (`anon` nie ma na nich żadnych grantów). Publikacja przez `private.publish_app_release` (wywoływane przez admina w `public.admin_publish_app` lub lokalny seed) tworzy niezmienną wersję warunków (`public.app_terms_versions` + `public.app_terms_plan_rates`) oraz zatwierdzone wydanie (`public.app_releases` z `is_current_published = true` i częściowym unikalnym indeksem per `app_id` i `slug`). Późniejsze niezatwierdzone zmiany draftu w `public.apps` lub `public.app_plans` nie wpływają na to, co widzi publiczny katalog. Widoki `public.catalog_listings` i `public.catalog_plan_rates` mają `security_invoker = true`. *Przyjęte.*
+- **T-57 Niezmienność wersji warunków i stawek.** Wyzwalacze `app_terms_versions_immutable` i `app_terms_plan_rates_immutable` blokują `UPDATE` i bezpośredni `DELETE` opublikowanych wersji warunków i stawek (dopuszczając jedynie kaskadowe usunięcie przy usunięciu całej aplikacji). Kolumna `external_plan_key` (identyfikator planu w systemie płatności) nie ma grantu `SELECT` dla `anon` i nie występuje w `catalog_plan_rates`. *Przyjęte.*
+- **T-58 Moduł `money` i prezentacja stawek (`src/lib/money.ts`).** Kwoty w najmniejszych jednostkach waluty (`bigint`, `toMinorBigInt`, `formatMinorCurrency` przez łańcuch dziesiętny przekazywany do `Intl.NumberFormat`, bez konwersji do `number`). Stawki w punktach bazowych (`formatCommissionPercent`, `formatCommissionRange` z półpauzą `15–25% recurring` przy różnych planach i `20% recurring` przy jednolitej stawce — zgodnie z W-07). *Przyjęte.*
+- **T-59 Filtry URL, paginacja i powrót do wyników (`src/modules/catalog/filters.ts`).** Parametry `q`, `category`, `commission`, `platform`, `language`, `page` w URL (`/`). Zmiana filtra resetuje `page` do 1. Linki do `/apps/[slug]` przekazują aktywne filtry w `?from=`, a `resolveBackToCatalogHref` waliduje je przez `parseCatalogFilters` i buduje wyłącznie wewnętrzny adres `/` lub `/?...` (ochrona przed open redirect / XSS przy zachowaniu filtrów po kliknięciu „Back to filtered results”). Rozmiar strony `CATALOG_PAGE_SIZE = 6` (podzielny przez 3 kolumny desktop i 2 kolumny tablet). *Przyjęte.*
+- **T-60 Dane demo (`supabase/seed.sql`, `public/demo/*.svg`).** 8 opublikowanych aplikacji demo oraz 2 nieopublikowane (`draft` i `submitted`) wyłącznie w lokalnym `supabase/seed.sql` (zero fikcyjnych statystyk i liczb twórców). Produkcyjna baza bez ofert wyświetla pusty stan katalogu. Opcjonalny flagowany sandbox `LOCAL_PGLITE_SANDBOX=1` (zablokowany w produkcji bez `ALLOW_LOCAL_PGLITE_SANDBOX=1`) pozwala uruchomić dokładnie te same migracje i zapytania SQL w pamięci (PGlite), gdy lokalny Docker jest niedostępny (B-01). *Przyjęte.*
+
+### Etap 3 — firma dodaje aplikację, administrator publikuje
+
+- **T-64 Edycja draftu firmy, planów i wersjonowanie zmian opublikowanego profilu (`public.save_app_draft`, `public.upsert_app_plan`, `public.delete_app_plan`).** Właściciel organizacji (`private.is_app_org_owner`) edytuje roboczy profil aplikacji (`public.apps`) oraz robocze abonamenty (`public.app_plans`, z rozdzielonym `name` i `external_plan_key`). Kwoty wpisywane w formularzu są parsowane bez arytmetyki zmiennoprzecinkowej (`parseMajorMoneyToMinor` → `bigint`), a procenty prowizji do punktów bazowych (`parsePercentToBps` → `100..9000 bps`). Jeżeli aplikacja ma już opublikowane wydanie (`app_releases.is_current_published = true`), zmiany w `public.apps` i `public.app_plans` pozostają prywatnym draftem firmy aż do ponownego zgłoszenia i zatwierdzenia przez administratora — publiczny odbiorca nigdy nie widzi niezatwierdzonego draftu. *Przyjęte.*
+- **T-65 Przepływ przeglądu i publikacji (`draft → submitted → published | rejected`, `public.submit_app_for_review`, `public.admin_review_app`, `public.app_review_events`).** Zgłoszenie (`submit_app_for_review`) waliduje kompletność profilu, obecność co najmniej jednego linku docelowego (`website_url`, `ios_store_url` lub `android_store_url`), warunków programu oraz co najmniej jednego aktywnego planu. Administrator (`private.is_platform_admin()`) w `public.admin_review_app` może: (a) odesłać zgłoszenie z wymaganym uzasadnieniem (`status = 'rejected'`, `rejection_reason`), które firma widzi w swoim panelu, albo (b) zatwierdzić ofertę dla środowiska `demo` (`status = 'published'`, nowy niezmienny snapshot `app_terms_versions` + `app_terms_plan_rates` + `app_releases`). Próba publikacji `live` przed weryfikacją integracji i finansowania (E6/E8) jest blokowana na serwerze (`live_publication_requires_verified_integration_and_funding`). Każde zdarzenie zapisuje niezmienny wpis w `public.app_review_events`. *Przyjęte.*
+- **T-66 Kontrola dostępu do plików/mediów i bezpieczne wyświetlanie (`public.app_media_assets`).** Tabela `public.app_media_assets` przechowuje powiązane zasoby (`logo`, `cover`, `screenshot`, `video`) z polityką RLS: zasoby nieopublikowanych aplikacji są widoczne wyłącznie dla członków własnej organizacji i administratora; `anon` oraz inne firmy widzą wyłącznie zasoby aplikacji posiadających bieżące zatwierdzone wydanie (`is_current_published = true`). Opisy są renderowane jako czysty tekst (bez `dangerouslySetInnerHTML`), a URL-e wideo/obrazów są walidowane do `https://` lub `/demo/...`. *Przyjęte.*
+
+### Etap 4 — dołączenie twórcy, przewodnik, programy i linki
+
+- **T-61 Członkostwo w programie i idempotentne dołączenie (`creator_program_memberships`, `public.join_program`).** Twórca dołącza natychmiast (bez zatwierdzania przez firmę) przez RPC `public.join_program(p_app_id, p_accepted_terms_version_id, p_accepted_terms)` (`SECURITY DEFINER`). Funkcja wymaga zalogowanego użytkownika, co najmniej jednego linku społecznościowego (`public.creator_is_ready_to_promote()`), jawnej akceptacji warunków (`p_accepted_terms = true`) oraz zgodności `p_accepted_terms_version_id` z aktualnie opublikowanym wydaniem (`app_releases.is_current_published = true`). Powtórne lub równoległe wywołania są serializowane blokadą doradczą (`pg_advisory_xact_lock`) i chronione ograniczeniem `unique (app_id, creator_id)`: zwracają istniejące członkostwo bez duplikatów i bez nadpisywania historycznego `accepted_terms_version_id`. Przy pierwszym dołączeniu generowany jest unikalny `referral_code` powiązany z `(creator_id, app_id)` oraz domyślny link (`Primary link`). *Przyjęte.*
+- **T-62 Nazwane linki i dozwolone cele przekierowań (`creator_referral_links`, `public.create_referral_link`).** Twórca tworzy nazwane linki (`label` unikalne per członkostwo, kanał `channel`, cel `destination_kind`: `'website' | 'ios_store' | 'android_store'`). Brak możliwości przekazania dowolnego URL: funkcja `private.resolve_app_destination` oraz wyzwalacz `enforce_referral_link_integrity` pobierają i weryfikują `target_url` wyłącznie z opublikowanego wydania aplikacji (`website_url`, `ios_store_url`, `android_store_url`). Limit 25 nazwanych linków na członkostwo egzekwowany w wyzwalaczu po zablokowaniu wiersza członkostwa (`FOR UPDATE`). Polityka RLS na `creator_referral_links` pozwala na odczyt wyłącznie właścicielowi (`creator_id = (select auth.uid())`) oraz adminowi. *Przyjęte.*
+- **T-63 Rekomendacje podobnych aplikacji (`public.suggest_similar_apps_for_creator`).** Funkcja SQL (`security invoker`) wyznacza zbiór kategorii aktywnych programów twórcy i zwraca opublikowane aplikacje z `public.catalog_listings` współdzielące co najmniej jedną kategorię (`cl.categories && v_joined_categories`), z wykluczeniem aplikacji, do których twórca już należy, posortowane po liczbie wspólnych kategorii i stawce prowizji (bez AI). *Przyjęte.*
+
+---
+
+## Rejestr zmian
+
+| Data | Zmiana |
+|---|---|
+| 2026-10-24 | Utworzenie dokumentu (etap 0: ocena repozytorium). |
+| 2026-10-24 | Etap 1: potwierdzone T-02, T-04, T-05, T-10, T-40, T-41, T-42; dodane T-43…T-55. |
+| 2026-10-24 | Etap 2: potwierdzone T-17, T-20, T-21; dodane T-56…T-60. |
+| 2026-10-25 | Etap 4: dodane T-61…T-63 (dołączenie do programu, nazwane linki, rekomendacje kategorii). |
+| 2026-10-25 | Etap 3: potwierdzone T-25, T-30; dodane T-64…T-66 (edycja draftu firmy, plany, przegląd admina, kontrola dostępu do mediów). |

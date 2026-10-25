@@ -1,0 +1,27 @@
+import type { Metadata } from "next";
+import { Instrument_Sans } from "next/font/google";
+import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { siteConfig } from "@/config/site";
+import "./globals.css";
+
+const instrumentSans = Instrument_Sans({
+  variable: "--font-sans",
+  subsets: ["latin", "latin-ext"],
+});
+
+export const metadata: Metadata = {
+  title: { default: siteConfig.name, template: `%s · ${siteConfig.name}` },
+  description: siteConfig.description,
+};
+
+export default function RootLayout({ children }: LayoutProps<"/">) {
+  return (
+    <html lang="en" className={`${instrumentSans.variable} h-full antialiased`}>
+      <body className="flex min-h-full flex-col">
+        <TooltipProvider>{children}</TooltipProvider>
+        <Toaster position="top-center" />
+      </body>
+    </html>
+  );
+}
