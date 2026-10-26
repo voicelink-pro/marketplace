@@ -79,7 +79,7 @@ export default async function CompanyOverviewPage() {
                 </Badge>
               ) : null}
               {minBps !== null && maxBps !== null ? (
-                <span className="tabular rounded-md bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
+                <span className="tabular rounded-md bg-primary px-2.5 py-0.5 text-xs font-semibold text-primary-foreground">
                   {formatCommissionRange(minBps, maxBps)}
                 </span>
               ) : null}
@@ -128,7 +128,7 @@ export default async function CompanyOverviewPage() {
               {app.hasLivePublishedRelease ? (
                 <Link
                   href={`/apps/${app.slug}`}
-                  className="inline-flex items-center gap-1 font-medium text-foreground hover:text-primary hover:underline"
+                  className="inline-flex items-center gap-1 font-medium text-foreground hover:text-primary-ink hover:underline"
                 >
                   <span>View in marketplace</span>
                   <ExternalLink aria-hidden className="size-3" />

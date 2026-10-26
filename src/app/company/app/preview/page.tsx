@@ -207,7 +207,7 @@ export default async function CompanyAppPreviewPage() {
                           </span>
                         </TableCell>
                         <TableCell className="text-right">
-                          <span className="tabular inline-flex rounded-md bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
+                          <span className="tabular inline-flex rounded-md bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground">
                             {formatCommissionPercent(plan.commissionBps)} recurring
                           </span>
                         </TableCell>
@@ -300,7 +300,7 @@ export default async function CompanyAppPreviewPage() {
           <Card className="border-primary/25">
             <CardHeader className="gap-2">
               <div className="text-xs font-medium text-muted-foreground">Creator commission</div>
-              <CardTitle className="tabular text-2xl font-semibold text-primary">
+              <CardTitle className="tabular text-2xl font-semibold text-foreground">
                 {minBps !== null && maxBps !== null
                   ? formatCommissionRange(minBps, maxBps)
                   : "Add a plan to preview rate"}

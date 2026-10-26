@@ -24,14 +24,14 @@ async function PromoteCtaActions({ app }: { app: PublishedAppDetail }) {
         <Button asChild size="lg" className="w-full">
           <Link href={`/login?next=${encodedNext}`}>
             <Megaphone data-icon="inline-start" />
-            Promote this app
+            Log in to join offer
           </Link>
         </Button>
         <Button asChild variant="outline" size="lg" className="w-full">
           <Link href={`/signup?next=${encodedNext}`}>Create a creator account</Link>
         </Button>
         <p className="text-center text-xs text-muted-foreground">
-          Log in or create an account to join this program and get your referral link and code.
+          Join with your creator account to get your referral link and code.
         </p>
       </div>
     );
@@ -108,7 +108,7 @@ export function PromoteCtaCard({ app }: { app: PublishedAppDetail }) {
     <Card className="border-primary/25">
       <CardHeader className="gap-2">
         <div className="text-xs font-medium text-muted-foreground">Creator commission</div>
-        <CardTitle className="tabular text-2xl font-semibold text-primary sm:text-3xl">
+        <CardTitle className="tabular text-2xl font-semibold text-foreground sm:text-3xl">
           {commissionLabel}
         </CardTitle>
         <CardDescription>
@@ -121,15 +121,15 @@ export function PromoteCtaCard({ app }: { app: PublishedAppDetail }) {
       <CardContent className="flex flex-col gap-5">
         <ul className="flex flex-col gap-2.5 text-sm text-foreground">
           <li className="flex items-start gap-2">
-            <Check aria-hidden className="mt-0.5 size-4 shrink-0 text-primary" />
+            <Check aria-hidden className="mt-0.5 size-4 shrink-0 text-primary-ink" />
             <span>Recurring commission for as long as the referred customer keeps paying</span>
           </li>
           <li className="flex items-start gap-2">
-            <Check aria-hidden className="mt-0.5 size-4 shrink-0 text-primary" />
+            <Check aria-hidden className="mt-0.5 size-4 shrink-0 text-primary-ink" />
             <span>{app.attributionWindowDays}-day attribution window from link click to sign-up</span>
           </li>
           <li className="flex items-start gap-2">
-            <Check aria-hidden className="mt-0.5 size-4 shrink-0 text-primary" />
+            <Check aria-hidden className="mt-0.5 size-4 shrink-0 text-primary-ink" />
             <span>Instant program access — no manual approval from the company</span>
           </li>
         </ul>

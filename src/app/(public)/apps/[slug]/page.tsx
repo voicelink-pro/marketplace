@@ -228,7 +228,7 @@ async function AppDetailContent({
                         </span>
                       </TableCell>
                       <TableCell className="text-right">
-                        <span className="tabular inline-flex rounded-md bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
+                        <span className="tabular inline-flex rounded-md bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground">
                           {formatCommissionPercent(plan.commissionBps)} recurring
                         </span>
                       </TableCell>

@@ -53,7 +53,7 @@ export function JoinProgramForm({
               I accept the{" "}
               <a
                 href="#program-terms"
-                className="font-medium underline underline-offset-4 hover:text-primary"
+                className="font-medium underline underline-offset-4 hover:text-primary-ink"
               >
                 {appName} program terms (Terms v{termsVersionNumber})
               </a>{" "}
@@ -63,9 +63,9 @@ export function JoinProgramForm({
           <FieldErrors state={state} field="acceptedTerms" />
         </Field>
 
-        <SubmitButton size="lg" className="w-full" pendingLabel="Joining program…">
+        <SubmitButton size="lg" className="w-full" pendingLabel="Joining offer…">
           <Megaphone data-icon="inline-start" />
-          Join program & get link
+          Join offer & get link
         </SubmitButton>
       </FieldGroup>
     </form>

@@ -2,22 +2,33 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
 
+/** The "b" mark from the brand board: a rounded stem joined to a ring. */
+export function LogoMark({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden className={cn("size-7 shrink-0 fill-primary", className)}>
+      <rect x="2.5" y="1" width="6.5" height="22" rx="3.25" />
+      <path
+        fillRule="evenodd"
+        d="M14 7a8 8 0 1 1 0 16a8 8 0 1 1 0-16Zm0 4.8a3.2 3.2 0 1 0 0 6.4a3.2 3.2 0 1 0 0-6.4Z"
+      />
+    </svg>
+  );
+}
+
 export function Logo({ className, href = "/" }: { className?: string; href?: string }) {
   return (
     <Link
       href={href}
       className={cn(
-        "inline-flex items-center gap-2 rounded-md font-semibold tracking-tight outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+        "inline-flex items-center gap-1.5 rounded-md outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
         className,
       )}
     >
-      <span
-        aria-hidden
-        className="grid size-7 place-items-center rounded-lg bg-primary text-[0.8rem] font-bold text-primary-foreground"
-      >
-        %
+      <LogoMark />
+      {/* The wordmark is lowercase by design; the accessible name stays "BoostLink". */}
+      <span className="text-[1.2rem] leading-none font-bold tracking-[-0.04em] lowercase">
+        {siteConfig.name}
       </span>
-      <span className="text-[0.95rem]">{siteConfig.name}</span>
     </Link>
   );
 }

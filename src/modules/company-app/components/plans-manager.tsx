@@ -100,7 +100,7 @@ export function PlansManager({
           <div className="flex flex-wrap items-center justify-between gap-2">
             <CardTitle>Working subscription plans for {appName}</CardTitle>
             {minBps !== null && maxBps !== null ? (
-              <span className="tabular rounded-md bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
+              <span className="tabular rounded-md bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground">
                 Catalog tile range: {formatCommissionRange(minBps, maxBps)}
               </span>
             ) : null}
@@ -147,7 +147,7 @@ export function PlansManager({
                         </span>
                       </TableCell>
                       <TableCell className="text-right">
-                        <span className="tabular inline-flex rounded-md bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
+                        <span className="tabular inline-flex rounded-md bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground">
                           {formatCommissionPercent(plan.commissionBps)} recurring
                         </span>
                       </TableCell>
@@ -310,7 +310,7 @@ export function PlansManager({
                         {idx === 0 ? <Badge variant="secondary">Current published</Badge> : null}
                       </div>
                     </TableCell>
-                    <TableCell className="tabular font-medium text-primary">
+                    <TableCell className="tabular font-medium text-primary-ink">
                       {formatCommissionRange(tv.minCommissionBps, tv.maxCommissionBps)}
                     </TableCell>
                     <TableCell className="tabular text-muted-foreground">

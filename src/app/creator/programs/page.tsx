@@ -75,7 +75,7 @@ export default async function CreatorProgramsPage() {
                       <CardTitle className="text-lg">
                         <Link
                           href={`/creator/programs/${program.slug}`}
-                          className="hover:text-primary hover:underline underline-offset-4"
+                          className="hover:text-primary-ink hover:underline underline-offset-4"
                         >
                           {program.appName}
                         </Link>
@@ -88,7 +88,7 @@ export default async function CreatorProgramsPage() {
                   </div>
 
                   <CardAction className="flex flex-wrap items-center gap-2">
-                    <span className="tabular rounded-md bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
+                    <span className="tabular rounded-md bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground">
                       {formatCommissionRange(
                         program.minCommissionBps,
                         program.maxCommissionBps,
