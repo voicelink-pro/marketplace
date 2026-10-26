@@ -1,6 +1,8 @@
-# Marketplace poleceń aplikacji — opis produktu i prompty do Cursora
+# BoostLink — marketplace poleceń aplikacji: opis produktu i prompty do Cursora
 
 Wersja po rozmowie z założycielami • 24.10.2026
+
+Nazwa platformy zatwierdzona przez właściciela 26.10.2026: **BoostLink**. Zakres dopracowania interfejsu etapów 1–4 i podział pracy: `docs/FRONTEND_SCOPE_STAGES_1_4.md`.
 
 Ten plik jest samodzielnym kontekstem dla modelu programującego. Uwzględnia późniejsze odpowiedzi założycieli i zastępuje wcześniejsze propozycje wszędzie, gdzie występuje sprzeczność. Nie wymaga wcześniejszej specyfikacji ani dostępu do rozmowy w ChatGPT.
 

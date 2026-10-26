@@ -1,8 +1,14 @@
-# Referral Market (working name)
+# BoostLink
 
 Marketplace where companies list subscription apps and creators earn recurring commission for customers they refer. Scope: `MARKETPLACE_BRIEF_I_PROMPTY.md`. Progress: `docs/IMPLEMENTATION_STATUS.md`.
 
 Stack: Next.js 16 (App Router), React 19, TypeScript strict, Tailwind 4 + shadcn/ui, Supabase (Postgres, Auth, RLS), Zod, Vitest.
+
+## Parallel frontend and backend work
+
+Frontend/UI/UX handoff for stages 1–4: [docs/FRONTEND_SCOPE_STAGES_1_4.md](docs/FRONTEND_SCOPE_STAGES_1_4.md). It defines screens, ownership, acceptance checks and PR order. Backend work continues separately with stage 5; frontend polish must preserve the existing server contracts.
+
+The product name is **BoostLink**, configured in `src/config/site.ts` and reused by navigation and page titles. The existing GitHub repository name and local Supabase project ID `marketplace-roch` remain technical identifiers; changing them is a separate infrastructure operation.
 
 ## Local setup
 

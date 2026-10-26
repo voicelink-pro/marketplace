@@ -6,6 +6,14 @@ Ostatnia aktualizacja: 2026-10-26 (naprawy i odbiór etapów 1–4 przed E5)
 Każda nowa rozmowa zaczyna od przeczytania briefu i tego pliku.
 Wyniki testów zapisujemy wyłącznie jako `pass`, `fail` albo `blocked`, z opisem, co faktycznie uruchomiono.
 
+## Równoległe dopracowanie UI/UX etapów 1–4
+
+- Marka platformy: **BoostLink**, zatwierdzona 26.10.2026; konfiguracja nazwy i metadane korzystają z `src/config/site.ts`.
+- Zakres dla frontend developera: [FRONTEND_SCOPE_STAGES_1_4.md](FRONTEND_SCOPE_STAGES_1_4.md), w tym pakiety E1–E4, właściciele plików i kryteria odbioru.
+- Status dopracowania UI/UX: **zakres przygotowany; realizacja i odbiór poszczególnych pakietów jeszcze nie rozpoczęte**. Wcześniejsze wyniki testów funkcjonalnych pozostają historią weryfikacji backendu.
+- Backend E5: kolejny zakres Karola z Codexem; ten wpis nie oznacza jego implementacji.
+- Weryfikacja zmiany marki i dokumentacji (26.10): **pass** — `pnpm lint`, `pnpm typecheck`, `pnpm build` (38 tras), nazwa BoostLink w wygenerowanym HTML/metadanych i brak poprzedniej nazwy w wygenerowanych plikach HTML. Testów logiki i integracji nie powtarzano w tym zadaniu: nie zmieniono backendu ani kontraktów.
+
 ## Podsumowanie etapów
 
 | Etap | Zakres | Status |
