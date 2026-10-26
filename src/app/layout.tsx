@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
-import { Instrument_Sans } from "next/font/google";
+import { Suspense } from "react";
+import localFont from "next/font/local";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { siteConfig } from "@/config/site";
 import "./globals.css";
 
-const instrumentSans = Instrument_Sans({
+const instrumentSans = localFont({
   variable: "--font-sans",
-  subsets: ["latin", "latin-ext"],
+  src: "./fonts/instrument-sans.ttf",
+  weight: "400 700",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -19,7 +22,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${instrumentSans.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
-        <TooltipProvider>{children}</TooltipProvider>
+        <TooltipProvider><Suspense fallback={<p className="p-6 text-sm text-muted-foreground">Loading…</p>}>{children}</Suspense></TooltipProvider>
         <Toaster position="top-center" />
       </body>
     </html>

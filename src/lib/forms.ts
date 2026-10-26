@@ -11,7 +11,7 @@ export type FormState =
       /** Echoed non-secret values so the form keeps what the user typed. */
       values?: Record<string, string>;
     }
-  | { status: "success"; message: string };
+  | { status: "success"; message: string; values?: Record<string, string> };
 
 export const idleFormState: FormState = { status: "idle" };
 

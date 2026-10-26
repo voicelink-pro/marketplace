@@ -46,7 +46,10 @@ describe.skipIf(!configured)("creator program memberships and links through the 
   });
 
   afterAll(async () => {
-    await Promise.all(createdUserIds.map((id) => admin.auth.admin.deleteUser(id)));
+    for (const id of createdUserIds) {
+      const removed = await admin.auth.admin.deleteUser(id);
+      if (removed.error) throw removed.error;
+    }
   });
 
   it("joins a published program idempotently under concurrent requests and isolates links per creator", async () => {

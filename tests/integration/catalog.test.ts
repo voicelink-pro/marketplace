@@ -23,11 +23,12 @@ describe.skipIf(!configured)("catalog through the Supabase Data API", () => {
 
   afterAll(async () => {
     for (const id of createdOrgIds) {
-      await admin.from("organizations").delete().eq("id", id);
+      const removed = await admin.from("organizations").delete().eq("id", id);
+      if (removed.error) throw removed.error;
     }
   });
 
-  it("exposes published releases to anon and hides drafts and external plan keys", async () => {
+  it("hides unpublished drafts and internal plan tables from anonymous API clients", async () => {
     const suffix = randomUUID().slice(0, 8);
     const publishedSlug = `it-pub-${suffix}`;
     const draftSlug = `it-draft-${suffix}`;

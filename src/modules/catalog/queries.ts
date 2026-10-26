@@ -195,13 +195,13 @@ export async function listCatalogApps(
       return res.rows;
     });
   } else {
-    const supabase = createPublicClient();
+    const supabase = await createPublicClient();
     const { data, error } = await supabase.rpc("list_catalog_apps", {
-      p_search: filters.q || null,
-      p_category: filters.category,
-      p_platform: filters.platform,
-      p_language: filters.language,
-      p_min_commission_bps: filters.minCommissionBps,
+      p_search: filters.q || undefined,
+      p_category: filters.category ?? undefined,
+      p_platform: filters.platform ?? undefined,
+      p_language: filters.language ?? undefined,
+      p_min_commission_bps: filters.minCommissionBps ?? undefined,
       p_page: filters.page,
       p_page_size: pageSize,
     });
@@ -292,7 +292,7 @@ export const getPublishedAppBySlug = cache(
     listing = result.listing;
     planRows = result.planRows;
   } else {
-    const supabase = createPublicClient();
+    const supabase = await createPublicClient();
     const [listingRes, plansRes] = await Promise.all([
       supabase.from("catalog_listings").select("*").eq("slug", normalizedSlug).maybeSingle(),
       supabase

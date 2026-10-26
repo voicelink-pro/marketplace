@@ -100,21 +100,21 @@ describe("catalog, plans, and terms versions (RLS, immutability, filters, pagina
   it("blocks non-admins (including the company owner) from publishing an app", async () => {
     await expect(
       asUser(db, ownerA, (tx) =>
-        tx.query(`select public.admin_publish_app($1)`, [publishedAppAId]),
+        tx.query(`select private.publish_app_release($1)`, [publishedAppAId]),
       ),
-    ).rejects.toThrow(/not_allowed/);
+    ).rejects.toThrow(/permission denied/);
 
     await expect(
       as(db, "anon", null, (tx) =>
-        tx.query(`select public.admin_publish_app($1)`, [publishedAppAId]),
+        tx.query(`select private.publish_app_release($1)`, [publishedAppAId]),
       ),
     ).rejects.toThrow();
   });
 
   it("refuses to publish an incomplete app or an app without active plans", async () => {
     await expect(
-      asUser(db, adminId, (tx) =>
-        tx.query(`select public.admin_publish_app($1)`, [publishedAppAId]),
+      as(db, "service_role", null, (tx) =>
+        tx.query(`select private.publish_app_release($1)`, [publishedAppAId]),
       ),
     ).rejects.toThrow(/app_profile_incomplete/);
 
@@ -148,8 +148,8 @@ describe("catalog, plans, and terms versions (RLS, immutability, filters, pagina
     );
 
     await expect(
-      asUser(db, adminId, (tx) =>
-        tx.query(`select public.admin_publish_app($1)`, [publishedAppAId]),
+      as(db, "service_role", null, (tx) =>
+        tx.query(`select private.publish_app_release($1)`, [publishedAppAId]),
       ),
     ).rejects.toThrow(/app_requires_active_plan/);
   });
@@ -177,11 +177,9 @@ describe("catalog, plans, and terms versions (RLS, immutability, filters, pagina
       { commit: true },
     );
 
-    await asUser(
-      db,
-      adminId,
+    await as(db, "service_role", null,
       async (tx) => {
-        await tx.query(`select public.admin_publish_app($1)`, [publishedAppAId]);
+        await tx.query(`select private.publish_app_release($1)`, [publishedAppAId]);
       },
       { commit: true },
     );
@@ -353,11 +351,9 @@ describe("catalog, plans, and terms versions (RLS, immutability, filters, pagina
       { commit: true },
     );
 
-    await asUser(
-      db,
-      adminId,
+    await as(db, "service_role", null,
       async (tx) => {
-        await tx.query(`select public.admin_publish_app($1)`, [publishedAppAId]);
+        await tx.query(`select private.publish_app_release($1)`, [publishedAppAId]);
       },
       { commit: true },
     );

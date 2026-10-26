@@ -328,5 +328,12 @@ begin
 
   insert into public.app_plans (app_id, name, external_plan_key, billing_interval, price_minor, currency, commission_bps) values
     (v_app_id, 'Submitted Plan', 'pending_plan_1', 'month', 1900, 'EUR', 2500);
+
+  -- Plan writes invalidate review. The fixture is submitted only after all
+  -- profile/plan edits, just like the real company flow.
+  update public.apps set status='submitted', submitted_at=now(), review_revision=review_revision+1
+    where id=v_app_id;
+  insert into public.app_review_events(app_id, organization_id, event_type, environment)
+    values(v_app_id, v_org_id, 'submitted', 'demo');
 end;
 $$;

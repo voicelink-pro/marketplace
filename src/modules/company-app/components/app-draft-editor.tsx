@@ -394,7 +394,7 @@ export function AppDraftEditorForm({
           <CardHeader>
             <CardTitle>Product website & app store links</CardTitle>
             <CardDescription>
-              Creator referral links can only redirect to the verified URLs you configure here. Provide at least one.
+              Creator referral links can only redirect to the URLs you configure here. Provide at least one.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -459,7 +459,7 @@ export function AppDraftEditorForm({
               ) : null}
             </div>
             <CardDescription>
-              Media assets are protected by organization access control: draft assets stay private to your company until a release is approved.
+              Uploaded media stays private until a release containing it is approved. External URLs must already be public.
             </CardDescription>
           </CardHeader>
           <CardContent>

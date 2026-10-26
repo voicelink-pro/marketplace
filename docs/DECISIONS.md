@@ -150,7 +150,7 @@ Status: **Przyjęte** = obowiązuje; **Do potwierdzenia w etapie N** = kierunek 
 
 ### Etap 1 — konta, konteksty, layouty
 
-- **T-43 Next.js 16 `cacheComponents`.** Włączone (domyślne w szablonie). Wszystko, co czyta ciasteczka/sesję, renderuje się w `<Suspense>`; strażnicy obszarów (`CreatorGate`, `CompanyGate`, `AdminGate`) są w layoutach wewnątrz `<Suspense>`, a strony i Server Actions ponownie wywołują `requireViewer`. Statyczna powłoka (sidebar, nagłówek) jest prerenderowana. *Przyjęte.*
+- **T-43 Next.js 16 `cacheComponents`.** Włączone jawnie w `next.config.ts`, razem z `partialPrefetching: true` (korekta 26.10; wcześniej konfiguracja nie odpowiadała opisowi). Wszystko, co czyta ciasteczka/sesję, renderuje się w `<Suspense>`; strażnicy obszarów (`CreatorGate`, `CompanyGate`, `AdminGate`) są w layoutach wewnątrz `<Suspense>`, a strony i Server Actions ponownie wywołują `requireViewer`. Statyczna powłoka (sidebar, nagłówek) jest prerenderowana. *Przyjęte.*
 - **T-44 Sesja.** `src/proxy.ts` (następca `middleware.ts` w Next 16) odświeża token przez `getClaims()` i wykonuje tylko optymistyczne przekierowania. Granicą autoryzacji są strony/akcje (`getClaims`) oraz RLS. `getSession()` nie jest używane na serwerze. *Przyjęte.*
 - **T-45 Potwierdzanie e-maila.** `enable_confirmations = true`. Szablony e-maili kierują na `/auth/confirm?token_hash=…&type=…` (działa na innym urządzeniu niż rejestracja, w przeciwieństwie do samego PKCE); trasa obsługuje też `code`. Parametr `next` przechodzi przez `safeRedirectPath` (tylko ścieżki w tej samej domenie). *Przyjęte.*
 - **T-46 Hasła.** Minimum 10 znaków, litery i cyfry (Supabase + Zod). `secure_password_change = true`: zmiana hasła z panelu wymaga świeżego logowania. Reset hasła nie ujawnia, czy konto istnieje. *Przyjęte.*
@@ -159,7 +159,7 @@ Status: **Przyjęte** = obowiązuje; **Do potwierdzenia w etapie N** = kierunek 
 - **T-49 Linki społecznościowe.** Tylko `https://` (normalizacja `http`→`https`, odrzucanie danych logowania w URL), rozpoznanie platformy po domenie (domeny podobne → `other`), dla znanych platform wymagana ścieżka profilu. Maks. 10 linków na twórcę (wyzwalacz z blokadą wiersza twórcy), unikalność (`creator_id`, `url`). Brak kolumny „zweryfikowany” (W-11). Gotowość do promowania: `creator_is_ready_to_promote()` = co najmniej jeden link; egzekwowana przy dołączaniu do programu w E4. *Przyjęte.*
 - **T-50 Admin.** Tabela `platform_admins` (kto nadał, notatka, kiedy). Klient może odczytać tylko własny wiersz; zapis wyłącznie `service_role` przez `pnpm admin:grant`. Obszar `/admin` zwraca 404 dla nie-adminów (nie ujawnia istnienia). Admin widzi wszystkie profile, organizacje, członkostwa i aplikacje przez polityki RLS z `private.is_platform_admin()`. *Przyjęte.*
 - **T-51 Wybór kontekstu.** `/dashboard` kieruje do ostatnio używanego kontekstu (ciasteczko `mp_last_context`, httpOnly, ustawiane w proxy), potem twórca → firma → admin → `/onboarding`. Ciasteczko to tylko preferencja; uprawnienia zawsze z bazy. Przełącznik kontekstu w topbarze pojawia się, gdy użytkownik ma oba. *Przyjęte.*
-- **T-52 Typy bazy.** `src/lib/supabase/database.types.ts` napisany ręcznie zgodnie z migracją, bo generator wymaga działającej bazy. Po uruchomieniu Supabase zastąpić wynikiem `pnpm db:types`; CI ostrzega o różnicy. *Tymczasowe.*
+- **T-52 Typy bazy.** `src/lib/supabase/database.types.ts` napisany ręcznie zgodnie z migracją, bo generator wymaga działającej bazy. 26.10 zastąpiono typami z prawdziwego lokalnego Supabase; generator zapisuje atomowo, a CI blokuje różnicę. *Przyjęte.*
 - **T-53 Formularze i stany.** Server Actions + `useActionState` z jednym typem `FormState` (idle / error z błędami pól i zachowanymi wartościami / success). Przycisk pokazuje stan wysyłania; sukces → toast lub przekierowanie; błędy → komunikat + pola. Stany puste modułów opisują, co się pojawi i kiedy, bez przykładowych liczb. Komunikaty błędów nie zdradzają szczegółów technicznych; logi zawierają tylko kod i treść błędu. *Przyjęte.*
 - **T-54 Wygląd.** Kierunek: spokojne, chłodne neutralne tło, białe karty, jeden akcent (zieleń „prowizji”), font Instrument Sans (łaciński + rozszerzony), bez gradientów i etykiet wersalikami. Komponenty shadcn/ui (Radix, styl nova). Robocza nazwa marki „Referral Market” w `src/config/site.ts` — do zastąpienia, gdy właściciele ją ustalą. Interfejs po angielsku (P-10 nadal otwarte). *Przyjęte; nazwa robocza.*
 - **T-55 Zmienne środowiskowe.** Publiczne: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `NEXT_PUBLIC_SITE_URL`, walidowane leniwie przez Zod; aplikacja odmawia startu, jeśli w zmiennej publicznej jest klucz sekretny (`sb_secret_…` lub JWT `service_role`). `SUPABASE_SECRET_KEY` tylko w skryptach i testach; aplikacja webowa go w E1 nie czyta. *Przyjęte.*
@@ -186,6 +186,18 @@ Status: **Przyjęte** = obowiązuje; **Do potwierdzenia w etapie N** = kierunek 
 
 ---
 
+## Naprawy przed E5 — decyzje techniczne z 26.10.2026
+
+- **T-67 Historia dostępna właścicielowi członkostwa.** Polityki RLS udostępniają zaakceptowane wersje warunków i stawek także po republikacji. Nie oznacza to przypisania przyszłych klientów do stawki z dnia dołączenia twórcy; snapshot klienta należy do E5/E7.
+- **T-68 Jeden proces publikacji API.** Uprawnienia wykonania starego RPC publikacji zostały wycofane. `admin_review_app` wymaga `p_expected_revision` i `submitted`; profil, plany, nazwa firmy i ponowne zgłoszenie zmieniają rewizję. Stara karta administratora nie może zatwierdzić nowych danych. Powtórna decyzja nie tworzy drugiego efektu. Prywatny publisher zostaje dla tego procesu i kontrolowanego lokalnego seeda.
+- **T-69 Plany archiwizowane.** RPC `delete_app_plan` zmienia `is_active=false`. Snapshoty zachowują odniesienia. Limit aktywnych planów jest sprawdzany również przy przywróceniu; aktualizacja już aktywnego planu przy limicie jest dozwolona.
+- **T-70 Prywatne pliki.** Bucket `app-media` jest prywatny; właściciel dodaje nowe obiekty o losowych nazwach w folderze aplikacji, bez upsertu/usuwania. Odczyt: własna organizacja/admin lub dokładna referencja w bieżącym zatwierdzonym wydaniu. Serwer przyjmuje PNG/JPEG/WebP do 10 MB i MP4/WebM do 25 MB, sprawdza sygnaturę/MIME, a trasa serwująca narzuca Content-Type, nosniff, CSP i no-store. Kontrola referencji blokuje cudzy lub nieistniejący zarządzany plik. Zewnętrznych URL-i nie traktujemy jako prywatnych plików platformy. Nadpisuje wcześniejszą, zbyt szeroką deklarację T-66.
+- **T-71 Publiczne stawki bez wewnętrznych kluczy.** Cofnięto grant odczytu `external_plan_key` i `plan_id` ze snapshotów dla `authenticated`. Prywatne plany organizacji nadal zawierają klucze potrzebne firmie; przyszłe przetwarzanie integracji korzysta z uprawnień serwera.
+- **T-72 Powtarzalna weryfikacja.** Webpack + oficjalny Tailwind PostCSS; font Instrument Sans lokalny z OFL. Typy z prawdziwej bazy, atomowe generowanie i kontrola CI. Przed inicjalizacją klientów Supabase jawne `io()`; klient katalogu nie inicjalizuje Auth ani timerów sesji. Integracje jawnie zawodzą bez konfiguracji i obejmują Storage oraz proces firmy. Porty lokalnego projektu 553xx, bez zatrzymywania innych stosów. PGlite nie może być uruchomiony w produkcji nawet dodatkową flagą (aktualizacja T-60).
+- **T-73 Niezmienność a klucze obce.** Treść snapshotów i decyzji pozostaje niezmienna. Dozwolone wyłącznie odpięcie FK usuniętego autora oraz sprzątanie odwołań podczas usunięcia całej aplikacji. Kontrole FK między elementami kaskady są odroczone do końca transakcji. Nie wdraża to procesu usuwania kont użytkowników ani zasad retencji finansowej przyszłych etapów.
+
+---
+
 ## Rejestr zmian
 
 | Data | Zmiana |
@@ -195,3 +207,5 @@ Status: **Przyjęte** = obowiązuje; **Do potwierdzenia w etapie N** = kierunek 
 | 2026-10-24 | Etap 2: potwierdzone T-17, T-20, T-21; dodane T-56…T-60. |
 | 2026-10-25 | Etap 4: dodane T-61…T-63 (dołączenie do programu, nazwane linki, rekomendacje kategorii). |
 | 2026-10-25 | Etap 3: potwierdzone T-25, T-30; dodane T-64…T-66 (edycja draftu firmy, plany, przegląd admina, kontrola dostępu do mediów). |
+
+| 2026-10-26 | Naprawy F1–F5, prywatny Storage, rewizje oceny, archiwizacja planów, typy, build i odbiór prawdziwego Supabase; T-67…T-73. |

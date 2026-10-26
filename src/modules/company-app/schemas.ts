@@ -10,7 +10,7 @@ import {
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const HTTPS_URL_RE = /^https:\/\/[A-Za-z0-9.-]+\.[A-Za-z]{2,}(:[0-9]{1,5})?([/?#][^\s]*)?$/;
 const MEDIA_URL_RE =
-  /^(https:\/\/[A-Za-z0-9.-]+\.[A-Za-z]{2,}(:[0-9]{1,5})?([/?#][^\s]*)?|\/demo\/[A-Za-z0-9/_-]+(\.[A-Za-z0-9]+)?)$/;
+  /^(https:\/\/[A-Za-z0-9.-]+\.[A-Za-z]{2,}(:[0-9]{1,5})?([/?#][^\s]*)?|\/demo\/[A-Za-z0-9/_-]+(\.[A-Za-z0-9]+)?|\/media\/apps\/[0-9a-f-]{36}\/[0-9a-f-]{36}\.(png|jpg|webp|mp4|webm))$/;
 const EXTERNAL_KEY_RE = /^[A-Za-z0-9._:-]+$/;
 
 const ZERO_DECIMAL_CURRENCIES = new Set(["JPY", "KRW"]);
@@ -154,25 +154,25 @@ export const appDraftFormSchema = z.object({
     .string()
     .nullable()
     .refine((val) => val === null || MEDIA_URL_RE.test(val), {
-      error: "Enter a valid https:// image URL or /demo/... asset path.",
+      error: "Use an uploaded media URL, an https:// image URL or a /demo/... asset.",
     }),
   coverImageUrl: z
     .string()
     .nullable()
     .refine((val) => val === null || MEDIA_URL_RE.test(val), {
-      error: "Enter a valid https:// image URL or /demo/... asset path.",
+      error: "Use an uploaded media URL, an https:// image URL or a /demo/... asset.",
     }),
   videoUrl: z
     .string()
     .nullable()
     .refine((val) => val === null || MEDIA_URL_RE.test(val), {
-      error: "Enter a valid https:// video URL or /demo/... asset path.",
+      error: "Use an uploaded media URL, an https:// video URL or a /demo/... asset.",
     }),
   screenshots: z
     .array(
       z.object({
         url: z.string().regex(MEDIA_URL_RE, {
-          error: "Screenshot URL must be https:// or /demo/...",
+          error: "Use an uploaded media URL, an https:// URL or a /demo/... asset.",
         }),
         alt: z.string().trim().min(1).max(200),
       }),
@@ -269,7 +269,7 @@ export function checkAppSubmissionReadiness(input: {
     {
       id: "destinations",
       label: "Product website or store link (App Store / Google Play)",
-      detail: linksOk ? "At least one verified destination URL set" : "Add website or store URL",
+      detail: linksOk ? "At least one destination URL set" : "Add website or store URL",
       complete: linksOk,
     },
     {

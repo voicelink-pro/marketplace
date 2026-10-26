@@ -1,4 +1,5 @@
 import "server-only";
+import { io } from "next/cache";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { getPublicEnv } from "@/lib/env";
@@ -9,6 +10,7 @@ import type { Database } from "./database.types";
  * the signed-in user, so RLS applies. Create a new one per request.
  */
 export async function createClient() {
+  await io();
   const cookieStore = await cookies();
   const env = getPublicEnv();
 

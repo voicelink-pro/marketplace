@@ -15,7 +15,7 @@ cp .env.example .env.local    # fill in from: pnpm exec supabase status -o env
 pnpm dev                      # http://localhost:3000
 ```
 
-Confirmation and password-reset emails are caught by the local mail viewer (Mailpit) at http://127.0.0.1:54324.
+Confirmation and password-reset emails are caught by the local mail viewer (Mailpit) at http://127.0.0.1:55324.
 
 Make someone an admin (there is no other way to get the role):
 
@@ -30,4 +30,21 @@ pnpm lint && pnpm typecheck && pnpm test && pnpm build
 pnpm db:reset && pnpm db:advisors && pnpm test:integration   # needs pnpm db:start
 ```
 
-`pnpm test` runs the migrations on in-process Postgres (PGlite) and checks RLS, grants and limits without Docker. The integration suite checks the same rules through the real Data API, plus concurrency.
+`pnpm test` runs the migrations on in-process Postgres (PGlite) and checks RLS, grants and limits without Docker. The integration suite checks the same rules through the real Data API, plus concurrency, company review and private Storage. It reads local credentials from `supabase status` when explicit test credentials are absent, and fails instead of silently skipping when no stack is available.
+
+This project uses ports **55321–55329** so it can run beside other Supabase projects. The app remains on port 3000. `pnpm dev` and `pnpm build` use Next.js Webpack with the official Tailwind PostCSS plugin; Instrument Sans is bundled locally with its OFL license. Cache Components and Partial Prefetching are explicitly enabled.
+
+For an existing local database, apply pending migrations without deleting data:
+
+```bash
+pnpm exec supabase db push --local --yes
+pnpm db:types
+pnpm db:advisors
+pnpm test:integration
+```
+
+`db:reset` deletes local database data; use it only for a disposable database. `db:types` generates the committed types atomically and CI fails on drift.
+
+Company media can be uploaded from App profile (PNG/JPEG/WebP up to 10 MB, MP4/WebM up to 25 MB). Uploaded objects are immutable and private; only references in the current approved release become public through `/media/apps/...`. New files receive new paths. External URLs are already public and cannot be made private by this app. The in-memory demo does not emulate Storage and is always forbidden in production.
+
+The Stage 1–4 repair and verification record is in `docs/IMPLEMENTATION_STATUS.md`. Stage 5 (redirects, clicks, customer attribution) has not been implemented.

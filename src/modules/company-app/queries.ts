@@ -1,4 +1,5 @@
 import "server-only";
+import { z } from "zod";
 import { toMinorBigInt } from "@/lib/money";
 import type { Database } from "@/lib/supabase/database.types";
 import { createClient } from "@/lib/supabase/server";
@@ -71,6 +72,7 @@ export type CompanyWorkspaceApp = {
   termsText: string;
   attributionWindowDays: number;
   status: AppStatus;
+  reviewRevision: number;
   publishEnvironment: "demo" | "live";
   submittedAt: string | null;
   reviewedAt: string | null;
@@ -175,6 +177,7 @@ type RawAppRow = {
   terms_text: string;
   attribution_window_days: number;
   status: AppStatus;
+  review_revision: number;
   publish_environment: "demo" | "live";
   submitted_at: unknown;
   reviewed_at: unknown;
@@ -234,7 +237,7 @@ export async function getCompanyWorkspaceApp(
                 categories, platforms, languages,
                 website_url, ios_store_url, android_store_url,
                 logo_url, cover_image_url, screenshots, video_url,
-                terms_text, attribution_window_days, status, publish_environment,
+                terms_text, attribution_window_days, status, review_revision, publish_environment,
                 submitted_at, reviewed_at, rejection_reason, published_at, created_at
          from public.apps
          where organization_id = $1
@@ -305,7 +308,7 @@ export async function getCompanyWorkspaceApp(
     const { data: found, error: appErr } = await supabase
       .from("apps")
       .select(
-        "id, organization_id, slug, name, tagline, description, categories, platforms, languages, website_url, ios_store_url, android_store_url, logo_url, cover_image_url, screenshots, video_url, terms_text, attribution_window_days, status, publish_environment, submitted_at, reviewed_at, rejection_reason, published_at, created_at",
+        "id, organization_id, slug, name, tagline, description, categories, platforms, languages, website_url, ios_store_url, android_store_url, logo_url, cover_image_url, screenshots, video_url, terms_text, attribution_window_days, status, review_revision, publish_environment, submitted_at, reviewed_at, rejection_reason, published_at, created_at",
       )
       .eq("organization_id", organizationId)
       .order("created_at")
@@ -314,7 +317,7 @@ export async function getCompanyWorkspaceApp(
 
     if (appErr) throw new Error(`Could not load app (${appErr.code})`);
     if (!found) return null;
-    appRow = found;
+    appRow = { ...found, publish_environment: z.enum(["demo", "live"]).parse(found.publish_environment) };
 
     const [pRes, tvRes, evRes, relRes] = await Promise.all([
       supabase
@@ -353,7 +356,10 @@ export async function getCompanyWorkspaceApp(
 
     planRows = pRes.data ?? [];
     termsRows = tvRes.data ?? [];
-    eventRows = evRes.data ?? [];
+    eventRows = (evRes.data ?? []).map(row => ({ ...row,
+      event_type: z.enum(["submitted", "approved", "rejected"]).parse(row.event_type),
+      environment: z.enum(["demo", "live"]).parse(row.environment),
+    }));
     publishedReleaseNumber = relRes.data?.release_number ?? null;
   }
 
@@ -380,6 +386,7 @@ export async function getCompanyWorkspaceApp(
     termsText: appRow.terms_text,
     attributionWindowDays: Number(appRow.attribution_window_days),
     status: appRow.status,
+    reviewRevision: Number(appRow.review_revision),
     publishEnvironment: appRow.publish_environment,
     submittedAt: toIsoOrNull(appRow.submitted_at),
     reviewedAt: toIsoOrNull(appRow.reviewed_at),
@@ -505,6 +512,9 @@ export async function listCompanyCreators(appId: string): Promise<CompanyCreator
       .in("creator_id", creatorIds)
       .order("created_at"),
   ]);
+
+  const failed = [profilesRes, termsRes, linksRes].find((result) => result.error);
+  if (failed?.error) throw new Error(`Could not load creator details (${failed.error.code})`);
 
   const nameById = new Map((profilesRes.data ?? []).map((p) => [p.id, p.display_name]));
   const versionById = new Map((termsRes.data ?? []).map((t) => [t.id, t.version_number]));

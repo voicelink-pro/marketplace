@@ -14,6 +14,7 @@ import {
   AppDraftEditorForm,
   AppSubmissionStatusCard,
 } from "@/modules/company-app/components/app-draft-editor";
+import { MediaUploadForm } from "@/modules/company-app/components/media-upload-form";
 import { getCompanyWorkspaceApp } from "@/modules/company-app/queries";
 
 export const metadata: Metadata = { title: "App profile" };
@@ -36,6 +37,7 @@ export default async function CompanyAppPage() {
         {app ? (
           <>
             <AppSubmissionStatusCard app={app} isOwner={isOwner} />
+            {isOwner ? <MediaUploadForm appId={app.id} /> : null}
             <AppDraftEditorForm app={app} isOwner={isOwner} />
           </>
         ) : isOwner ? (

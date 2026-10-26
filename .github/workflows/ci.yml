@@ -59,9 +59,7 @@ jobs:
       - name: Generated types match the committed file
         run: |
           pnpm db:types
-          git diff --exit-code src/lib/supabase/database.types.ts || {
-            echo "::warning::database.types.ts differs from the generated types. Run pnpm db:types and commit."
-          }
+          git diff --exit-code src/lib/supabase/database.types.ts
       - name: Export local Supabase credentials
         run: |
           status=$(pnpm exec supabase status -o json)

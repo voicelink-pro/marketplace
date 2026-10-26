@@ -13,6 +13,20 @@ const SUPABASE_STUB_SQL = `
   create role authenticated nologin noinherit;
   create role service_role nologin noinherit bypassrls;
   create role supabase_auth_admin nologin noinherit;
+  create schema storage;
+  grant usage on schema storage to anon, authenticated, service_role;
+  create table storage.buckets (
+    id text primary key, name text not null, public boolean not null default false,
+    file_size_limit bigint, allowed_mime_types text[]
+  );
+  create table storage.objects (
+    id uuid primary key default gen_random_uuid(), bucket_id text references storage.buckets(id),
+    name text not null, metadata jsonb, unique(bucket_id,name)
+  );
+  alter table storage.objects enable row level security;
+  grant select on storage.objects to anon;
+  grant select,insert,update,delete on storage.objects to authenticated,service_role;
+
 
   create schema auth;
   grant usage on schema auth to anon, authenticated, service_role;
@@ -91,13 +105,12 @@ declare global {
   var __mpPgliteSandboxVersion: number | undefined;
 }
 
-const SANDBOX_SCHEMA_VERSION = 6;
+const SANDBOX_SCHEMA_VERSION = 7;
 
 export function isLocalPgliteSandboxEnabled(): boolean {
   if (process.env.LOCAL_PGLITE_SANDBOX !== "1") return false;
   if (
-    process.env.NODE_ENV === "production" &&
-    process.env.ALLOW_LOCAL_PGLITE_SANDBOX !== "1"
+    process.env.NODE_ENV === "production"
   ) {
     throw new Error(
       "LOCAL_PGLITE_SANDBOX is a local development sandbox and cannot be used in production.",

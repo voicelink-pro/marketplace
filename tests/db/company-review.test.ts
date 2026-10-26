@@ -149,13 +149,9 @@ describe("company app draft, plans, media ACL, submission, and admin review work
       ),
     ).rejects.toThrow(/not_allowed/);
 
-    // Anon cannot see unpublished media assets or the draft in the public catalog
+    await expect(as(db, "anon", null, tx => tx.query(`select id from public.app_media_assets`))).rejects.toThrow(/permission denied/);
+    // Anon cannot see the draft in the public catalog
     await as(db, "anon", null, async (tx) => {
-      const media = await tx.query(`select id from public.app_media_assets where app_id = $1`, [
-        appAId,
-      ]);
-      expect(media.rows).toHaveLength(0);
-
       const catalog = await tx.query(
         `select slug from public.catalog_listings where slug = 'orbit-habit'`,
       );
@@ -181,14 +177,14 @@ describe("company app draft, plans, media ACL, submission, and admin review work
     // Non-admin cannot review
     await expect(
       asUser(db, ownerA, (tx) =>
-        tx.query(`select public.admin_review_app($1, 'approve', null, 'demo')`, [appAId]),
+        tx.query(`select public.admin_review_app($1, 'approve', null, 'demo', (select review_revision from public.apps where id = $1))`, [appAId]),
       ),
     ).rejects.toThrow(/not_allowed/);
 
     // Admin rejecting without a reason fails validation
     await expect(
       asUser(db, adminId, (tx) =>
-        tx.query(`select public.admin_review_app($1, 'reject', '   ', 'demo')`, [appAId]),
+        tx.query(`select public.admin_review_app($1, 'reject', '   ', 'demo', (select review_revision from public.apps where id = $1))`, [appAId]),
       ),
     ).rejects.toThrow(/rejection_reason_required/);
 
@@ -198,7 +194,7 @@ describe("company app draft, plans, media ACL, submission, and admin review work
       adminId,
       async (tx) => {
         await tx.query(
-          `select public.admin_review_app($1, 'reject', 'Please clarify whether free trials are offered in the program terms.', 'demo')`,
+          `select public.admin_review_app($1, 'reject', 'Please clarify whether free trials are offered in the program terms.', 'demo', (select review_revision from public.apps where id = $1))`,
           [appAId],
         );
       },
@@ -260,7 +256,7 @@ describe("company app draft, plans, media ACL, submission, and admin review work
     // Admin attempting live publication before integration & funding are verified is blocked
     await expect(
       asUser(db, adminId, (tx) =>
-        tx.query(`select public.admin_review_app($1, 'approve', null, 'live')`, [appAId]),
+        tx.query(`select public.admin_review_app($1, 'approve', null, 'live', (select review_revision from public.apps where id = $1))`, [appAId]),
       ),
     ).rejects.toThrow(/live_publication_requires_verified_integration_and_funding/);
 
@@ -270,14 +266,14 @@ describe("company app draft, plans, media ACL, submission, and admin review work
       adminId,
       async (tx) => {
         await tx.query(
-          `select public.admin_review_app($1, 'approve', 'Checklist verified for demo catalog.', 'demo')`,
+          `select public.admin_review_app($1, 'approve', 'Checklist verified for demo catalog.', 'demo', (select review_revision from public.apps where id = $1))`,
           [appAId],
         );
       },
       { commit: true },
     );
 
-    // Published version is now live in the public catalog and its media assets are readable by anon
+    // Published release serves approved media; the working inventory stays private.
     await as(db, "anon", null, async (tx) => {
       const listing = await tx.query<{
         slug: string;
@@ -295,11 +291,7 @@ describe("company app draft, plans, media ACL, submission, and admin review work
         terms_version_number: 1,
       });
 
-      const media = await tx.query<{ asset_kind: string }>(
-        `select asset_kind from public.app_media_assets where app_id = $1`,
-        [appAId],
-      );
-      expect(media.rows.length).toBeGreaterThanOrEqual(4);
+      // Anon has no access to the working media inventory. Public URLs are in the release.
     });
   });
 
@@ -367,7 +359,7 @@ describe("company app draft, plans, media ACL, submission, and admin review work
       adminId,
       async (tx) => {
         await tx.query(
-          `select public.admin_review_app($1, 'approve', 'Approved v2 rate increase.', 'demo')`,
+          `select public.admin_review_app($1, 'approve', 'Approved v2 rate increase.', 'demo', (select review_revision from public.apps where id = $1))`,
           [appAId],
         );
       },

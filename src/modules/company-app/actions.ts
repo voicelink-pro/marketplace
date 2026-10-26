@@ -1,6 +1,7 @@
 "use server";
 
 import { refresh } from "next/cache";
+import { z } from "zod";
 import { formError, formString, type FormState, zodFormError } from "@/lib/forms";
 import { logUnexpected } from "@/lib/log";
 import { createClient } from "@/lib/supabase/server";
@@ -159,13 +160,13 @@ export async function saveAppDraft(_prev: FormState, formData: FormData): Promis
     p_categories: data.categories,
     p_platforms: data.platforms,
     p_languages: data.languages,
-    p_website_url: data.websiteUrl,
-    p_ios_store_url: data.iosStoreUrl,
-    p_android_store_url: data.androidStoreUrl,
-    p_logo_url: data.logoUrl,
-    p_cover_image_url: data.coverImageUrl,
+    p_website_url: data.websiteUrl ?? undefined,
+    p_ios_store_url: data.iosStoreUrl ?? undefined,
+    p_android_store_url: data.androidStoreUrl ?? undefined,
+    p_logo_url: data.logoUrl ?? undefined,
+    p_cover_image_url: data.coverImageUrl ?? undefined,
     p_screenshots: data.screenshots,
-    p_video_url: data.videoUrl,
+    p_video_url: data.videoUrl ?? undefined,
     p_terms_text: data.termsText,
     p_attribution_window_days: data.attributionWindowDays,
   });
@@ -263,7 +264,7 @@ export async function upsertAppPlan(_prev: FormState, formData: FormData): Promi
     p_price_minor: Number(priceParsed.minor),
     p_currency: baseParsed.data.currency,
     p_commission_bps: rateParsed.bps,
-    p_plan_id: baseParsed.data.planId ?? null,
+    p_plan_id: baseParsed.data.planId,
   });
 
   if (error) {
@@ -385,6 +386,12 @@ export async function reviewSubmittedApp(_prev: FormState, formData: FormData): 
   const appId = uuidSchema.safeParse(formString(formData, "appId"));
   if (!appId.success) return formError("Invalid app.");
 
+  const revision = z.coerce.number().int().min(0).max(Number.MAX_SAFE_INTEGER)
+    .safeParse(formString(formData, "reviewRevision"));
+  if (!revision.success || !formString(formData, "reviewRevision")) {
+    return formError("Reload the application to review its current revision.");
+  }
+
   const decision = formString(formData, "decision");
   const reason = formString(formData, "reason");
   const environment = formString(formData, "environment") || "demo";
@@ -403,11 +410,12 @@ export async function reviewSubmittedApp(_prev: FormState, formData: FormData): 
   if (isLocalPgliteSandboxEnabled()) {
     try {
       await runInAuthenticatedPgliteSandbox(viewer.userId, async (tx) => {
-        await tx.query(`select public.admin_review_app($1, $2, $3, $4)`, [
+        await tx.query(`select public.admin_review_app($1, $2, $3, $4, $5::bigint)`, [
           appId.data,
           decision,
           reason || null,
           environment,
+          revision.data,
         ]);
       });
       refresh();
@@ -420,6 +428,9 @@ export async function reviewSubmittedApp(_prev: FormState, formData: FormData): 
       };
     } catch (err) {
       const msg = extractPgErrorMessage(err);
+      if (msg.includes("stale_review_revision") || msg.includes("app_not_submitted")) {
+        return formError("This submission changed or was already reviewed. Reload it before deciding.");
+      }
       if (msg.includes("live_publication_requires_verified_integration_and_funding")) {
         return formError(
           "Live publication requires a verified payment integration and company funding. Use the Demo environment until Stages 6 & 8 are connected.",
@@ -437,11 +448,15 @@ export async function reviewSubmittedApp(_prev: FormState, formData: FormData): 
   const { error } = await supabase.rpc("admin_review_app", {
     p_app_id: appId.data,
     p_decision: decision,
-    p_reason: reason || null,
+    p_reason: reason || undefined,
     p_environment: environment,
+    p_expected_revision: revision.data,
   });
 
   if (error) {
+    if (error.message.includes("stale_review_revision") || error.message.includes("app_not_submitted")) {
+      return formError("This submission changed or was already reviewed. Reload it before deciding.");
+    }
     if (error.message.includes("live_publication_requires_verified_integration_and_funding")) {
       return formError(
         "Live publication requires a verified payment integration and company funding. Use the Demo environment until Stages 6 & 8 are connected.",

@@ -134,7 +134,7 @@ export function AdminReviewCard({ app }: { app: CompanyWorkspaceApp }) {
           <div className="flex flex-col gap-2 text-sm">
             <span className="text-xs font-medium text-muted-foreground">Tagline & description</span>
             <p className="font-medium">{app.tagline || "—"}</p>
-            <p className="line-clamp-4 text-xs leading-relaxed text-muted-foreground">
+            <p className="whitespace-pre-wrap text-xs leading-relaxed text-muted-foreground">
               {app.description || "No description provided."}
             </p>
             <div className="flex flex-wrap gap-1.5 pt-1">
@@ -182,6 +182,23 @@ export function AdminReviewCard({ app }: { app: CompanyWorkspaceApp }) {
             </div>
           </div>
         </div>
+
+        <details className="rounded-lg border p-3 text-sm">
+          <summary className="cursor-pointer font-medium">Review all images, screenshots and video</summary>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            {[app.coverImageUrl, ...app.screenshots.map(image => image.url)].filter((url): url is string => Boolean(url)).map((url, index) => (
+              <a key={`${url}-${index}`} href={url} target="_blank" rel="noopener noreferrer" className="flex flex-col gap-1">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={url} alt={index === 0 ? "App cover" : `Screenshot ${index}`} referrerPolicy="no-referrer" className="aspect-video w-full rounded-md border object-contain" />
+                <span className="text-xs underline">Open image {index + 1}</span>
+              </a>
+            ))}
+          </div>
+          {app.videoUrl ? <a href={app.videoUrl} target="_blank" rel="noopener noreferrer" className="mt-3 inline-block underline">Open product video</a> : null}
+          <div className="mt-3 flex flex-wrap gap-3 text-xs underline">
+            {[app.websiteUrl, app.iosStoreUrl, app.androidStoreUrl].filter((url): url is string => Boolean(url)).map(url => <a key={url} href={url} target="_blank" rel="noopener noreferrer">{url}</a>)}
+          </div>
+        </details>
 
         {/* Plans & Commission Rates */}
         {activePlans.length > 0 ? (
@@ -235,6 +252,7 @@ export function AdminReviewCard({ app }: { app: CompanyWorkspaceApp }) {
         <div className="grid gap-4 border-t pt-4 md:grid-cols-2">
           <form action={approveAction} className="flex flex-col justify-between gap-3 rounded-lg border p-3.5">
             <input type="hidden" name="appId" value={app.id} />
+            <input type="hidden" name="reviewRevision" value={app.reviewRevision} />
             <input type="hidden" name="decision" value="approve" />
             <input type="hidden" name="environment" value="demo" />
             <div className="flex flex-col gap-1">
@@ -245,7 +263,7 @@ export function AdminReviewCard({ app }: { app: CompanyWorkspaceApp }) {
               {approveState.status === "error" ? <FormMessage state={approveState} /> : null}
             </div>
             <SubmitButton
-              disabled={!checklist.readyToSubmit}
+              disabled={app.status !== "submitted" || !checklist.readyToSubmit}
               pendingLabel="Publishing…"
               className="self-start"
             >
@@ -256,6 +274,7 @@ export function AdminReviewCard({ app }: { app: CompanyWorkspaceApp }) {
 
           <form action={rejectAction} noValidate className="flex flex-col justify-between gap-3 rounded-lg border p-3.5">
             <input type="hidden" name="appId" value={app.id} />
+            <input type="hidden" name="reviewRevision" value={app.reviewRevision} />
             <input type="hidden" name="decision" value="reject" />
             <FieldGroup>
               {rejectState.status === "error" ? <FormMessage state={rejectState} /> : null}
@@ -278,6 +297,7 @@ export function AdminReviewCard({ app }: { app: CompanyWorkspaceApp }) {
               </Field>
               <SubmitButton
                 variant="outline"
+                disabled={app.status !== "submitted"}
                 pendingLabel="Sending back…"
                 className="self-start"
               >

@@ -22,6 +22,7 @@ describe.skipIf(!configured)("accounts through the Supabase Data API", () => {
   let admin: Client;
   let anon: Client;
   const createdUserIds: string[] = [];
+  const createdOrgIds: string[] = [];
 
   async function signedInUser(name: string): Promise<{ id: string; client: Client }> {
     const email = `it-${name}-${randomUUID()}@example.test`;
@@ -52,10 +53,18 @@ describe.skipIf(!configured)("accounts through the Supabase Data API", () => {
     const { data, error } = await alice.client.rpc("create_organization", { p_name: "Alice Co" });
     if (error) throw error;
     aliceOrgId = data;
+    createdOrgIds.push(data);
   });
 
   afterAll(async () => {
-    await Promise.all(createdUserIds.map((id) => admin.auth.admin.deleteUser(id)));
+    for (const id of createdOrgIds) {
+      const removed = await admin.from("organizations").delete().eq("id", id);
+      if (removed.error) throw removed.error;
+    }
+    for (const id of createdUserIds) {
+      const removed = await admin.auth.admin.deleteUser(id);
+      if (removed.error) throw removed.error;
+    }
   });
 
   it("creates a profile for a new account", async () => {
@@ -149,6 +158,7 @@ describe.skipIf(!configured)("accounts through the Supabase Data API", () => {
       const owner = await signedInUser("Racer");
       const org = await owner.client.rpc("create_organization", { p_name: "Race Co" });
       if (org.error) throw org.error;
+      createdOrgIds.push(org.data);
 
       const attempts = await Promise.all(
         Array.from({ length: 8 }, (_, index) =>
@@ -174,6 +184,7 @@ describe.skipIf(!configured)("accounts through the Supabase Data API", () => {
       );
       for (const attempt of attempts) expect(attempt.error).toBeNull();
       expect(new Set(attempts.map((attempt) => attempt.data)).size).toBe(1);
+      createdOrgIds.push(attempts[0]!.data!);
 
       const { count } = await admin
         .from("organization_members")
@@ -198,10 +209,11 @@ describe.skipIf(!configured)("accounts through the Supabase Data API", () => {
       );
       expect(attempts.filter((attempt) => !attempt.error)).toHaveLength(10);
 
-      const { count } = await admin
+      const { count, error } = await creator.client
         .from("creator_social_links")
         .select("id", { count: "exact", head: true })
         .eq("creator_id", creator.id);
+      expect(error).toBeNull();
       expect(count).toBe(10);
     });
   });

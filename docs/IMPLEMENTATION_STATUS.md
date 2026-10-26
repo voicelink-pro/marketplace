@@ -1,7 +1,7 @@
 # Status implementacji
 
 Brief: `MARKETPLACE_BRIEF_I_PROMPTY.md` • Decyzje: `docs/DECISIONS.md`
-Ostatnia aktualizacja: 2026-10-25 (etap 4)
+Ostatnia aktualizacja: 2026-10-26 (naprawy i odbiór etapów 1–4 przed E5)
 
 Każda nowa rozmowa zaczyna od przeczytania briefu i tego pliku.
 Wyniki testów zapisujemy wyłącznie jako `pass`, `fail` albo `blocked`, z opisem, co faktycznie uruchomiono.
@@ -11,10 +11,10 @@ Wyniki testów zapisujemy wyłącznie jako `pass`, `fail` albo `blocked`, z opis
 | Etap | Zakres | Status |
 |---|---|---|
 | 0 | Ocena repozytorium, dokumenty startowe | **Ukończony** |
-| 1 | Fundament, konta, konteksty, layouty | **Ukończony w kodzie**; weryfikacja na prawdziwym Supabase `blocked` (B-01) |
-| 2 | Publiczny katalog i strony aplikacji | **Ukończony w kodzie** (zweryfikowany na PGlite + w przeglądarce); test przez PostgREST `blocked` (B-01) |
-| 3 | Firma dodaje aplikację, admin publikuje | **Ukończony w kodzie** (zweryfikowany na PGlite + w przeglądarce); test przez PostgREST `blocked` (B-01) |
-| 4 | Dołączenie twórcy, przewodnik, programy, linki | **Ukończony w kodzie** (zweryfikowany na PGlite + w przeglądarce desktop/mobile); test przez PostgREST `blocked` (B-01) |
+| 1 | Fundament, konta, konteksty, layouty | **Ukończony; poprawki i testy prawdziwego Supabase `pass` (26.10)** |
+| 2 | Publiczny katalog i strony aplikacji | **Ukończony; poprawki, PGlite i prawdziwy PostgREST `pass` (26.10)** |
+| 3 | Firma dodaje aplikację, admin publikuje | **Ukończony; poprawki, PGlite i prawdziwy PostgREST `pass` (26.10)** |
+| 4 | Dołączenie twórcy, przewodnik, programy, linki | **Ukończony; historyczne warunki i izolacja przez prawdziwy PostgREST `pass` (26.10)** |
 | 5 | Przypisanie klientów, statystyki poleceń | Nie rozpoczęty — **następny** |
 | 6 | Integracje płatności (Stripe, RevenueCat, Generic API) | Nie rozpoczęty |
 | 7 | Prowizje, historia stawek, zamknięcie miesiąca | Nie rozpoczęty |
@@ -250,12 +250,51 @@ Brak kodu, więc brak testów. Wykonano tylko inwentaryzację plików, narzędzi
 | `pnpm test` — baza na PGlite (`tests/db/company-review.test.ts` + pozostałe) | **pass** | 53/53 testów (limit 1 aplikacji, izolacja draftów/planów/mediów między firmą A i B oraz `anon`, pełny cykl `draft → submitted → rejected z uzasadnieniem → poprawka → approved (demo)`, blokada `live` bez integracji i finansowania, wersjonowanie zmian opublikowanego profilu i stawek bez ujawniania niezatwierdzonego draftu publicznie) |
 | Weryfikacja w przeglądarce (`localhost:3001`) | **pass** | `/company`, `/company/app`, `/company/app/preview`, `/company/plans`, `/company/creators` oraz `/admin` (kolejka zgłoszeń z checklistą i akcjami zatwierdzenia/odrzucenia) |
 
-## Blokery i ryzyka
+## Naprawy i odbiór przed etapem 5 — 26.10.2026
+
+Ten wpis aktualizuje wcześniejsze historyczne `blocked`. Etapu 5 nie implementowano.
+
+### Wdrożone poprawki
+
+- F1: twórca odczytuje zaakceptowane historyczne warunki i stawki po kolejnych publikacjach. Obce konta nie otrzymują tego dostępu.
+- F2: `app_media_assets` jest prywatnym inwentarzem draftu. Publiczne referencje pochodzą wyłącznie z zatwierdzonego wydania. Dodano prywatny bucket `app-media`, kontrolę organizacji, niezmienne ścieżki plików, walidację sygnatur/MIME i wielkości oraz trasę `/media/apps/...` z RLS i bezpiecznymi nagłówkami. Upload w panelu firmy; administrator może obejrzeć komplet mediów. Zewnętrzne URL-e pozostają zewnętrznymi, publicznymi zasobami — aplikacja nie deklaruje ich ochrony.
+- F3: usunięcie planu archiwizuje go przez `is_active=false`; historia i klucz obcy pozostają. Aktualizacja aktywnego planu przy limicie 20 działa, przywrócenie dodatkowego planu nie omija limitu.
+- F4: stare `admin_publish_app` nie jest wykonywalne przez role API, także administratora. Publiczny proces przeglądu wymaga statusu `submitted` i numeru obejrzanej rewizji. Zmiana profilu, planów lub nazwy firmy unieważnia zgłoszenie; ponowna decyzja nie tworzy kolejnego wydania.
+- F5: `external_plan_key` i `plan_id` historycznych stawek nie są dostępne zwykłym zalogowanym kontom. Firma korzysta z prywatnych roboczych planów; katalog pokazuje publiczną projekcję.
+- Ujednolicono polityki SELECT wskazane przez advisories; minimalne granty i izolacja zachowane.
+- Naprawiono kolizję niezmiennych snapshotów z referencyjnymi akcjami FK przy usuwaniu całej aplikacji i odpinaniu usuniętego autora. Treść warunków, stawek i decyzji nadal jest niezmienna.
+- `listCompanyCreators` sprawdza błędy wszystkich zapytań.
+- Cache Components i Partial Prefetching włączone jawnie; dynamiczne strony mają granicę Suspense, a inicjalizacja SDK jest poprzedzona `io()` zgodnie z lokalną dokumentacją Next.js 16.4. Font jest lokalny, wraz z OFL. Standardowy Tailwind PostCSS i Webpack eliminują zależność buildu od Google Fonts i problematycznego IPC Turbopacka.
+- Typy bazy wygenerowane z prawdziwego lokalnego Postgresa, zapis atomowy; CI blokuje rozjazd typów. Testy integracyjne odczytują lokalną konfigurację bez wypisywania kluczy; brak środowiska kończy się błędem zamiast pozornego sukcesu z pominiętymi testami.
+- Sandbox PGlite jest wyłącznie developerski, zawsze zablokowany w produkcji; nie emuluje Storage. Bieżące `.env.local` używa prawdziwego lokalnego Supabase.
+
+### Migracje i środowisko
+
+Dodano cztery migracje: `20261026211649_stage_1_4_hardening.sql`, `20261026211934_private_app_media.sql`, `20261026212738_review_policy_cleanup.sql`, `20261026212932_immutable_reference_cleanup.sql`. Poprzednich migracji nie zmieniono. Lokalny Supabase tego projektu działa na portach 553xx (API 55321, Postgres 55322, Mailpit 55324), aby nie kolidować z innymi projektami. Aplikacja: http://localhost:3000.
+
+Istniejąca baza: `pnpm exec supabase db push --local --yes`, potem `pnpm db:types`, `pnpm db:advisors`, `pnpm test:integration`. Nie trzeba usuwać jej danych. `db:reset` jest przeznaczone tylko dla bazy jednorazowej.
+
+### Weryfikacja końcowa
+
+- **pass — `pnpm lint`:** 0 błędów i ostrzeżeń.
+- **pass — `pnpm typecheck`:** typy tras i TypeScript.
+- **pass — `pnpm test`:** 14 plików, 132 testy (jednostki i migracje/RLS na PGlite). Nowe regresje obejmują historię po republikacji, archiwizację planu, limit aktywnych planów, stare RPC, stale review, retry decyzji, prywatność mediów i referencje FK.
+- **pass — `pnpm test:integration`:** 4 pliki, 18 testów na prawdziwym lokalnym Supabase; bez pominięć. Izolacja kont, równoległe zapisy/join, proces firmy, równoległe akceptacje, Storage przed/po publikacji, historyczne warunki i sprzątanie własnych fixture’ów.
+- **pass — `pnpm build`:** 38 tras; statyczne, PPR i dynamiczne zgodnie z raportem Next.js. `next start` działa na http://localhost:3000. Granice `io()` przed SDK i klient anonimowy bez inicjalizacji Auth usuwają błędy `Date.now()` przy prerenderowaniu/prefetchu; po końcowym uruchomieniu brak tych błędów w logach.
+- **pass — odtworzenie pustej lokalnej bazy:** `supabase db reset --local --yes` zastosował wszystkie osiem migracji i seed bez błędów. To wyłącznie jednorazowy stos `marketplace-roch` utworzony w tej sesji; inne projekty i chmura nie były modyfikowane. Powtórny zestaw 18 integracji przeszedł na odtworzonej bazie.
+- **pass — `pnpm db:types`:** wygenerowane ponownie typy są identyczne z plikiem w projekcie (porównanie `diff -q`).
+- **pass — `pnpm db:advisors`:** brak problemów (`results: []`), również po odtworzeniu bazy.
+- **pass — lokalny Auth/SMTP:** rejestracja bez sesji → e-mail w Mailpit → rzeczywisty callback Next `/auth/confirm` → onboarding i cookies sesji. Osobno e-mail recovery → callback → `/reset-password` i cookies. Nie zmieniano hasła prawdziwego użytkownika.
+- **pass — UI na prawdziwej sesji Supabase:** logowanie → panel firmy → odrzucenie SVG → upload PNG → zapis draftu → submit → akceptacja administratora → Published (Demo) → wylogowanie. Żądanie HTTP bez sesji dla tego samego pliku: 404 przed akceptacją, 200 po. Desktop 1280×900 i mobile 390×844: brak poziomego overflow panelu. Dowód: `docs/verification/stage-1-4-desktop.jpg`. Konto QA i plik były jednorazowe.
+
+Historyczne tabele testów z 24–25.10 pozostają zapisem ówczesnego stanu, nie bieżącymi blockerami. Po usunięciu danych QA katalog ponownie pokazuje osiem wyłącznie lokalnych ofert seeda i nie zgłasza błędów przeglądarki. GitHub Actions nie uruchamiano zdalnie; wykonano jego komendy lokalnie. Nie jest to odbiór E9 ani uruchomienie live.
+
+## Historyczne blokery i pozostałe ograniczenia
 
 | ID | Opis | Wpływ | Obejście / akcja |
 |---|---|---|---|
-| B-01 | Docker nie działa: przy `supabase start` daemon zgłasza „read-only file system / input/output error” i pada. Przyczyna: prawie pełny dysk (ok. 220–320 MB wolnego). Użytkownik nie może teraz zwolnić miejsca. | Brak lokalnego Supabase: testy integracyjne, `db reset`, advisors, ręczny przepływ auth i wygląd paneli są `blocked` | Zwolnić kilka GB, uruchomić Docker Desktop, wykonać kroki z „Jak przetestować ręcznie”. Do tego czasu migracje i RLS sprawdzane na PGlite. |
-| B-05 | Mało miejsca na dysku | `next build` zdążył się wykonać, ale cache Turbopacka nie zapisuje się; kolejne instalacje/buildy mogą się nie udać | Zwolnić miejsce; `.next/cache` można usuwać |
+| B-01 (zamknięty 26.10) | Lokalny Docker i Supabase działają; porty 553xx. | Integracje i Auth/Storage odebrane lokalnie. | Utrzymywać uruchomiony Docker do testów bazy. |
+| B-05 (zamknięty dla bieżącego odbioru) | Historyczne problemy miejsca na dysku nie blokują już buildu i lokalnej bazy. | Bieżące kontrole pass. | Nadal monitorować wolne miejsce. |
 | B-02 | Brak projektu Supabase w chmurze i kluczy | Brak środowiska hostowanego | E1 działa lokalnie; projekt w chmurze potrzebny przed pilotażem |
 | B-03 | Brak kluczy Stripe / RevenueCat / operatora | Testy z dostawcą w E6/E8 | Jawne fixtures i sandbox; testy z dostawcą oznaczone `blocked` |
 | B-04 | Otwarte decyzje biznesowe P-01…P-09 | Blokują wyłącznie operacje live z prawdziwymi pieniędzmi | Sandbox zgodnie z `DECISIONS.md`; live wyłączone |
@@ -264,4 +303,4 @@ Brak kodu, więc brak testów. Wykonano tylko inwentaryzację plików, narzędzi
 ## Następny krok
 
 1. **ETAP 5** — bezpieczne przekierowania linków (`/r/[token]`), rejestrowanie kliknięć, API przypisujące konto klienta aplikacji do twórcy (po tokenie linku lub kodzie polecającym), wydzielony moduł polityk pierwszeństwa i okna przypisania, podłączenie rzeczywistych kliknięć i rejestracji do dashboardów twórcy i firmy oraz aplikacja demonstracyjna integracji — po wklejeniu promptu E5.
-2. **Przed uruchomieniem testów integracyjnych przez PostgREST:** usunąć B-01/B-05 i wykonać `pnpm db:reset && pnpm db:advisors && pnpm test:integration`.
+2. Dla każdej zmiany bazy wykonać `pnpm db:advisors && pnpm test:integration`; nie pomijać regresji historycznych warunków, zatwierdzania rewizji i izolacji mediów. Testy tego obszaru działają już na prawdziwym lokalnym Supabase.
