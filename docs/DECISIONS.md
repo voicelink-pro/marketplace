@@ -205,6 +205,15 @@ Status: **Przyjęte** = obowiązuje; **Do potwierdzenia w etapie N** = kierunek 
 
 - **T-74 Podział pracy.** Frontend dopracowuje UI/UX istniejących etapów 1–4 według `docs/FRONTEND_SCOPE_STAGES_1_4.md`. Karol z Codexem prowadzi backend kolejnych etapów, zaczynając od E5. Pliki wspólne i zmiany kontraktów wymagają uzgodnienia; oddzielne gałęzie, małe PR i CI przed połączeniem do `main`. *Przyjęte; zakres prac zlecony przez właściciela.*
 
+## Etap 5 — przypisanie klientów (26.10.2026)
+
+- **T-75 Link publiczny i dowód kliknięcia.** `/r/[token]` korzysta wyłącznie z celu aktualnego zatwierdzonego wydania, bez parametru redirect. Tworzy oddzielny losowy token kliknięcia, którego skrót jest prywatny. Web otrzymuje `bl_ref`; sklepy mobilne pozostają bez tokenu, kod wpisuje się przy rejestracji. Cookie marketplace nie jest używane w domenie aplikacji. Brak fingerprintingu, IP i user agentów. Kliknięcia oznaczają wygenerowane przekierowania, nie unikalnych ludzi. *Przyjęte.*
+- **T-76 Centralna polityka sandbox.** `private.attribution_policy()` w migracji E5 jest jedynym źródłem konfiguracji reguł: `sandbox-v1`, ostatnie ważne kliknięcie w ciągu 30 dni, jawny kod wygrywa przed utrwaleniem. Przy wielu tokenach czas pochodzi z serwera. Nieznane/obce tokeny oraz nieprawidłowy jawny kod są błędem. Oferta z innym opublikowanym oknem nie jest po cichu interpretowana jako 30 dni. P-03/P-04/P-05 pozostają **otwarte dla live**; E5 odmawia nowych przypisań poza demo. *Przyjęte technicznie; wartości biznesowe wyłącznie sandbox.*
+- **T-77 Trwała tożsamość klienta.** `POST /api/v1/customers` jest API backend–backend. Sekret ma zakres jednej aplikacji, 90 dni ważności, rotację z natychmiastowym odwołaniem i prywatny skrót SHA-256. Nie używamy klucza Supabase w aplikacji klienta. Backend BoostLink wywołuje wąskie RPC jako anon; sekret sprawdza baza. Sekret nadaje operator skryptem zapisującym plik 0600 lub właściciel przez autoryzowane RPC. Brak CORS, odrzucenie Origin, ścisły JSON, limit ciała/listy tokenów i limity żądań. *Przyjęte.*
+- **T-78 Idempotencja i brak przejęcia.** Para aplikacja + skrót nieosobowego ID klienta jest unikalna; blokada transakcyjna i atomowy zapis tworzą jedną tożsamość przy wyścigu. Retry zwraca pierwotny rekord bez zmiany twórcy, źródła i wersji warunków, także po wygaśnięciu tokenu. Rejestracja bez polecenia utrwala `unattributed`. Aplikacja musi zgłaszać wszystkie konta, a przed integracją zarejestrować stare jako organiczne; platforma nie zna wcześniej niezgłoszonych klientów. Serwer aplikacji odpowiada za wiarygodność zgłoszenia. *Przyjęte.*
+- **T-79 Snapshot przy pozyskaniu.** Przypisany klient ma odniesienie do aktualnej niezmiennej wersji pełnej tabeli warunków/stawek przy rejestracji. To nie jest automatycznie wersja zaakceptowana przez twórcę w dniu join. Zmiana oferty i retry nie przeliczają historii. Twórca zachowuje odczyt właściwej historii przez RLS. Nie implementuje to naliczania prowizji z E7. *Przyjęte; P-07 nadal sandbox.*
+- **T-80 Statystyki i prywatność.** Odczyty i agregaty respektują RLS; firma widzi własną aplikację, twórca własne dane, admin ma odczyt administracyjny. Rejestracje kodem nie są przypisywane żadnemu linkowi. Panele nie dostają źródłowego ID klienta ani sekretu/tokenów kliknięć, wyłącznie UUID/pseudonim, datę i źródło. Płatności, aktywni płacący i prowizje pozostają poza E5. Nowy moduł prezentacyjny dodano do istniejących ekranów; osobne dopracowanie UI/UX E1–E4 nadal prowadzi frontend. *Przyjęte.*
+
 ## Rejestr zmian
 
 | Data | Zmiana |
@@ -218,3 +227,5 @@ Status: **Przyjęte** = obowiązuje; **Do potwierdzenia w etapie N** = kierunek 
 | 2026-10-26 | Naprawy F1–F5, prywatny Storage, rewizje oceny, archiwizacja planów, typy, build i odbiór prawdziwego Supabase; T-67…T-73. |
 
 | 2026-10-26 | Zatwierdzona marka BoostLink (W-00), zakres frontend/UI/UX E1–E4 i podział pracy (T-74). |
+
+| 2026-10-26 | Etap 5 sandbox: tokeny kliknięć, API klienta, trwałe przypisanie, snapshoty i rzeczywiste statystyki; T-75…T-80. |

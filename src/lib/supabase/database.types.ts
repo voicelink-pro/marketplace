@@ -315,6 +315,56 @@ isOneToOne: false
       referencedColumns: ["user_id"]
     }
                   ]
+                },"customer_referrals": {
+                  Row: {
+                    "app_id": string,"click_id": string | null,"creator_id": string | null,"id": string,"link_id": string | null,"membership_id": string | null,"policy_version": string,"registered_at": string,"source": string,"terms_version_id": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "app_id": string,"click_id"?: string | null,"creator_id"?: string | null,"id"?: string,"link_id"?: string | null,"membership_id"?: string | null,"policy_version": string,"registered_at"?: string,"source": string,"terms_version_id"?: string | null
+                  }
+                  Update: {
+                    "app_id"?: string,"click_id"?: string | null,"creator_id"?: string | null,"id"?: string,"link_id"?: string | null,"membership_id"?: string | null,"policy_version"?: string,"registered_at"?: string,"source"?: string,"terms_version_id"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "customer_referrals_app_id_fkey"
+      columns: ["app_id"]
+isOneToOne: false
+      referencedRelation: "apps"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "customer_referrals_click_id_fkey"
+      columns: ["click_id"]
+isOneToOne: false
+      referencedRelation: "referral_clicks"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "customer_referrals_creator_id_fkey"
+      columns: ["creator_id"]
+isOneToOne: false
+      referencedRelation: "creator_profiles"
+      referencedColumns: ["user_id"]
+    },{
+      foreignKeyName: "customer_referrals_link_id_fkey"
+      columns: ["link_id"]
+isOneToOne: false
+      referencedRelation: "creator_referral_links"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "customer_referrals_membership_id_fkey"
+      columns: ["membership_id"]
+isOneToOne: false
+      referencedRelation: "creator_program_memberships"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "customer_referrals_terms_version_id_fkey"
+      columns: ["terms_version_id"]
+isOneToOne: false
+      referencedRelation: "app_terms_versions"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"organization_members": {
                   Row: {
                     "created_at": string,"organization_id": string,"role": Database["public"]['Enums']["organization_role"],"user_id": string
@@ -389,6 +439,44 @@ isOneToOne: false
                   Relationships: [
 
                   ]
+                },"referral_clicks": {
+                  Row: {
+                    "app_id": string,"clicked_at": string,"creator_id": string,"expires_at": string,"id": string,"link_id": string,"membership_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "app_id": string,"clicked_at"?: string,"creator_id": string,"expires_at": string,"id"?: string,"link_id": string,"membership_id": string
+                  }
+                  Update: {
+                    "app_id"?: string,"clicked_at"?: string,"creator_id"?: string,"expires_at"?: string,"id"?: string,"link_id"?: string,"membership_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "referral_clicks_app_id_fkey"
+      columns: ["app_id"]
+isOneToOne: false
+      referencedRelation: "apps"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "referral_clicks_creator_id_fkey"
+      columns: ["creator_id"]
+isOneToOne: false
+      referencedRelation: "creator_profiles"
+      referencedColumns: ["user_id"]
+    },{
+      foreignKeyName: "referral_clicks_link_id_fkey"
+      columns: ["link_id"]
+isOneToOne: false
+      referencedRelation: "creator_referral_links"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "referral_clicks_membership_id_fkey"
+      columns: ["membership_id"]
+isOneToOne: false
+      referencedRelation: "creator_program_memberships"
+      referencedColumns: ["id"]
+    }
+                  ]
                 }
           }
           Views: {
@@ -441,6 +529,9 @@ isOneToOne: false
 "admin_review_app":
 { Args: { "p_app_id": string,"p_decision": string,"p_environment"?: string,"p_expected_revision"?: number,"p_reason"?: string }; Returns: string
                            },
+"attribution_summary":
+{ Args: { "p_app_id"?: string }; Returns: Json
+                           },
 "create_app":
 { Args: { "p_name": string,"p_organization_id": string }; Returns: string
                            },
@@ -463,6 +554,15 @@ isOneToOne: false
 { Args: { "p_category"?: Database["public"]['Enums']["app_category"],"p_language"?: string,"p_min_commission_bps"?: number,"p_page"?: number,"p_page_size"?: number,"p_platform"?: Database["public"]['Enums']["app_platform"],"p_search"?: string }; Returns: {
               "app_id": string,"categories": (Database["public"]['Enums']["app_category"])[],"cover_image_url": string,"languages": (string)[],"logo_url": string,"max_commission_bps": number,"min_commission_bps": number,"name": string,"organization_name": string,"platforms": (Database["public"]['Enums']["app_platform"])[],"published_at": string,"slug": string,"tagline": string,"total_count": number
             }[]
+                           },
+"record_referral_click":
+{ Args: { "p_link_token": string }; Returns: Json
+                           },
+"register_referred_customer":
+{ Args: { "p_api_key": string,"p_click_tokens"?: (string)[],"p_code"?: string,"p_customer_id": string }; Returns: Json
+                           },
+"rotate_attribution_api_key":
+{ Args: { "p_app_id": string }; Returns: string
                            },
 "save_app_draft":
 { Args: { "p_android_store_url"?: string,"p_app_id": string,"p_attribution_window_days"?: number,"p_categories"?: (Database["public"]['Enums']["app_category"])[],"p_cover_image_url"?: string,"p_description"?: string,"p_ios_store_url"?: string,"p_languages"?: (string)[],"p_logo_url"?: string,"p_name": string,"p_platforms"?: (Database["public"]['Enums']["app_platform"])[],"p_screenshots"?: Json,"p_slug"?: string,"p_tagline"?: string,"p_terms_text"?: string,"p_video_url"?: string,"p_website_url"?: string }; Returns: string

@@ -1,6 +1,6 @@
+import { AttributionPanel } from '@/modules/attribution/components/attribution-panel';
 import {
   ArrowRight,
-  ChartNoAxesColumn,
   CircleAlert,
   Eye,
   ExternalLink,
@@ -9,7 +9,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { PageHeader } from "@/components/layout/page-header";
-import { EmptyModule } from "@/components/states/empty-module";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -142,11 +141,7 @@ export default async function CompanyOverviewPage() {
           <h2 id="results-heading" className="text-lg font-semibold">
             Referral & subscription results
           </h2>
-          <EmptyModule
-            icon={ChartNoAxesColumn}
-            title="No referred customer activity yet"
-            description="Clicks, registered customers, paying subscribers, and commission statements appear here once your app reports referral events."
-          />
+          {app ? <AttributionPanel company appId={app.id} /> : <p className="text-sm text-muted-foreground">Create an app to see referral results.</p>}
         </section>
       </div>
     </>

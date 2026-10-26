@@ -1,7 +1,7 @@
 # Status implementacji
 
 Brief: `MARKETPLACE_BRIEF_I_PROMPTY.md` • Decyzje: `docs/DECISIONS.md`
-Ostatnia aktualizacja: 2026-10-26 (naprawy i odbiór etapów 1–4 przed E5)
+Ostatnia aktualizacja: 2026-10-26 (odbiór etapu 5 w sandboxie)
 
 Każda nowa rozmowa zaczyna od przeczytania briefu i tego pliku.
 Wyniki testów zapisujemy wyłącznie jako `pass`, `fail` albo `blocked`, z opisem, co faktycznie uruchomiono.
@@ -11,7 +11,7 @@ Wyniki testów zapisujemy wyłącznie jako `pass`, `fail` albo `blocked`, z opis
 - Marka platformy: **BoostLink**, zatwierdzona 26.10.2026; konfiguracja nazwy i metadane korzystają z `src/config/site.ts`.
 - Zakres dla frontend developera: [FRONTEND_SCOPE_STAGES_1_4.md](FRONTEND_SCOPE_STAGES_1_4.md), w tym pakiety E1–E4, właściciele plików i kryteria odbioru.
 - Status dopracowania UI/UX: **zakres przygotowany; realizacja i odbiór poszczególnych pakietów jeszcze nie rozpoczęte**. Wcześniejsze wyniki testów funkcjonalnych pozostają historią weryfikacji backendu.
-- Backend E5: kolejny zakres Karola z Codexem; ten wpis nie oznacza jego implementacji.
+- Backend E5: prowadzi Karol z Codexem; aktualny odbiór opisano niżej w sekcji E5. Zakres frontendu E1–E4 pozostaje niezależny.
 - Weryfikacja zmiany marki i dokumentacji (26.10): **pass** — `pnpm lint`, `pnpm typecheck`, `pnpm build` (38 tras), nazwa BoostLink w wygenerowanym HTML/metadanych i brak poprzedniej nazwy w wygenerowanych plikach HTML. Testów logiki i integracji nie powtarzano w tym zadaniu: nie zmieniono backendu ani kontraktów.
 
 ## Podsumowanie etapów
@@ -23,8 +23,8 @@ Wyniki testów zapisujemy wyłącznie jako `pass`, `fail` albo `blocked`, z opis
 | 2 | Publiczny katalog i strony aplikacji | **Ukończony; poprawki, PGlite i prawdziwy PostgREST `pass` (26.10)** |
 | 3 | Firma dodaje aplikację, admin publikuje | **Ukończony; poprawki, PGlite i prawdziwy PostgREST `pass` (26.10)** |
 | 4 | Dołączenie twórcy, przewodnik, programy, linki | **Ukończony; historyczne warunki i izolacja przez prawdziwy PostgREST `pass` (26.10)** |
-| 5 | Przypisanie klientów, statystyki poleceń | Nie rozpoczęty — **następny** |
-| 6 | Integracje płatności (Stripe, RevenueCat, Generic API) | Nie rozpoczęty |
+| 5 | Przypisanie klientów, statystyki poleceń | **Ukończony w sandboxie; testy i odbiór lokalny pass (26.10)** |
+| 6 | Integracje płatności (Stripe, RevenueCat, Generic API) | Nie rozpoczęty — **następny** |
 | 7 | Prowizje, historia stawek, zamknięcie miesiąca | Nie rozpoczęty |
 | 8 | Finansowanie firm, auto-doładowania, wypłaty (sandbox) | Nie rozpoczęty |
 | 9 | Domknięcie MVP, pilotaż | Nie rozpoczęty |
@@ -308,7 +308,42 @@ Historyczne tabele testów z 24–25.10 pozostają zapisem ówczesnego stanu, ni
 | B-04 | Otwarte decyzje biznesowe P-01…P-09 | Blokują wyłącznie operacje live z prawdziwymi pieniędzmi | Sandbox zgodnie z `DECISIONS.md`; live wyłączone |
 | R-01 | Superpowers i react-best-practices tylko w tymczasowym cache Codexa; Trail of Bits brak | Możliwa utrata dostępu do instrukcji | Zalecana stała instalacja skilli w projekcie |
 
+## Etap 5 — bezpieczne przekierowania, przypisanie i statystyki (26.10.2026)
+
+### Co wdrożono
+
+- `/r/[token]`: sprawdzony cel z aktualnego zatwierdzonego wydania, brak dowolnych redirectów, niecache'owane 302, oddzielny losowy token kliknięcia przekazywany do web przez `bl_ref`. HEAD/prefetch nie tworzą kliknięć. Dla mobile kod przy rejestracji; brak obietnicy zachowania polecenia przez instalację.
+- `POST /api/v1/customers`: uwierzytelnienie sekretem konkretnej aplikacji, ścisła walidacja i limity, komunikacja backend–backend. Bez konta klienta na BoostLink. Sekrety i tokeny są przechowywane w bazie jako prywatne skróty; klient aplikacji nie otrzymuje sekretu.
+- `private.attribution_policy()`: jedna konfiguracja propozycji sandbox P-03/P-04/P-05. Jawny kod przed linkiem, ostatnie ważne kliknięcie, okno 30 dni, blokada trybu live i odmiennego reklamowanego okna.
+- Atomowa mapa tożsamości klienta, blokada wyścigów, unikalność per aplikacja, niezmienne przypisanie i idempotentne retry. Także konto organiczne pozostaje organiczne; instrukcja wymaga zgłaszania wszystkich rejestracji i wprowadzenia starych kont przed integracją.
+- Snapshot wersji całej tabeli warunków/stawek z chwili rejestracji i zachowanie odczytu historii twórcy po republikacji. Brak płatności i wyliczeń prowizji.
+- Rzeczywiste kliknięcia/rejestracje w Overview twórcy i firmy, Links oraz Referrals. Osobne źródło kodu, porównanie wyników poszczególnych linków, stronicowana lista pseudonimów klientów. Dostęp ograniczony przez RLS; brak PII i źródłowego ID klienta w panelach.
+- Skrypt nadania/rotacji klucza `scripts/attribution-key.mjs` i samodzielna lokalna aplikacja HTTPS `examples/attribution-demo/server.mjs`, która trzyma sekret i przechwycone tokeny na swoim backendzie.
+
+### Migracja i uruchomienie
+
+Nowa migracja: `supabase/migrations/20261026222235_referral_attribution.sql`. Nie zmieniono wcześniejszych migracji. Dla istniejącej lokalnej bazy: `pnpm exec supabase db push --local --yes`, następnie `pnpm db:types`, `pnpm db:advisors`, `pnpm test:integration`. BoostLink nie wymaga nowej zmiennej środowiskowej ani uprzywilejowanego klucza w serwerze web. Zewnętrzny backend aplikacji przechowuje `BOOSTLINK_API_URL` i `BOOSTLINK_APP_API_KEY`; demo ma własny szablon konfiguracji.
+
+Instrukcja integracji, kontrakt dla frontendu i pełny scenariusz ręczny: [ATTRIBUTION_INTEGRATION.md](ATTRIBUTION_INTEGRATION.md).
+
+### Weryfikacja
+
+- **pass — `pnpm lint`:** 0 błędów i ostrzeżeń.
+- **pass — `pnpm typecheck`:** typy tras i TypeScript, także testy integracyjne.
+- **pass — `pnpm test`:** 16 plików, 147 testów. Obejmuje pełny łańcuch migracji na PGlite, granicę HTTP, wygaśnięcie, ostatnie ważne kliknięcie, pierwszeństwo kodu, retry, organiczne konto bez możliwości przejęcia, obcą aplikację, próby zapisu z frontendu, niezmienność, niedozwolony redirect, niezgodne okno i limity.
+- **pass — `pnpm test:integration`:** 5 plików, 23 testy na prawdziwym lokalnym Supabase, bez pominięć. Osiem równoległych przypisań dwóch twórców daje jeden rekord i jedną odpowiedź `created`; izolacja dwóch firm i twórców, kontrakt HTTP z prawdziwym RPC, rotacja oraz snapshot stawek po dwóch republikacjach. Pozostałe testy E1–E4 również pass.
+- **pass — `pnpm build`:** 39 stron w generowaniu; nowe trasy `/r/[token]` i `/api/v1/customers` są dynamiczne. Cache Components i Partial Prefetching pozostają aktywne.
+- **pass — `pnpm db:advisors`:** `results: []`, brak problemów. Migracja E5 zastosowana lokalnie; podczas prac funkcje dopracowano bez resetowania bazy. Pełna finalna migracja była wykonywana od zera w testach PGlite; odbiór funkcji i uprawnień wykonano przez realny PostgREST. Nie resetowano potrzebnych danych użytkownika ani innych stosów.
+- **pass — rzeczywisty HTTP Next:** 302 z tokenem `bl_ref` i no-store; próba podania redirectu daje 400, HEAD daje 405; link/kod tworzą 201, retry tego samego klienta daje 200 i ten sam rekord, brak sekretu daje 401.
+- **pass — aplikacja demonstracyjna HTTPS:** przechwycenie tokenu we własnej sesji, rejestracja z backendu do Next, retry 200 i brak sekretu w HTML. Sprawdzono również brak konkretnego sekretu QA w `.next/static`. Certyfikat i konta były wyłącznie lokalne i jednorazowe.
+- **pass — UI z prawdziwymi sesjami:** panele Referrals twórcy i firmy pokazują 1 rzeczywiste kliknięcie, 2 rejestracje linkiem i 1 kodem z testowego flow; kod nie zwiększa wyniku linku. Są pseudonimy i nazwa aplikacji, bez źródłowych ID/PII. Szerokości 390 i 1280 px: brak poziomego overflow całej strony, brak błędów/ostrzeżeń konsoli. Dowód: `docs/verification/stage-5-referrals.png`.
+- Jednorazowe konta, aplikację i klucz QA usunięto po odbiorze; statystyk demonstracyjnych nie zapisano w seedzie. Katalog wraca do lokalnych ofert seeda. Odbiór nie oznacza uruchomienia live ani etapu 6.
+
+
+### Granice etapu
+
+Tylko sandbox/demo. P-03/P-04/P-05/P-07 nadal wymagają zatwierdzenia dla live. Liczba kliknięć nie oznacza unikalnych ludzi i może obejmować boty; nie stosujemy fingerprintingu. Dane i konta aplikacji demonstracyjnej są w pamięci, a certyfikat jest lokalny i jednodniowy. Nie uruchomiono płatności, naliczania prowizji, finansowania ani wypłat. Cloud/pilotaż nadal wymagają B-02/B-03/B-04.
+
 ## Następny krok
 
-1. **ETAP 5** — bezpieczne przekierowania linków (`/r/[token]`), rejestrowanie kliknięć, API przypisujące konto klienta aplikacji do twórcy (po tokenie linku lub kodzie polecającym), wydzielony moduł polityk pierwszeństwa i okna przypisania, podłączenie rzeczywistych kliknięć i rejestracji do dashboardów twórcy i firmy oraz aplikacja demonstracyjna integracji — po wklejeniu promptu E5.
-2. Dla każdej zmiany bazy wykonać `pnpm db:advisors && pnpm test:integration`; nie pomijać regresji historycznych warunków, zatwierdzania rewizji i izolacji mediów. Testy tego obszaru działają już na prawdziwym lokalnym Supabase.
+**ETAP 6** — integracje płatności Stripe/RevenueCat/Generic API po osobnym zleceniu. E5 zapisuje stabilny identyfikator przypisania i historyczną wersję warunków potrzebne kolejnym etapom. Frontend może niezależnie dopracowywać etapy 1–4 według swojego zakresu; przy zmianie wspólnych stron uzgadnia kontrakt modułu atrybucji.

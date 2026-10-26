@@ -1,4 +1,5 @@
-import { ArrowRight, HandCoins, Layers, Sparkles, TriangleAlert } from "lucide-react";
+import { AttributionPanel } from '@/modules/attribution/components/attribution-panel';
+import { ArrowRight, Layers, Sparkles, TriangleAlert } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/layout/page-header";
@@ -64,11 +65,7 @@ export default async function CreatorOverviewPage() {
           <h2 id="earnings-heading" className="text-lg font-semibold">
             Earnings and results
           </h2>
-          <EmptyModule
-            icon={HandCoins}
-            title="No earnings or referral activity yet"
-            description="Clicks, registered customers, paying subscribers and recurring commission appear here once people sign up through your links or referral codes."
-          />
+          <AttributionPanel />
         </section>
 
         <section aria-labelledby="programs-heading" className="flex flex-col gap-3">

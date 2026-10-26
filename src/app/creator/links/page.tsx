@@ -1,3 +1,4 @@
+import { AttributionPanel } from '@/modules/attribution/components/attribution-panel';
 import { ExternalLink, Link2 } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -82,6 +83,7 @@ export default async function CreatorLinksPage({
       />
 
       <div className="flex flex-col gap-6">
+        <AttributionPanel appId={visiblePrograms.length===1 ? visiblePrograms[0]!.appId : undefined} />
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Create a named link</CardTitle>
