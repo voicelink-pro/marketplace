@@ -87,7 +87,14 @@ export function PanelShell({ area, children }: { area: PanelArea; children: Reac
       </aside>
       <div className="flex min-w-0 flex-col">
         <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b bg-background/85 px-3 backdrop-blur sm:px-4 lg:px-8">
-          <MobileNav area={area} />
+          <MobileNav
+            area={area}
+            contextSwitch={
+              <Suspense fallback={null}>
+                <ContextSwitch area={area} />
+              </Suspense>
+            }
+          />
           <Logo href={home} className="lg:hidden" />
           <div className="ml-auto flex items-center gap-3">
             <Suspense fallback={null}>

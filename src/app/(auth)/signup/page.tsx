@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AuthCard } from "@/modules/auth/components/auth-card";
+import { AuthSwitchLink } from "@/modules/auth/components/auth-switch-link";
 import { SignupForm } from "@/modules/auth/components/signup-form";
 
 export const metadata: Metadata = { title: "Create account" };
@@ -15,9 +15,7 @@ export default function SignupPage() {
       footer={
         <span>
           Already have an account?{" "}
-          <Link href="/login" className="font-medium text-foreground underline-offset-4 hover:underline">
-            Log in
-          </Link>
+          <AuthSwitchLink href="/login">Log in</AuthSwitchLink>
         </span>
       }
     >

@@ -15,7 +15,14 @@ import {
 import { PANEL_LABELS, type PanelArea } from "./nav-config";
 import { PanelNav } from "./panel-nav";
 
-export function MobileNav({ area }: { area: PanelArea }) {
+export function MobileNav({
+  area,
+  contextSwitch,
+}: {
+  area: PanelArea;
+  /** Server-rendered workspace switch; renders nothing for single-context accounts. */
+  contextSwitch?: React.ReactNode;
+}) {
   const [open, setOpen] = useState(false);
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -33,6 +40,14 @@ export function MobileNav({ area }: { area: PanelArea }) {
           </SheetTitle>
           <SheetDescription>{PANEL_LABELS[area]} workspace</SheetDescription>
         </SheetHeader>
+        {contextSwitch ? (
+          <div
+            className="border-b p-3 empty:hidden sm:hidden [&_a]:flex-1 [&_a]:text-center [&>nav]:w-full"
+            onClick={() => setOpen(false)}
+          >
+            {contextSwitch}
+          </div>
+        ) : null}
         <div className="p-3">
           <Suspense fallback={null}>
             <PanelNav area={area} onNavigate={() => setOpen(false)} />
