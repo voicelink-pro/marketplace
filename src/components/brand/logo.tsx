@@ -25,8 +25,7 @@ export function Logo({ className, href = "/" }: { className?: string; href?: str
       )}
     >
       <LogoMark />
-      {/* The wordmark is lowercase by design; the accessible name stays "BoostLink". */}
-      <span className="text-[1.2rem] leading-none font-bold tracking-[-0.04em] lowercase">
+      <span className="text-[1.2rem] leading-none font-bold tracking-[-0.04em]">
         {siteConfig.name}
       </span>
     </Link>
