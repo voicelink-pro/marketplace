@@ -107,7 +107,7 @@ export default async function CreatorProgramDetailPage({
               Use your link for web sign-ups and your code when viewers install {program.appName} on mobile or enter a code at registration.
             </CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-5 md:grid-cols-2">
+          <CardContent className="grid grid-cols-1 gap-5 md:grid-cols-2">
             <CopyableField
               label="Referral code (tied to your account & this app)"
               value={program.referralCode}
@@ -160,7 +160,37 @@ export default async function CreatorProgramDetailPage({
             </CardContent>
           </Card>
 
-          <div className="overflow-hidden rounded-xl border bg-card">
+          {/* Phones: one tile per link with the full URL, so it stays readable and copyable. */}
+          <ul className="flex flex-col gap-2 sm:hidden">
+            {program.links.map((link) => (
+              <li key={link.id} className="flex flex-col gap-2 rounded-xl border bg-card p-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-semibold">{link.label}</span>
+                  {link.isDefault ? <Badge variant="secondary">Primary</Badge> : null}
+                  <Badge variant="outline">{SOCIAL_PLATFORM_LABELS[link.channel]}</Badge>
+                </div>
+                <span className="font-mono text-xs break-all select-all">{link.shareUrl}</span>
+                <a
+                  href={link.targetUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                >
+                  Opens {link.destinationLabel}
+                  <ExternalLink aria-hidden className="size-3 shrink-0" />
+                </a>
+                <CopyValueButton
+                  value={link.shareUrl}
+                  label="Copy link"
+                  toastMessage={`Copied “${link.label}” link.`}
+                  ariaLabel={`Copy link for ${link.label}`}
+                  className="w-full"
+                />
+              </li>
+            ))}
+          </ul>
+
+          <div className="hidden overflow-hidden rounded-xl border bg-card sm:block">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -233,16 +263,22 @@ export default async function CreatorProgramDetailPage({
               <TableHeader>
                 <TableRow>
                   <TableHead>Plan</TableHead>
-                  <TableHead>Billing cycle</TableHead>
-                  <TableHead className="text-right">Subscription price</TableHead>
-                  <TableHead className="text-right">Your commission</TableHead>
+                  <TableHead className="hidden sm:table-cell">Billing cycle</TableHead>
+                  <TableHead className="text-right">
+                    <span className="sm:hidden">Price</span>
+                    <span className="hidden sm:inline">Subscription price</span>
+                  </TableHead>
+                  <TableHead className="text-right">
+                    <span className="sm:hidden">Yours</span>
+                    <span className="hidden sm:inline">Your commission</span>
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {program.plans.map((plan) => (
                   <TableRow key={plan.id}>
                     <TableCell className="font-medium">{plan.planName}</TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell className="hidden text-muted-foreground sm:table-cell">
                       {BILLING_INTERVAL_LABELS[plan.billingInterval]}
                     </TableCell>
                     <TableCell className="tabular text-right">
@@ -253,7 +289,8 @@ export default async function CreatorProgramDetailPage({
                     </TableCell>
                     <TableCell className="text-right">
                       <span className="tabular inline-flex rounded-md bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground">
-                        {formatCommissionPercent(plan.commissionBps)} recurring
+                        {formatCommissionPercent(plan.commissionBps)}
+                        <span className="hidden sm:inline">&nbsp;recurring</span>
                       </span>
                     </TableCell>
                   </TableRow>
