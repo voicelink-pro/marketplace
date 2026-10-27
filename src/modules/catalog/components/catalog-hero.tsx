@@ -2,23 +2,46 @@ import Link from "next/link";
 import { LogoMark } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
+import { APP_CATEGORIES } from "../constants";
 
-/** Short light hero above the catalog. The catalog stays the home page (W-01). */
-export function CatalogHero() {
+/**
+ * "Commission that keeps paying" band under the hero. Every figure is a
+ * product rule or a real constant, never a made-up metric.
+ */
+export function HomeFacts() {
+  const facts = [
+    { value: "0", label: "approvals to wait for" },
+    { value: String(APP_CATEGORIES.length), label: "app categories" },
+    { value: "Every", label: "renewal earns commission" },
+    { value: "Upfront", label: "rates, shown for each plan" },
+  ];
+
   return (
-    <section className="relative overflow-hidden rounded-3xl border bg-card px-5 py-5 sm:px-10 sm:py-14">
-      {/* Oversized brand shapes from the brand board; purely decorative. */}
-      <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 hidden w-[26rem] md:block">
-        <LogoMark className="absolute -right-10 -bottom-20 size-[22rem] rotate-[-8deg]" />
-      </div>
-
-      <div className="relative flex max-w-xl flex-col gap-2 sm:gap-4">
-        <h1 className="text-2xl leading-[1.1] sm:text-5xl">Promote apps. Earn on every renewal.</h1>
-        <p className="text-sm text-muted-foreground sm:text-lg">
-          Join an app’s offer, share your link, and get a share of every subscription payment your
-          audience makes.
-        </p>
-      </div>
+    <section
+      aria-labelledby="home-facts-heading"
+      className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between lg:gap-10"
+    >
+      <h2
+        id="home-facts-heading"
+        className="text-3xl leading-tight font-extrabold tracking-[-0.04em] sm:text-5xl"
+      >
+        Commission that{" "}
+        <mark className="rounded-sm bg-primary px-1.5 text-primary-foreground [box-decoration-break:clone]">
+          keeps
+        </mark>{" "}
+        paying
+      </h2>
+      <dl className="grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-4 lg:gap-x-4">
+        {facts.map((fact) => (
+          // dt before dd for screen readers; shown value-first like a stat.
+          <div key={fact.label} className="flex flex-col-reverse justify-end gap-1 lg:w-36 lg:items-center lg:text-center">
+            <dt className="text-sm text-muted-foreground">{fact.label}</dt>
+            <dd className="tabular text-3xl leading-none font-extrabold tracking-[-0.04em] sm:text-4xl">
+              {fact.value}
+            </dd>
+          </div>
+        ))}
+      </dl>
     </section>
   );
 }
@@ -33,8 +56,9 @@ export function CreatorPitch() {
 
   return (
     <section
+      id="how-it-works"
       aria-labelledby="creator-pitch-heading"
-      className="dark relative overflow-hidden rounded-3xl bg-background px-6 py-10 text-foreground sm:px-10 sm:py-14 dark:bg-card"
+      className="dark relative scroll-mt-24 overflow-hidden rounded-[2rem] bg-background px-6 py-10 text-foreground sm:px-10 sm:py-14 dark:bg-card"
     >
       <LogoMark
         className="pointer-events-none absolute -right-16 -top-16 hidden size-72 rotate-12 opacity-90 lg:block"

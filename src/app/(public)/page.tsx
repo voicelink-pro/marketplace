@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AppCard } from "@/modules/catalog/components/app-card";
 import { CatalogFilterBar } from "@/modules/catalog/components/catalog-filter-bar";
-import { CatalogHero, CreatorPitch } from "@/modules/catalog/components/catalog-hero";
+import { CreatorPitch, HomeFacts } from "@/modules/catalog/components/catalog-hero";
 import { CatalogPagination } from "@/modules/catalog/components/catalog-pagination";
+import { HomeHero } from "@/modules/catalog/components/home-hero";
 import {
   hasActiveCatalogFilters,
   parseCatalogFilters,
@@ -90,14 +91,23 @@ async function CatalogContent({
 
 export default function CatalogPage({ searchParams }: PageProps<"/">) {
   return (
-    <div className="flex flex-col gap-8">
-      <CatalogHero />
+    <div className="flex flex-col gap-10 sm:gap-14">
+      <HomeHero />
 
-      <Suspense fallback={<CatalogSkeleton />}>
-        <CatalogContent searchParams={searchParams} />
-      </Suspense>
+      {/* Phones: the offers come straight after the hero; the facts band moves below them. */}
+      <div className="order-3 lg:order-none">
+        <HomeFacts />
+      </div>
 
-      <CreatorPitch />
+      <div id="offers" className="order-2 scroll-mt-24 lg:order-none">
+        <Suspense fallback={<CatalogSkeleton />}>
+          <CatalogContent searchParams={searchParams} />
+        </Suspense>
+      </div>
+
+      <div className="order-4 lg:order-none">
+        <CreatorPitch />
+      </div>
     </div>
   );
 }
