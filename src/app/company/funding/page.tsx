@@ -1,22 +1,3 @@
-import { Wallet } from "lucide-react";
-import type { Metadata } from "next";
-import { PageHeader } from "@/components/layout/page-header";
-import { EmptyModule } from "@/components/states/empty-module";
-
-export const metadata: Metadata = { title: "Funding & statements" };
-
-export default function CompanyFundingPage() {
-  return (
-    <>
-      <PageHeader
-        title="Funding & statements"
-        description="Funds you add up front to pay creator commission, and your monthly statements."
-      />
-      <EmptyModule
-        icon={Wallet}
-        title="No funding activity yet"
-        description="Deposits, automatic top-ups and monthly statements will be listed here."
-      />
-    </>
-  );
-}
+import type{Metadata}from'next';import{redirect}from'next/navigation';import{PageHeader}from'@/components/layout/page-header';import{primaryOrganization,requireViewer}from'@/modules/accounts/viewer';import{getCompanyWorkspaceApp}from'@/modules/company-app/queries';import{CommissionPanel}from'@/modules/commissions/components/commission-panel';
+export const metadata:Metadata={title:'Funding & statements'};
+export default async function CompanyFundingPage(){const viewer=await requireViewer('/company/funding');const org=primaryOrganization(viewer);if(!org)redirect('/onboarding/company');const app=await getCompanyWorkspaceApp(org.id,org.name);return <><PageHeader title="Funding & statements" description="Program commission and monthly statements."/><p className="mb-5 text-sm text-muted-foreground">Real deposits, automatic top-ups and payout execution are not available in stage 7. Any funding shown here is explicitly simulated by an operator in the sandbox.</p>{app?<CommissionPanel appId={app.id} company/>:<p>Create an app to see its statements.</p>}</>}

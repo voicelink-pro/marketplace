@@ -211,6 +211,166 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"commission_earnings": {
+                  Row: {
+                    "app_id": string,"billing_interval": string,"commission_basis_minor": number,"commission_bps": number,"created_at": string,"creator_id": string,"creator_minor": number,"currency": string,"gross_minor": number,"id": string,"occurred_at": string,"plan_name": string,"platform_fee_bps": number,"platform_fee_minor": number,"policy_id": string,"referral_id": string,"sale_minor": number,"terms_version_id": string,"transaction_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "app_id": string,"billing_interval": string,"commission_basis_minor": number,"commission_bps": number,"created_at"?: string,"creator_id": string,"creator_minor": number,"currency": string,"gross_minor": number,"id"?: string,"occurred_at": string,"plan_name": string,"platform_fee_bps": number,"platform_fee_minor": number,"policy_id": string,"referral_id": string,"sale_minor": number,"terms_version_id": string,"transaction_id": string
+                  }
+                  Update: {
+                    "app_id"?: string,"billing_interval"?: string,"commission_basis_minor"?: number,"commission_bps"?: number,"created_at"?: string,"creator_id"?: string,"creator_minor"?: number,"currency"?: string,"gross_minor"?: number,"id"?: string,"occurred_at"?: string,"plan_name"?: string,"platform_fee_bps"?: number,"platform_fee_minor"?: number,"policy_id"?: string,"referral_id"?: string,"sale_minor"?: number,"terms_version_id"?: string,"transaction_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "commission_earnings_app_id_fkey"
+      columns: ["app_id"]
+isOneToOne: false
+      referencedRelation: "apps"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "commission_earnings_creator_id_fkey"
+      columns: ["creator_id"]
+isOneToOne: false
+      referencedRelation: "creator_profiles"
+      referencedColumns: ["user_id"]
+    },{
+      foreignKeyName: "commission_earnings_referral_id_fkey"
+      columns: ["referral_id"]
+isOneToOne: false
+      referencedRelation: "customer_referrals"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "commission_earnings_terms_version_id_fkey"
+      columns: ["terms_version_id"]
+isOneToOne: false
+      referencedRelation: "app_terms_versions"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "commission_earnings_transaction_id_fkey"
+      columns: ["transaction_id"]
+isOneToOne: true
+      referencedRelation: "payment_transactions"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"commission_journals": {
+                  Row: {
+                    "app_id": string,"basis_delta": number,"created_at": string,"creator_delta": number,"creator_id": string | null,"currency": string,"effective_month": string,"entries": NonNullable<Json>,"fee_delta": number,"funding_credit": number,"funding_used": number,"gross_delta": number,"id": string,"idempotency_key": string,"kind": string,"sale_delta": number,"source_at": string,"source_month": string,"transaction_id": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "app_id": string,"basis_delta"?: number,"created_at"?: string,"creator_delta"?: number,"creator_id"?: string | null,"currency": string,"effective_month": string,"entries": NonNullable<Json>,"fee_delta"?: number,"funding_credit"?: number,"funding_used"?: number,"gross_delta"?: number,"id"?: string,"idempotency_key": string,"kind": string,"sale_delta"?: number,"source_at": string,"source_month": string,"transaction_id"?: string | null
+                  }
+                  Update: {
+                    "app_id"?: string,"basis_delta"?: number,"created_at"?: string,"creator_delta"?: number,"creator_id"?: string | null,"currency"?: string,"effective_month"?: string,"entries"?: NonNullable<Json>,"fee_delta"?: number,"funding_credit"?: number,"funding_used"?: number,"gross_delta"?: number,"id"?: string,"idempotency_key"?: string,"kind"?: string,"sale_delta"?: number,"source_at"?: string,"source_month"?: string,"transaction_id"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "commission_journals_app_id_fkey"
+      columns: ["app_id"]
+isOneToOne: false
+      referencedRelation: "apps"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "commission_journals_creator_id_fkey"
+      columns: ["creator_id"]
+isOneToOne: false
+      referencedRelation: "creator_profiles"
+      referencedColumns: ["user_id"]
+    },{
+      foreignKeyName: "commission_journals_transaction_id_fkey"
+      columns: ["transaction_id"]
+isOneToOne: false
+      referencedRelation: "payment_transactions"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"commission_month_closures": {
+                  Row: {
+                    "app_id": string,"closed_at": string,"month": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "app_id": string,"closed_at"?: string,"month": string
+                  }
+                  Update: {
+                    "app_id"?: string,"closed_at"?: string,"month"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "commission_month_closures_app_id_fkey"
+      columns: ["app_id"]
+isOneToOne: false
+      referencedRelation: "apps"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"commission_review_cases": {
+                  Row: {
+                    "app_id": string,"code": string,"created_at": string,"creator_id": string | null,"id": string,"source_digest": string,"transaction_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "app_id": string,"code": string,"created_at"?: string,"creator_id"?: string | null,"id"?: string,"source_digest": string,"transaction_id": string
+                  }
+                  Update: {
+                    "app_id"?: string,"code"?: string,"created_at"?: string,"creator_id"?: string | null,"id"?: string,"source_digest"?: string,"transaction_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "commission_review_cases_app_id_fkey"
+      columns: ["app_id"]
+isOneToOne: false
+      referencedRelation: "apps"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "commission_review_cases_creator_id_fkey"
+      columns: ["creator_id"]
+isOneToOne: false
+      referencedRelation: "creator_profiles"
+      referencedColumns: ["user_id"]
+    },{
+      foreignKeyName: "commission_review_cases_transaction_id_fkey"
+      columns: ["transaction_id"]
+isOneToOne: false
+      referencedRelation: "payment_transactions"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"commission_statements": {
+                  Row: {
+                    "app_id": string,"basis_minor": number,"created_at": string,"creator_id": string,"creator_minor": number,"currency": string,"fee_minor": number,"gross_minor": number,"id": string,"month": string,"sale_minor": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "app_id": string,"basis_minor": number,"created_at"?: string,"creator_id": string,"creator_minor": number,"currency": string,"fee_minor": number,"gross_minor": number,"id"?: string,"month": string,"sale_minor": number
+                  }
+                  Update: {
+                    "app_id"?: string,"basis_minor"?: number,"created_at"?: string,"creator_id"?: string,"creator_minor"?: number,"currency"?: string,"fee_minor"?: number,"gross_minor"?: number,"id"?: string,"month"?: string,"sale_minor"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "commission_statements_app_id_fkey"
+      columns: ["app_id"]
+isOneToOne: false
+      referencedRelation: "apps"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "commission_statements_app_id_month_fkey"
+      columns: ["app_id","month"]
+isOneToOne: false
+      referencedRelation: "commission_month_closures"
+      referencedColumns: ["app_id","month"]
+    },{
+      foreignKeyName: "commission_statements_creator_id_fkey"
+      columns: ["creator_id"]
+isOneToOne: false
+      referencedRelation: "creator_profiles"
+      referencedColumns: ["user_id"]
+    }
+                  ]
                 },"creator_profiles": {
                   Row: {
                     "created_at": string,"updated_at": string,"user_id": string
@@ -776,6 +936,18 @@ isOneToOne: false
 "claim_payment_events":
 { Args: { "p_backend": string,"p_integration"?: string,"p_limit"?: number }; Returns: Json
                            },
+"close_commission_month":
+{ Args: { "p_app_id": string,"p_backend": string,"p_month": string }; Returns: string
+                           },
+"commission_sandbox_inputs":
+{ Args: { "p_app_id": string,"p_backend": string }; Returns: Json
+                           },
+"commission_workspace":
+{ Args: { "p_app_id"?: string,"p_creator_id"?: string,"p_referral_id"?: string }; Returns: Json
+                           },
+"configure_commission_sandbox":
+{ Args: { "p_effective_at": string,"p_fee_bps": number }; Returns: string
+                           },
 "configure_payment_integration":
 { Args: { "p_account": string,"p_app_id": string,"p_credential_ref": string,"p_environment": string,"p_provider": string }; Returns: string
                            },
@@ -791,8 +963,14 @@ isOneToOne: false
 "creator_is_ready_to_promote":
 { Args: Record<PropertyKey, never>; Returns: boolean
                            },
+"declare_commission_basis":
+{ Args: { "p_backend": string,"p_basis_minor": string,"p_transaction": string }; Returns: undefined
+                           },
 "delete_app_plan":
 { Args: { "p_plan_id": string }; Returns: undefined
+                           },
+"fund_commission_sandbox":
+{ Args: { "p_amount_minor": string,"p_app_id": string,"p_currency": string,"p_reference": string }; Returns: undefined
                            },
 "ingest_payment_event":
 { Args: { "p_backend": string,"p_environment": string,"p_event_ref": string,"p_integration": string,"p_raw": string }; Returns: Json
@@ -823,6 +1001,9 @@ isOneToOne: false
 "payment_metrics":
 { Args: { "p_app_id"?: string,"p_creator_id"?: string }; Returns: Json
                            },
+"process_commission_jobs":
+{ Args: { "p_app_id"?: string,"p_backend": string,"p_limit"?: number }; Returns: Json
+                           },
 "record_referral_click":
 { Args: { "p_link_token": string }; Returns: Json
                            },
@@ -846,6 +1027,9 @@ isOneToOne: false
                            },
 "set_payment_source":
 { Args: { "p_integration": string,"p_store": string }; Returns: undefined
+                           },
+"simulate_commission_payout":
+{ Args: { "p_earning": string,"p_paid"?: boolean }; Returns: undefined
                            },
 "submit_app_for_review":
 { Args: { "p_app_id": string }; Returns: string

@@ -1,3 +1,4 @@
+import { CommissionPanel } from '@/modules/commissions/components/commission-panel';
 import { AttributionPanel } from '@/modules/attribution/components/attribution-panel';
 import { ArrowRight, Layers, Sparkles, TriangleAlert } from "lucide-react";
 import type { Metadata } from "next";
@@ -65,7 +66,7 @@ export default async function CreatorOverviewPage() {
           <h2 id="earnings-heading" className="text-lg font-semibold">
             Earnings and results
           </h2>
-          <AttributionPanel />
+          <AttributionPanel /><CommissionPanel summary />
         </section>
 
         <section aria-labelledby="programs-heading" className="flex flex-col gap-3">

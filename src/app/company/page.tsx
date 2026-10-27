@@ -1,3 +1,4 @@
+import { CommissionPanel } from '@/modules/commissions/components/commission-panel';
 import { AttributionPanel } from '@/modules/attribution/components/attribution-panel';
 import {
   ArrowRight,
@@ -141,7 +142,7 @@ export default async function CompanyOverviewPage() {
           <h2 id="results-heading" className="text-lg font-semibold">
             Referral & subscription results
           </h2>
-          {app ? <AttributionPanel company appId={app.id} /> : <p className="text-sm text-muted-foreground">Create an app to see referral results.</p>}
+          {app ? <><AttributionPanel company appId={app.id} /><CommissionPanel company appId={app.id} summary /></> : <p className="text-sm text-muted-foreground">Create an app to see referral results.</p>}
         </section>
       </div>
     </>

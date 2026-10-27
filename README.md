@@ -57,4 +57,8 @@ The Stage 1–4 repair and verification record is in `docs/IMPLEMENTATION_STATUS
 
 ## Payment integrations (stage 6)
 
-See [docs/PAYMENT_INTEGRATIONS.md](docs/PAYMENT_INTEGRATIONS.md) for authenticated webhook delivery, durable asynchronous processing, identity/plan mapping and frontend contracts. Apply the E6 migration, run `pnpm payments:setup`, restart Next, then run `pnpm payments:worker`. Actual Stripe/RevenueCat sandbox acceptance requires provider access; local fixtures do not imply provider verification. Live processing and all commission/funding/payout features remain disabled.
+See [docs/PAYMENT_INTEGRATIONS.md](docs/PAYMENT_INTEGRATIONS.md) for authenticated webhook delivery, durable asynchronous processing, identity/plan mapping and frontend contracts. Apply the E6 migration, run `pnpm payments:setup`, restart Next, then run `pnpm payments:worker`. Actual Stripe/RevenueCat sandbox acceptance requires provider access; local fixtures do not imply provider verification. Live payment processing remains disabled. Stage 7 adds explicitly configured sandbox commission accounting; real funding and payout execution remain disabled.
+
+## Commission accounting (stage 7)
+
+See [docs/COMMISSION_ACCOUNTING.md](docs/COMMISSION_ACCOUNTING.md) for explicit sandbox policy/basis declarations, the immutable balanced journal, historical rates, corrections, operator month closure and fixture funding. Apply the E7 migration and run `pnpm commissions:worker` alongside the E6 worker. No platform fee is configured automatically. Provider access preparation: [docs/PROVIDER_SANDBOX_PLAYBOOK.md](docs/PROVIDER_SANDBOX_PLAYBOOK.md).
