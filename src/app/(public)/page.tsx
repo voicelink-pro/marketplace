@@ -9,6 +9,7 @@ import { CatalogFilterBar } from "@/modules/catalog/components/catalog-filter-ba
 import { CreatorPitch, HomeFacts } from "@/modules/catalog/components/catalog-hero";
 import { CatalogPagination } from "@/modules/catalog/components/catalog-pagination";
 import { HomeHero } from "@/modules/catalog/components/home-hero";
+import { LogoCloud } from "@/modules/catalog/components/logo-cloud";
 import {
   hasActiveCatalogFilters,
   parseCatalogFilters,
@@ -39,8 +40,9 @@ async function CatalogContent({
   const result = await listCatalogApps(filters);
   const filtersActive = hasActiveCatalogFilters(filters);
 
+  let catalog: React.ReactNode;
   if (result.totalCount === 0 && !filtersActive) {
-    return (
+    catalog = (
       <div className="flex flex-col gap-6">
         <CatalogFilterBar filters={filters} totalCount={0} />
         <EmptyModule
@@ -50,42 +52,63 @@ async function CatalogContent({
         />
       </div>
     );
+  } else {
+    catalog = (
+      <div className="flex flex-col gap-6">
+        <CatalogFilterBar filters={filters} totalCount={result.totalCount} />
+
+        {result.items.length === 0 ? (
+          <EmptyModule
+            icon={SearchX}
+            title="No apps match these filters"
+            description="Try clearing a filter or searching with different keywords."
+          >
+            <Button asChild variant="outline">
+              <Link href="/">Clear filters</Link>
+            </Button>
+          </EmptyModule>
+        ) : (
+          <>
+            <section
+              aria-label="Published apps"
+              className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+            >
+              {result.items.map((app) => (
+                <AppCard key={app.appId} app={app} filters={filters} />
+              ))}
+            </section>
+
+            <CatalogPagination
+              filters={filters}
+              totalCount={result.totalCount}
+              pageSize={result.pageSize}
+              totalPages={result.totalPages}
+            />
+          </>
+        )}
+      </div>
+    );
   }
 
+  // Fragment children are items of the page's flex column (see the order classes there).
   return (
-    <div className="flex flex-col gap-6">
-      <CatalogFilterBar filters={filters} totalCount={result.totalCount} />
-
-      {result.items.length === 0 ? (
-        <EmptyModule
-          icon={SearchX}
-          title="No apps match these filters"
-          description="Try clearing a filter or searching with different keywords."
-        >
-          <Button asChild variant="outline">
-            <Link href="/">Clear filters</Link>
-          </Button>
-        </EmptyModule>
-      ) : (
-        <>
-          <section
-            aria-label="Published apps"
-            className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
-          >
-            {result.items.map((app) => (
-              <AppCard key={app.appId} app={app} filters={filters} />
-            ))}
-          </section>
-
-          <CatalogPagination
-            filters={filters}
-            totalCount={result.totalCount}
-            pageSize={result.pageSize}
-            totalPages={result.totalPages}
-          />
-        </>
+    <>
+      {/* Logos of the apps this page already loaded; hidden while searching so it doesn't echo the results. */}
+      {filtersActive ? null : (
+        <LogoCloud
+          apps={result.items.map((app) => ({ slug: app.slug, name: app.name, logoUrl: app.logoUrl }))}
+        />
       )}
-    </div>
+
+      {/* Phones: the offers come straight after the hero; the facts band moves below them. */}
+      <div className="order-3 lg:order-none">
+        <HomeFacts />
+      </div>
+
+      <div id="offers" className="order-2 scroll-mt-24 lg:order-none">
+        {catalog}
+      </div>
+    </>
   );
 }
 
@@ -94,16 +117,9 @@ export default function CatalogPage({ searchParams }: PageProps<"/">) {
     <div className="flex flex-col gap-10 sm:gap-14">
       <HomeHero />
 
-      {/* Phones: the offers come straight after the hero; the facts band moves below them. */}
-      <div className="order-3 lg:order-none">
-        <HomeFacts />
-      </div>
-
-      <div id="offers" className="order-2 scroll-mt-24 lg:order-none">
-        <Suspense fallback={<CatalogSkeleton />}>
-          <CatalogContent searchParams={searchParams} />
-        </Suspense>
-      </div>
+      <Suspense fallback={<CatalogSkeleton />}>
+        <CatalogContent searchParams={searchParams} />
+      </Suspense>
 
       <div className="order-4 lg:order-none">
         <CreatorPitch />
