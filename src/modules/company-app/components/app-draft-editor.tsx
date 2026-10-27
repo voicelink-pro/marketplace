@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Check,
   CircleAlert,
   Clock,
   Eye,
@@ -36,6 +35,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import { idleFormState, type FormState } from "@/lib/forms";
 import {
   APP_CATEGORIES,
@@ -47,8 +47,10 @@ import {
 } from "@/modules/catalog/constants";
 import { saveAppDraft, submitAppForReview } from "../actions";
 import type { CompanyWorkspaceApp } from "../queries";
-import { type MediaTarget, useMediaTargetHandler } from "./media-target";
-import { checkAppSubmissionReadiness } from "../schemas";
+import type { MediaTarget } from "./media-target";
+import { MediaUploadField } from "./media-upload-form";
+import { appReadiness } from "./app-readiness";
+import { PublicationChecklist } from "./publication-checklist";
 
 const textareaClassName =
   "min-h-28 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
@@ -81,40 +83,14 @@ const STATUS_BADGE: Record<
   rejected: { label: "Changes requested", variant: "destructive" },
 };
 
-export function AppSubmissionStatusCard({
-  app,
-  isOwner,
-}: {
-  app: CompanyWorkspaceApp;
-  isOwner: boolean;
-}) {
-  const [submitState, submitAction] = useActionState(submitAppForReview, idleFormState);
-  useSuccessToast(submitState);
-
-  const activePlans = app.plans.filter((p) => p.isActive);
-  const checklist = checkAppSubmissionReadiness({
-    name: app.name,
-    tagline: app.tagline,
-    description: app.description,
-    categories: app.categories,
-    platforms: app.platforms,
-    languages: app.languages,
-    websiteUrl: app.websiteUrl,
-    iosStoreUrl: app.iosStoreUrl,
-    androidStoreUrl: app.androidStoreUrl,
-    coverImageUrl: app.coverImageUrl,
-    logoUrl: app.logoUrl,
-    termsText: app.termsText,
-    activePlanCount: activePlans.length,
-  });
-
+export function AppSubmissionStatusCard({ app }: { app: CompanyWorkspaceApp }) {
   const statusMeta = STATUS_BADGE[app.status];
 
   return (
     <Card>
       <CardHeader className="gap-2">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <CardTitle className="text-lg">Publication & review status</CardTitle>
             <Badge variant={statusMeta.variant}>{statusMeta.label}</Badge>
             <Badge variant="outline">Demo environment</Badge>
@@ -163,48 +139,7 @@ export function AppSubmissionStatusCard({
           </Alert>
         ) : null}
 
-        <div className="grid gap-2 sm:grid-cols-2">
-          {checklist.items.map((item) => (
-            <div
-              key={item.id}
-              className="flex items-start gap-2.5 rounded-lg border bg-muted/30 p-3 text-xs"
-            >
-              {item.complete ? (
-                <Check aria-hidden className="mt-0.5 size-4 shrink-0 text-primary-ink" />
-              ) : (
-                <CircleAlert aria-hidden className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-              )}
-              <div className="flex flex-col gap-0.5">
-                <span className="font-medium text-foreground">{item.label}</span>
-                <span className="text-muted-foreground">{item.detail}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {isOwner ? (
-          <form action={submitAction} className="flex flex-col gap-3 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">
-            <input type="hidden" name="appId" value={app.id} />
-            <div className="flex flex-col gap-1">
-              {submitState.status === "error" ? <FormMessage state={submitState} /> : null}
-              <p className="text-xs text-muted-foreground">
-                Live production publishing requires verified payment integration and funding (Stages 6 & 8). Approvals currently publish to the Demo catalog.
-              </p>
-            </div>
-            <SubmitButton
-              disabled={!checklist.readyToSubmit}
-              pendingLabel="Submitting…"
-              className="shrink-0"
-            >
-              <Send data-icon="inline-start" />
-              {app.status === "submitted"
-                ? "Resubmit updated draft"
-                : app.hasLivePublishedRelease
-                  ? "Submit new version for review"
-                  : "Submit for admin review"}
-            </SubmitButton>
-          </form>
-        ) : null}
+        <PublicationChecklist checklist={appReadiness(app)} />
       </CardContent>
     </Card>
   );
@@ -213,12 +148,18 @@ export function AppSubmissionStatusCard({
 export function AppDraftEditorForm({
   app,
   isOwner,
+  demoMode,
 }: {
   app: CompanyWorkspaceApp;
   isOwner: boolean;
+  /** Local sandbox only: offers the sample-visuals shortcut. */
+  demoMode: boolean;
 }) {
   const [state, action] = useActionState(saveAppDraft, idleFormState);
   useSuccessToast(state);
+  const [submitState, submitAction, submitPending] = useActionState(submitAppForReview, idleFormState);
+  useSuccessToast(submitState);
+  const checklist = appReadiness(app);
 
   const [logoUrl, setLogoUrl] = useState(app.logoUrl ?? "");
   const [coverImageUrl, setCoverImageUrl] = useState(app.coverImageUrl ?? "");
@@ -253,7 +194,6 @@ export function AppDraftEditorForm({
     },
     [state],
   );
-  useMediaTargetHandler(receiveMedia);
 
   function fillDemoVisuals() {
     markEdited();
@@ -266,7 +206,20 @@ export function AppDraftEditorForm({
     ]);
   }
 
+  const submitLabel =
+    app.status === "submitted"
+      ? "Resubmit updated draft"
+      : app.hasLivePublishedRelease
+        ? "Submit new version for review"
+        : "Submit for admin review";
+  const submitHint = !checklist.readyToSubmit
+    ? "Finish the checklist above to submit for review."
+    : dirty
+      ? "Save your changes before submitting."
+      : "Approved listings appear in the demo catalog. Live publishing opens once payments and funding are verified.";
+
   return (
+    <>
     <form action={action} noValidate onChange={markEdited}>
       <input type="hidden" name="appId" value={app.id} />
 
@@ -292,7 +245,7 @@ export function AppDraftEditorForm({
           <CardHeader>
             <CardTitle>App identity & descriptions</CardTitle>
             <CardDescription>
-              Shown on your marketplace tile and on the public `/apps/{app.slug}` profile page.
+              Shown on your marketplace tile and on your public profile page.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -325,7 +278,7 @@ export function AppDraftEditorForm({
                     aria-invalid={invalid(state, "slug")}
                   />
                   <FieldDescription id="app-slug-hint">
-                    Public address: `/apps/{app.slug}`
+                    Public address: <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">/apps/{app.slug}</code>
                   </FieldDescription>
                   <FieldErrors state={state} field="slug" />
                 </Field>
@@ -359,7 +312,7 @@ export function AppDraftEditorForm({
                   aria-invalid={invalid(state, "description")}
                 />
                 <FieldDescription>
-                  Rendered safely as plain-text paragraphs (no raw HTML).
+                  Plain text. Leave a blank line between paragraphs.
                 </FieldDescription>
                 <FieldErrors state={state} field="description" />
               </Field>
@@ -506,7 +459,7 @@ export function AppDraftEditorForm({
           <CardHeader className="gap-2">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <CardTitle>Visual assets, screenshots & video</CardTitle>
-              {isOwner ? (
+              {isOwner && demoMode ? (
                 <Button type="button" variant="outline" size="sm" onClick={fillDemoVisuals}>
                   <Sparkles data-icon="inline-start" />
                   Fill sample demo visuals
@@ -514,11 +467,13 @@ export function AppDraftEditorForm({
               ) : null}
             </div>
             <CardDescription>
-              Uploaded media stays private until a release containing it is approved. External URLs must already be public.
+              Upload files or paste links to images that are already public.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <FieldGroup>
+              {isOwner ? <MediaUploadField appId={app.id} onPlace={receiveMedia} /> : null}
+
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field data-invalid={invalid(state, "coverImageUrl")}>
                   <FieldLabel htmlFor="cover-image-url">Tile cover graphic URL (16:10)</FieldLabel>
@@ -526,7 +481,7 @@ export function AppDraftEditorForm({
                     id="cover-image-url"
                     name="coverImageUrl"
                     disabled={!isOwner}
-                    placeholder="https://... or /demo/cover-pulse.svg"
+                    placeholder="https://…/cover.png"
                     value={coverImageUrl}
                     onChange={(e) => setCoverImageUrl(e.currentTarget.value)}
                     aria-invalid={invalid(state, "coverImageUrl")}
@@ -540,7 +495,7 @@ export function AppDraftEditorForm({
                     id="logo-url"
                     name="logoUrl"
                     disabled={!isOwner}
-                    placeholder="https://... or /demo/logo-pulse.svg"
+                    placeholder="https://…/logo.png"
                     value={logoUrl}
                     onChange={(e) => setLogoUrl(e.currentTarget.value)}
                     aria-invalid={invalid(state, "logoUrl")}
@@ -555,7 +510,7 @@ export function AppDraftEditorForm({
                   id="video-url"
                   name="videoUrl"
                   disabled={!isOwner}
-                  placeholder="https://yourapp.example.com/demo/walkthrough.mp4"
+                  placeholder="https://…/walkthrough.mp4"
                   value={videoUrl}
                   onChange={(e) => setVideoUrl(e.currentTarget.value)}
                   aria-invalid={invalid(state, "videoUrl")}
@@ -584,7 +539,7 @@ export function AppDraftEditorForm({
                     <Input
                       name="screenshotUrl"
                       disabled={!isOwner}
-                      placeholder="Screenshot URL (https://... or /demo/screen-pulse-1.svg)"
+                      placeholder="Screenshot URL (https://…)"
                       value={shot.url}
                       onChange={(e) => {
                         const next = [...screenshots];
@@ -682,26 +637,59 @@ export function AppDraftEditorForm({
         </p>
 
         {isOwner ? (
-          <div className="sticky bottom-3 z-20 flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-card/95 p-3 shadow-sm backdrop-blur">
-            <p role="status" className="text-sm">
-              {dirty ? (
-                <span className="font-semibold">Unsaved changes</span>
-              ) : (
-                <span className="text-muted-foreground">All changes saved to your private draft</span>
-              )}
-            </p>
-            <div className="flex gap-2">
-              <Button variant="outline" asChild>
+          <div className="sticky bottom-3 z-20 flex flex-col gap-3 rounded-xl border bg-card/95 p-3 shadow-sm backdrop-blur sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex min-w-0 flex-col gap-1">
+              <p role="status" className="text-sm">
+                {dirty ? (
+                  <span className="font-semibold">Unsaved changes</span>
+                ) : (
+                  <span className="text-muted-foreground">All changes saved to your private draft</span>
+                )}
+              </p>
+              <p className="text-xs text-muted-foreground">{submitHint}</p>
+              {submitState.status === "error" ? <FormMessage state={submitState} /> : null}
+            </div>
+            <div className="grid shrink-0 grid-cols-2 gap-2 sm:flex">
+              <Button variant="ghost" asChild className="hidden sm:inline-flex">
                 <Link href="/company/app/preview">
                   <Eye data-icon="inline-start" />
-                  Preview saved draft
+                  Preview
                 </Link>
               </Button>
-              <SubmitButton pendingLabel="Saving draft…">Save draft</SubmitButton>
+              <SubmitButton
+                variant={checklist.readyToSubmit && !dirty ? "outline" : "default"}
+                pendingLabel="Saving…"
+              >
+                Save draft
+              </SubmitButton>
+              <Button
+                type="submit"
+                form="app-submit-review"
+                variant={checklist.readyToSubmit && !dirty ? "default" : "outline"}
+                disabled={!checklist.readyToSubmit || dirty || submitPending}
+                aria-disabled={!checklist.readyToSubmit || dirty || submitPending}
+              >
+                {submitPending ? <Spinner data-icon="inline-start" /> : <Send data-icon="inline-start" />}
+                {submitPending ? (
+                  "Submitting…"
+                ) : (
+                  <>
+                    <span className="sm:hidden">{app.status === "submitted" ? "Resubmit" : "Submit for review"}</span>
+                    <span className="hidden sm:inline">{submitLabel}</span>
+                  </>
+                )}
+              </Button>
             </div>
           </div>
         ) : null}
       </div>
     </form>
+    {isOwner ? (
+      // Separate form: the editor's <form> can't contain it, so the button above targets it by id.
+      <form id="app-submit-review" action={submitAction} hidden>
+        <input type="hidden" name="appId" value={app.id} />
+      </form>
+    ) : null}
+    </>
   );
 }

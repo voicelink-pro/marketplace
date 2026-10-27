@@ -76,7 +76,7 @@ export default async function CompanyAppPreviewPage() {
       <Alert>
         <AlertTitle>Private draft preview — visible only to {organization.name}</AlertTitle>
         <AlertDescription>
-          This preview shows how `/apps/{app.slug}` will look once your current working draft and subscription plans are approved by an administrator.
+          This preview shows how your public profile will look once your current working draft and subscription plans are approved by an administrator.
         </AlertDescription>
       </Alert>
 
