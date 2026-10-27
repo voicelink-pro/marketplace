@@ -12,6 +12,7 @@ import {
   type LucideIcon,
   Plug,
   Receipt,
+  Search,
   Settings,
   Users,
   Wallet,
@@ -31,6 +32,7 @@ export const PANEL_LABELS: Record<PanelArea, string> = {
 export const PANEL_NAV: Record<PanelArea, NavItem[]> = {
   creator: [
     { href: "/creator", label: "Overview", icon: LayoutDashboard },
+    { href: "/", label: "Browse apps", icon: Search },
     { href: "/creator/programs", label: "My programs", icon: Layers },
     { href: "/creator/links", label: "Links", icon: Link2 },
     { href: "/creator/referrals", label: "Referrals", icon: Users },

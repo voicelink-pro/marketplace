@@ -71,11 +71,14 @@ export function PanelShell({ area, children }: { area: PanelArea; children: Reac
         <Suspense fallback={null}>
           <PanelNav area={area} />
         </Suspense>
-        <div className="mt-auto px-2 text-xs text-muted-foreground">
-          <Link href="/" className="hover:text-foreground">
-            Browse the marketplace
-          </Link>
-        </div>
+        {/* Creators get "Browse apps" in the main navigation instead. */}
+        {area !== "creator" ? (
+          <div className="mt-auto px-2 text-xs text-muted-foreground">
+            <Link href="/" className="hover:text-foreground">
+              Browse the marketplace
+            </Link>
+          </div>
+        ) : null}
       </aside>
       <div className="flex min-w-0 flex-col">
         <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b bg-background/85 px-3 backdrop-blur sm:px-4 lg:px-8">

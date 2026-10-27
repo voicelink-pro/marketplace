@@ -203,7 +203,30 @@ export function AdminReviewCard({ app }: { app: CompanyWorkspaceApp }) {
 
         {/* Plans & Commission Rates */}
         {activePlans.length > 0 ? (
-          <div className="overflow-hidden rounded-lg border">
+          <>
+          {/* Phones: one tile per plan, including the billing ID the reviewer checks. */}
+          <ul className="flex flex-col gap-2 sm:hidden">
+            {activePlans.map((plan) => (
+              <li key={plan.id} className="flex flex-col gap-1.5 rounded-lg border p-3 text-sm">
+                <div className="flex items-start justify-between gap-2">
+                  <span className="font-semibold">{plan.name}</span>
+                  <span className="tabular shrink-0 font-semibold text-primary-ink">
+                    {formatCommissionPercent(plan.commissionBps)} recurring
+                  </span>
+                </div>
+                <span className="tabular">
+                  {formatMinorCurrency(plan.priceMinor, plan.currency)}{" "}
+                  <span className="text-xs text-muted-foreground">
+                    {BILLING_INTERVAL_SUFFIX[plan.billingInterval]}
+                  </span>
+                </span>
+                <code className="self-start rounded bg-muted px-1.5 py-0.5 font-mono text-xs break-all">
+                  {plan.externalPlanKey}
+                </code>
+              </li>
+            ))}
+          </ul>
+          <div className="hidden overflow-hidden rounded-lg border sm:block">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -240,6 +263,7 @@ export function AdminReviewCard({ app }: { app: CompanyWorkspaceApp }) {
               </TableBody>
             </Table>
           </div>
+          </>
         ) : null}
 
         <div className="rounded-lg border bg-muted/20 p-3 text-xs">

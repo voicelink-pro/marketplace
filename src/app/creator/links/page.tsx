@@ -21,6 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { SOCIAL_PLATFORM_LABELS } from "@/modules/accounts/social";
+import { ReferralLinkCards } from "@/modules/programs/components/referral-link-cards";
 import { requireViewer } from "@/modules/accounts/viewer";
 import {
   CopyValueButton,
@@ -82,24 +83,6 @@ export default async function CreatorLinksPage({
       />
 
       <div className="flex flex-col gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Create a named link</CardTitle>
-            <CardDescription>
-              Pick one of your active programs, name the placement, and select the channel and app destination.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <CreateReferralLinkForm
-              programs={programs.map((program) => ({
-                membershipId: program.membershipId,
-                appName: program.appName,
-                availableDestinations: program.availableDestinations,
-              }))}
-            />
-          </CardContent>
-        </Card>
-
         {programs.length > 1 ? (
           <div className="flex flex-wrap items-center gap-1.5">
             <Button
@@ -124,7 +107,11 @@ export default async function CreatorLinksPage({
           </div>
         ) : null}
 
-        <div className="overflow-hidden rounded-xl border bg-card">
+        <ReferralLinkCards
+          className="sm:hidden"
+          links={allLinks.map((link) => ({ ...link, program: { appName: link.appName, appSlug: link.appSlug } }))}
+        />
+        <div className="hidden overflow-hidden rounded-xl border bg-card sm:block">
           <Table>
             <TableHeader>
               <TableRow>
@@ -188,6 +175,24 @@ export default async function CreatorLinksPage({
             </TableBody>
           </Table>
         </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Create a named link</CardTitle>
+            <CardDescription>
+              Pick one of your active programs, name the placement, and select the channel and app destination.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <CreateReferralLinkForm
+              programs={programs.map((program) => ({
+                membershipId: program.membershipId,
+                appName: program.appName,
+                availableDestinations: program.availableDestinations,
+              }))}
+            />
+          </CardContent>
+        </Card>
       </div>
     </>
   );

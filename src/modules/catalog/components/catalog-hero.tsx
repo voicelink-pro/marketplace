@@ -6,15 +6,15 @@ import { siteConfig } from "@/config/site";
 /** Short light hero above the catalog. The catalog stays the home page (W-01). */
 export function CatalogHero() {
   return (
-    <section className="relative overflow-hidden rounded-3xl border bg-card px-5 py-7 sm:px-10 sm:py-14">
+    <section className="relative overflow-hidden rounded-3xl border bg-card px-5 py-5 sm:px-10 sm:py-14">
       {/* Oversized brand shapes from the brand board; purely decorative. */}
       <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 hidden w-[26rem] md:block">
         <LogoMark className="absolute -right-10 -bottom-20 size-[22rem] rotate-[-8deg]" />
       </div>
 
-      <div className="relative flex max-w-xl flex-col gap-4">
-        <h1 className="text-3xl leading-[1.05] sm:text-5xl">Promote apps. Earn on every renewal.</h1>
-        <p className="text-muted-foreground sm:text-lg">
+      <div className="relative flex max-w-xl flex-col gap-2 sm:gap-4">
+        <h1 className="text-2xl leading-[1.1] sm:text-5xl">Promote apps. Earn on every renewal.</h1>
+        <p className="text-sm text-muted-foreground sm:text-lg">
           Join an app’s offer, share your link, and get a share of every subscription payment your
           audience makes.
         </p>
