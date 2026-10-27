@@ -1,3 +1,4 @@
+import { CommissionPanel } from '@/modules/commissions/components/commission-panel';
 import {notFound} from 'next/navigation';
 import {z} from 'zod';
 import {createClient} from '@/lib/supabase/server';
@@ -7,5 +8,5 @@ import {PaymentResults} from '@/modules/payments/components/payment-results';
 export default async function CustomerTimeline({params}:PageProps<'/company/referrals/[id]'>){
  await requireViewer('/company/referrals');const {id}=await params;if(!z.uuid().safeParse(id).success)notFound();
  const client=await createClient();const row=await client.from('customer_referrals').select('id,app_id').eq('id',id).single();if(row.error||!row.data)notFound();
- return <><PageHeader title={'Customer #'+id.replaceAll('-','').slice(0,12).toUpperCase()} description="Payment and subscription history without customer personal information."/><PaymentResults company customer={id} appId={row.data.app_id}/></>;
+ return <><PageHeader title={'Customer #'+id.replaceAll('-','').slice(0,12).toUpperCase()} description="Payment and subscription history without customer personal information."/><CommissionPanel customer={id} company /><PaymentResults company customer={id} appId={row.data.app_id}/></>;
 }

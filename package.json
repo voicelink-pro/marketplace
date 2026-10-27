@@ -21,7 +21,9 @@
     "db:reset": "supabase db reset",
     "db:types": "node scripts/db-types.mjs",
     "db:advisors": "supabase db advisors --local --type all --fail-on warn",
-    "admin:grant": "node --env-file-if-exists=.env.local scripts/grant-admin.mjs"
+    "admin:grant": "node --env-file-if-exists=.env.local scripts/grant-admin.mjs",
+    "commissions:worker": "node --env-file-if-exists=.env.local scripts/commission-worker.mjs",
+    "commissions:operator": "node --env-file-if-exists=.env.local scripts/commission-operator.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.7",

@@ -85,6 +85,9 @@ Skrót dla śledzenia w kodzie i testach. Pełne brzmienie: brief, sekcja A1.
 | P-08 | Waluty i kraje wypłat | Model wielowalutowy; demo w EUR; brak automatycznego FX; brak sumowania różnych walut | Lista krajów/walut dostępna u wybranego operatora i dla podmiotu | Otwarte |
 | P-09 | Miesiąc rozliczeniowy | Miesiąc kalendarzowy UTC; odblokowanie po wykonaniu zamknięcia i uzgodnienia | Zatwierdzona strefa czasowa i proces zamknięcia | Otwarte |
 | P-10 | Język interfejsu | Angielski jako propozycja startowa (brief A3) | Potwierdzenie przy pilotażu | Propozycja briefu |
+| P-12 | Zaokrąglanie prowizji | Sandbox: half-up do minor dla brutto i opłaty; twórca otrzymuje resztę | Zatwierdzona reguła podziału realnych pieniędzy | Otwarte |
+| P-13 | Częściowy refund | Sandbox: proporcjonalna redukcja podstawy względem zapłaconej sprzedaży, obcięta do minor; ponowne wyliczenie z pierwotnych stawek | Zatwierdzona podstawa i reguła korekt | Otwarte |
+| P-14 | Alokacja finansowania | Sandbox: pełne pozycje według okresu, daty i ID, osobno per waluta | Zatwierdzona kolejność i reguły częściowego finansowania | Otwarte |
 | P-11 | Układ UI | Katalog 3/2/1 kolumny; panele z sidebarem na desktopie i menu mobilnym (brief A3) | — (zwykła decyzja UI) | Propozycja briefu |
 
 Dodatkowe propozycje, które pojawią się w trakcie prac (np. reguły zaokrągleń kwot, P-12+), dopisujemy tutaj, jeżeli wpływają na podział realnych pieniędzy.
@@ -127,7 +130,7 @@ Status: **Przyjęte** = obowiązuje; **Do potwierdzenia w etapie N** = kierunek 
 
 - **T-20 Kwoty.** Kwoty jako liczby całkowite w najmniejszej jednostce waluty (`bigint` w Postgres, `*_minor`) z kodem waluty ISO 4217. Brak `float`/`numeric` z ułamkami dla kwot. W TypeScript dedykowany typ i funkcje modułu `money`; brak arytmetyki zmiennoprzecinkowej. *Przyjęte.*
 - **T-21 Stawki.** Procenty jako liczby całkowite w punktach bazowych (1500 = 15,00%). *Przyjęte.*
-- **T-22 Zaokrąglanie.** Jedna jawna funkcja zaokrąglania w module `money`. Kwota twórcy liczona jako `prowizja_brutto − opłata_platformy`, więc suma zawsze się zgadza. Kierunek zaokrąglania prowizji brutto i opłaty dzieli realne pieniądze, dlatego zostanie dopisany jako propozycja P-12 w E7. *Do potwierdzenia w E7.*
+- **T-22 Zaokrąglanie.** Jedna jawna funkcja zaokrąglania w module `money`. Kwota twórcy liczona jako `prowizja_brutto − opłata_platformy`, więc suma zawsze się zgadza. Kierunek zaokrąglania prowizji brutto i opłaty opisuje propozycja P-12; kalkulator i SQL E7 mają tę samą regułę half-up. *Przyjęte technicznie; live wymaga zatwierdzenia P-12.*
 - **T-23 Dziennik rozliczeń.** Niezmienny, bilansowany dziennik (append-only, zapisy podwójne, suma = 0 per transakcja i waluta). Korekty to nowe zapisy. Brak edytowalnego pola salda użytkownika; salda są projekcją dziennika. *Przyjęte; implementacja w E7.*
 - **T-24 Idempotencja.** Zdarzenia zewnętrzne deduplikowane po (dostawca, środowisko, id zdarzenia) **oraz** po transakcji, której dotyczą. Operacje finansowe inicjowane przez użytkownika mają klucz idempotencji z ograniczeniem unikalności w bazie. Zapis finansowy i zmiana stanu w jednej transakcji DB. *Przyjęte.*
 - **T-25 Snapshoty stawek.** Warunki programu są wersjonowane (nowa wersja zamiast edycji). Przypisanie klienta przechowuje odniesienie do wersji/snapshotu tabeli stawek z chwili przypisania. *Przyjęte; implementacja w E3/E5/E7.*
@@ -225,6 +228,17 @@ Status: **Przyjęte** = obowiązuje; **Do potwierdzenia w etapie N** = kierunek 
 - **T-87 Metryki i wspólny frontend.** Płacący klient ma dodatnią niepróbną płatność z pozostałą wartością po zwrotach, bez przegranego/niejednoznacznego sporu. Aktywny płacący dodatkowo ma ważny opłacony okres i stan active/past_due. Liczymy osoby, nie liczbę odnowień. Kontekst twórcy jest filtrowany jawnie również przy roli właściciela firmy na tym samym koncie (niezbędna korekta odczytu E5). `PaymentResults`, serwerowe queries/actions i dokument kontraktu dostarczają dane do istniejącego UI; redesign E1–E4 pozostaje u kolegi. *Przyjęte.*
 - **T-88 Faktyczny odbiór dostawców.** Kod jest sprawdzany na jawnych fixtures oraz prawdziwym lokalnym Supabase/HTTP/workerze. Bez kont/sekretów Stripe i RevenueCat test zakupu u dostawcy ma status **blocked**, nigdy pass. Obsługiwane pola i ograniczenia (snapshot, pojedyncza pozycja abonamentowa, waluty) opisano w `docs/PAYMENT_INTEGRATIONS.md`. *Przyjęte.*
 
+## Etap 7 — decyzje techniczne (27.10.2026)
+
+- **T-89 Jawne dane finansowe.** Brak domyślnego procentu platformy i brak domyślnej podstawy. Politykę sandbox deklaruje operator, basis konkretnej transakcji jest niezmienne. 10% i podstawa po rabacie z podatkiem wyłącznie w jawnych fixtures. Live nie jest naliczane. *Przyjęte; P-01/P-02/P-12…14 otwarte.*
+- **T-90 Historyczna tabela planów.** Stawka z całego snapshotu E5 po ID planu i walucie, także dla odnowienia/zmiany planu. Nieznany nowy plan to sprawa do rozpatrzenia bez automatycznej stawki. Roczna sprzedaż nie tworzy fikcyjnych miesięcznych transakcji. *Przyjęte; P-07 sandbox.*
+- **T-91 Niezmienny bilansowany dziennik.** Oryginalne wyliczenie i komplet postings są atomowym zapisem. Constraint pilnuje sumy zero; historia jest append-only, a stan to prywatna projekcja. Korekty i przeniesienia mają idempotentne klucze. Uprzywilejowane usuwanie wyłącznie nadrzędnych danych testowych dopuszcza kaskadę; frontend nie usuwa dziennika. *Przyjęte.*
+- **T-92 Współbieżność E7.** Worker pobiera blokadę aplikacji przed blokadą zadania i ponownie sprawdza pending. Kolejność app ID, transakcja rozliczenia i zmiana statusu atomowe. Podwójne naliczenie/close/funding jest sprawdzane przez rzeczywisty Data API i PostgreSQL. *Przyjęte.*
+- **T-93 Korekty i spory.** Skumulowane refundy/straty zmieniają pozostałą podstawę, a różnica daje nowy wpis. Stan open/pending/needs_review wstrzymuje środki. Refund po in_payout/paid tworzy sprawę bez przypisania kosztu. Cofnięcie refundu respektuje finansowanie ponownie użyte na inne należności. *Przyjęte technicznie; P-06/P-13 sandbox.*
+- **T-94 Zamknięcie i późne zdarzenia.** Osobny niezmienny miesiąc UTC; zamknięcie tylko ukończonego okresu po uzgodnieniu. Starszy niezamknięty miesiąc nie odblokowuje się przy close innego okresu. Późne zdarzenia trafiają do otwartego okresu, zachowując datę źródłową, transakcję i oryginalny okres. Zestawienia są niezmienne, odrębne od aktualnej dostępności środków. *Przyjęte; P-09 sandbox.*
+- **T-95 Kontrolowane finansowanie.** Tylko operator tworzy jawny funding fixture i może symulować payout. Dopływ środków zwalnia wcześniej zamknięte pozycje bez kolejnego close. Brak dodatkowego 30-dniowego holda/minimum, brak realnej wpłaty/wypłaty i E8. *Przyjęte; P-14 sandbox.*
+- **T-96 Kontrakt frontendu i izolacja.** `getCommissionWorkspace` / `CommissionPanel`: Earnings, Overview, zestawienia firmy, szczegóły klienta. Pieniądze tekstowe per waluta, bez PII/sekretów. Jawny kontekst twórcy i firmy, RLS, brak browserowych mutacji pieniędzy. Kolega nadal prowadzi redesign. *Przyjęte.*
+
 ## Rejestr zmian
 
 | Data | Zmiana |
@@ -242,3 +256,5 @@ Status: **Przyjęte** = obowiązuje; **Do potwierdzenia w etapie N** = kierunek 
 | 2026-10-26 | Etap 5 sandbox: tokeny kliknięć, API klienta, trwałe przypisanie, snapshoty i rzeczywiste statystyki; T-75…T-80. |
 
 | 2026-10-27 | Etap 6: trzy adaptery, trwały inbox/worker, mapowania, źródła, deduplikacja i metryki; T-81…T-88. |
+
+| 2026-10-27 | Etap 7 sandbox: prowizje, dziennik, korekty, finansowanie fixtures i zamknięcia; T-89…T-96, propozycje P-12…P-14; playbook dostawców. |
