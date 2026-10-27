@@ -37,7 +37,9 @@ import {
   CopyValueButton,
 } from "@/modules/programs/components/copy-value-button";
 import { CreateReferralLinkForm } from "@/modules/programs/components/create-referral-link-form";
+import { PerCustomerAmount, PerCustomerNote, PlanRateCards } from "@/modules/catalog/components/plan-rates";
 import { HowToPromoteGuide } from "@/modules/programs/components/how-to-promote-guide";
+import { ReferralLinkCards } from "@/modules/programs/components/referral-link-cards";
 import { getCreatorProgramDetailBySlug } from "@/modules/programs/queries";
 
 export const metadata: Metadata = { title: "Program details" };
@@ -94,12 +96,6 @@ export default async function CreatorProgramDetailPage({
           </Alert>
         ) : null}
 
-        <HowToPromoteGuide
-          appName={program.appName}
-          attributionWindowDays={program.attributionWindowDays}
-          highlighted={justJoined}
-        />
-
         <Card>
           <CardHeader>
             <CardTitle>Your referral code & primary link</CardTitle>
@@ -127,6 +123,13 @@ export default async function CreatorProgramDetailPage({
             ) : null}
           </CardContent>
         </Card>
+
+        <HowToPromoteGuide
+          appName={program.appName}
+          attributionWindowDays={program.attributionWindowDays}
+          highlighted={justJoined}
+          collapsible
+        />
 
         <section aria-labelledby="named-links-heading" className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
@@ -160,35 +163,7 @@ export default async function CreatorProgramDetailPage({
             </CardContent>
           </Card>
 
-          {/* Phones: one tile per link with the full URL, so it stays readable and copyable. */}
-          <ul className="flex flex-col gap-2 sm:hidden">
-            {program.links.map((link) => (
-              <li key={link.id} className="flex flex-col gap-2 rounded-xl border bg-card p-3">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="font-semibold">{link.label}</span>
-                  {link.isDefault ? <Badge variant="secondary">Primary</Badge> : null}
-                  <Badge variant="outline">{SOCIAL_PLATFORM_LABELS[link.channel]}</Badge>
-                </div>
-                <span className="font-mono text-xs break-all select-all">{link.shareUrl}</span>
-                <a
-                  href={link.targetUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-                >
-                  Opens {link.destinationLabel}
-                  <ExternalLink aria-hidden className="size-3 shrink-0" />
-                </a>
-                <CopyValueButton
-                  value={link.shareUrl}
-                  label="Copy link"
-                  toastMessage={`Copied “${link.label}” link.`}
-                  ariaLabel={`Copy link for ${link.label}`}
-                  className="w-full"
-                />
-              </li>
-            ))}
-          </ul>
+          <ReferralLinkCards links={program.links} className="sm:hidden" />
 
           <div className="hidden overflow-hidden rounded-xl border bg-card sm:block">
             <Table>
@@ -258,7 +233,8 @@ export default async function CreatorProgramDetailPage({
             </Badge>
           </div>
 
-          <div className="overflow-hidden rounded-xl border bg-card">
+          <PlanRateCards plans={program.plans} className="sm:hidden" />
+          <div className="hidden overflow-hidden rounded-xl border bg-card sm:block">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -292,12 +268,14 @@ export default async function CreatorProgramDetailPage({
                         {formatCommissionPercent(plan.commissionBps)}
                         <span className="hidden sm:inline">&nbsp;recurring</span>
                       </span>
+                      <PerCustomerAmount plan={plan} className="mt-1 block" />
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </div>
+          <PerCustomerNote />
 
           <Card>
             <CardHeader>

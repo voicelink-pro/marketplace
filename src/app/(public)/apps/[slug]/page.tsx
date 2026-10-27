@@ -22,6 +22,7 @@ import {
   formatMinorCurrency,
 } from "@/lib/money";
 import { PromoteCtaCard } from "@/modules/catalog/components/promote-cta-card";
+import { PerCustomerAmount, PerCustomerNote, PlanRateCards } from "@/modules/catalog/components/plan-rates";
 import { StickyJoinBar } from "@/modules/catalog/components/sticky-join-bar";
 import {
   APP_CATEGORY_LABELS,
@@ -209,7 +210,8 @@ async function AppDetailContent({
               </p>
             </div>
 
-            <div className="overflow-hidden rounded-xl border bg-card">
+            <PlanRateCards plans={app.plans} className="sm:hidden" />
+            <div className="hidden overflow-hidden rounded-xl border bg-card sm:block">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -243,12 +245,14 @@ async function AppDetailContent({
                           {formatCommissionPercent(plan.commissionBps)}
                           <span className="hidden sm:inline">&nbsp;recurring</span>
                         </span>
+                        <PerCustomerAmount plan={plan} className="mt-1 block" />
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
             </div>
+            <PerCustomerNote />
           </section>
 
           {/* Full Product Description */}

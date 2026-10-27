@@ -23,7 +23,7 @@ export function AppCard({
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-xl border bg-card transition-colors hover:border-foreground/25 focus-within:ring-3 focus-within:ring-ring/50">
       <Link href={detailHref} className="flex flex-1 flex-col outline-none">
-        <div className="relative aspect-[16/9] w-full overflow-hidden bg-muted">
+        <div className="relative hidden aspect-[16/9] w-full overflow-hidden bg-muted sm:block">
           {app.coverImageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -39,7 +39,7 @@ export function AppCard({
           )}
         </div>
 
-        <div className="flex flex-1 flex-col gap-4 p-5">
+        <div className="flex flex-1 flex-col gap-3 p-4 sm:gap-4 sm:p-5">
           <div className="flex min-w-0 items-center gap-3">
             {app.logoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -67,13 +67,16 @@ export function AppCard({
 
           <div className="flex flex-col rounded-lg bg-primary px-4 py-3 text-primary-foreground">
             <span className="tabular text-3xl leading-none font-extrabold tracking-tight">{rate}</span>
-            <span className="mt-1 text-xs font-medium">of every subscription payment</span>
+            <span className="mt-1 text-xs font-medium">
+              of every subscription payment
+              {app.minCommissionBps !== app.maxCommissionBps ? <span className="block">depending on plan</span> : null}
+            </span>
           </div>
 
-          <p className="line-clamp-2 text-sm text-muted-foreground">{app.tagline}</p>
+          <p className="hidden text-sm text-muted-foreground sm:line-clamp-2">{app.tagline}</p>
 
-          <div className="mt-auto flex items-center justify-between gap-3 pt-1">
-            <ul aria-label="Platforms" className="flex min-w-0 flex-wrap gap-1">
+          <div className="mt-auto flex items-center justify-end gap-3 pt-1 sm:justify-between">
+            <ul aria-label="Platforms" className="hidden min-w-0 flex-wrap gap-1 sm:flex">
               {app.platforms.map((platform) => (
                 <li
                   key={platform}

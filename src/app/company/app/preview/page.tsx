@@ -21,6 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { PerCustomerAmount, PerCustomerNote, PlanRateCards } from "@/modules/catalog/components/plan-rates";
 import {
   formatCommissionPercent,
   formatCommissionRange,
@@ -183,7 +184,12 @@ export default async function CompanyAppPreviewPage() {
                 </CardContent>
               </Card>
             ) : (
-              <div className="overflow-hidden rounded-xl border bg-card">
+              <>
+              <PlanRateCards
+                className="sm:hidden"
+                plans={activePlans.map((plan) => ({ ...plan, planName: plan.name }))}
+              />
+              <div className="hidden overflow-hidden rounded-xl border bg-card sm:block">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -210,12 +216,15 @@ export default async function CompanyAppPreviewPage() {
                           <span className="tabular inline-flex rounded-md bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground">
                             {formatCommissionPercent(plan.commissionBps)} recurring
                           </span>
+                          <PerCustomerAmount plan={{ ...plan, planName: plan.name }} className="mt-1 block" />
                         </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
               </div>
+              <PerCustomerNote />
+              </>
             )}
           </section>
 
