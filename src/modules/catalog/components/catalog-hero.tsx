@@ -34,7 +34,7 @@ export function CreatorPitch() {
   return (
     <section
       aria-labelledby="creator-pitch-heading"
-      className="dark relative overflow-hidden rounded-3xl bg-background px-6 py-10 text-foreground sm:px-10 sm:py-14"
+      className="dark relative overflow-hidden rounded-3xl bg-background px-6 py-10 text-foreground sm:px-10 sm:py-14 dark:bg-card"
     >
       <LogoMark
         className="pointer-events-none absolute -right-16 -top-16 hidden size-72 rotate-12 opacity-90 lg:block"

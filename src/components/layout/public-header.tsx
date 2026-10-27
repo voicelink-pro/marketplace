@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getViewer } from "@/modules/accounts/viewer";
 import { AccountMenu } from "./account-menu";
+import { ThemeToggle } from "./theme-toggle";
 
 async function HeaderAccount() {
   const viewer = await getViewer();
@@ -43,7 +44,8 @@ export function PublicHeader() {
     <header className="sticky top-0 z-30 border-b bg-background/85 backdrop-blur">
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-4 px-4 sm:px-6">
         <Logo />
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-1 sm:gap-2">
+          <ThemeToggle />
           <Suspense fallback={<Skeleton className="h-9 w-40 rounded-lg" />}>
             <HeaderAccount />
           </Suspense>
