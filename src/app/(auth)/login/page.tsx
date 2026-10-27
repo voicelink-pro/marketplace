@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AuthCard } from "@/modules/auth/components/auth-card";
+import { AuthSwitchLink } from "@/modules/auth/components/auth-switch-link";
 import { LoginForm } from "@/modules/auth/components/login-form";
 import { isLocalPgliteSandboxEnabled } from "@/modules/catalog/local-pglite-sandbox";
 
@@ -13,14 +13,12 @@ export default function LoginPage() {
 
   return (
     <AuthCard
-      title="Log in"
-      description="Welcome back. Log in to your creator or company workspace."
+      title="Welcome back"
+      description="Log in to your creator or app workspace."
       footer={
         <span>
           New here?{" "}
-          <Link href="/signup" className="font-medium text-foreground underline-offset-4 hover:underline">
-            Create an account
-          </Link>
+          <AuthSwitchLink href="/signup">Create an account</AuthSwitchLink>
         </span>
       }
     >

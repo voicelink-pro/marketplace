@@ -12,7 +12,7 @@ export function PanelNav({ area, onNavigate }: { area: PanelArea; onNavigate?: (
 
   return (
     <nav aria-label={`${area} navigation`} className="flex flex-col gap-0.5">
-      {items.map(({ href, label, icon: Icon }) => {
+      {items.map(({ href, label, icon: Icon, soon }) => {
         const active = isActive(pathname, href, root);
         return (
           <Link
@@ -25,8 +25,13 @@ export function PanelNav({ area, onNavigate }: { area: PanelArea; onNavigate?: (
               active && "bg-sidebar-accent text-foreground",
             )}
           >
-            <Icon aria-hidden className={cn("size-4 shrink-0", active && "text-primary")} />
+            <Icon aria-hidden className={cn("size-4 shrink-0", active && "text-primary-ink")} />
             {label}
+            {soon ? (
+              <span className="ml-auto rounded-full border px-2 py-0.5 text-[11px] leading-none font-medium text-muted-foreground">
+                Soon
+              </span>
+            ) : null}
           </Link>
         );
       })}

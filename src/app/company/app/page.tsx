@@ -14,7 +14,7 @@ import {
   AppDraftEditorForm,
   AppSubmissionStatusCard,
 } from "@/modules/company-app/components/app-draft-editor";
-import { MediaUploadForm } from "@/modules/company-app/components/media-upload-form";
+import { isLocalPgliteSandboxEnabled } from "@/modules/catalog/local-pglite-sandbox";
 import { getCompanyWorkspaceApp } from "@/modules/company-app/queries";
 
 export const metadata: Metadata = { title: "App profile" };
@@ -36,16 +36,15 @@ export default async function CompanyAppPage() {
       <div className="flex max-w-4xl flex-col gap-6">
         {app ? (
           <>
-            <AppSubmissionStatusCard app={app} isOwner={isOwner} />
-            {isOwner ? <MediaUploadForm appId={app.id} /> : null}
-            <AppDraftEditorForm app={app} isOwner={isOwner} />
+            <AppSubmissionStatusCard app={app} />
+            <AppDraftEditorForm app={app} isOwner={isOwner} demoMode={isLocalPgliteSandboxEnabled()} />
           </>
         ) : isOwner ? (
           <Card className="max-w-2xl">
             <CardHeader>
               <CardTitle>Create your app</CardTitle>
               <CardDescription>
-                A company account can list one app in the MVP. Start with your app’s name — you’ll fill in its profile, visuals, and subscription plans next.
+                Each company account lists one app. Start with your app’s name — you’ll fill in its profile, visuals, and subscription plans next.
               </CardDescription>
             </CardHeader>
             <CardContent>

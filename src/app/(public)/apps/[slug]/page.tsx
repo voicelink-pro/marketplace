@@ -22,6 +22,8 @@ import {
   formatMinorCurrency,
 } from "@/lib/money";
 import { PromoteCtaCard } from "@/modules/catalog/components/promote-cta-card";
+import { PerCustomerAmount, PerCustomerNote, PlanRateCards } from "@/modules/catalog/components/plan-rates";
+import { StickyJoinBar } from "@/modules/catalog/components/sticky-join-bar";
 import {
   APP_CATEGORY_LABELS,
   APP_PLATFORM_LABELS,
@@ -54,7 +56,7 @@ function AppDetailSkeleton() {
   return (
     <div className="flex flex-col gap-8">
       <Skeleton className="h-8 w-40 rounded-lg" />
-      <div className="grid gap-8 lg:grid-cols-12">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
         <div className="flex flex-col gap-6 lg:col-span-8">
           <Skeleton className="h-32 w-full rounded-xl" />
           <Skeleton className="aspect-[16/10] w-full rounded-xl" />
@@ -87,7 +89,7 @@ async function AppDetailContent({
     .filter(Boolean);
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 pb-20 lg:pb-0">
       <div>
         <Button variant="ghost" size="sm" asChild className="-ml-2.5 text-muted-foreground">
           <Link href={backHref}>
@@ -97,7 +99,7 @@ async function AppDetailContent({
         </Button>
       </div>
 
-      <div className="grid items-start gap-8 lg:grid-cols-12">
+      <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
         <div className="flex flex-col gap-8 lg:col-span-8">
           {/* App Identity Header */}
           <header className="flex flex-col gap-5 rounded-xl border bg-card p-5 sm:p-6">
@@ -189,9 +191,13 @@ async function AppDetailContent({
           ) : null}
 
           {/* Mobile CTA placement so mobile visitors don't have to scroll past everything */}
-          <div className="lg:hidden">
+          <div id="join-offer" className="scroll-mt-20 lg:hidden">
             <PromoteCtaCard app={app} />
           </div>
+          <StickyJoinBar
+            targetId="join-offer"
+            commissionLabel={formatCommissionRange(app.minCommissionBps, app.maxCommissionBps)}
+          />
 
           {/* Subscription Plans & Commission Rates Table */}
           <section id="plans" aria-labelledby="plans-heading" className="flex flex-col gap-3">
@@ -204,21 +210,28 @@ async function AppDetailContent({
               </p>
             </div>
 
-            <div className="overflow-hidden rounded-xl border bg-card">
+            <PlanRateCards plans={app.plans} className="sm:hidden" />
+            <div className="hidden overflow-hidden rounded-xl border bg-card sm:block">
               <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Plan</TableHead>
-                    <TableHead>Billing cycle</TableHead>
-                    <TableHead className="text-right">Subscription price</TableHead>
-                    <TableHead className="text-right">Creator commission</TableHead>
+                    <TableHead className="hidden sm:table-cell">Billing cycle</TableHead>
+                    <TableHead className="text-right">
+                      <span className="sm:hidden">Price</span>
+                      <span className="hidden sm:inline">Subscription price</span>
+                    </TableHead>
+                    <TableHead className="text-right">
+                      <span className="sm:hidden">Commission</span>
+                      <span className="hidden sm:inline">Creator commission</span>
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {app.plans.map((plan) => (
                     <TableRow key={plan.id}>
                       <TableCell className="font-medium">{plan.planName}</TableCell>
-                      <TableCell className="text-muted-foreground">
+                      <TableCell className="hidden text-muted-foreground sm:table-cell">
                         {BILLING_INTERVAL_LABELS[plan.billingInterval]}
                       </TableCell>
                       <TableCell className="tabular text-right">
@@ -228,15 +241,18 @@ async function AppDetailContent({
                         </span>
                       </TableCell>
                       <TableCell className="text-right">
-                        <span className="tabular inline-flex rounded-md bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
-                          {formatCommissionPercent(plan.commissionBps)} recurring
+                        <span className="tabular inline-flex rounded-md bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground">
+                          {formatCommissionPercent(plan.commissionBps)}
+                          <span className="hidden sm:inline">&nbsp;recurring</span>
                         </span>
+                        <PerCustomerAmount plan={plan} className="mt-1 block" />
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
             </div>
+            <PerCustomerNote />
           </section>
 
           {/* Full Product Description */}
@@ -385,7 +401,7 @@ async function AppDetailContent({
         </div>
 
         {/* Sticky Desktop CTA */}
-        <aside aria-label="Promote this app" className="hidden lg:col-span-4 lg:block lg:sticky lg:top-24">
+        <aside aria-label="Join this offer" className="hidden lg:col-span-4 lg:block lg:sticky lg:top-24">
           <PromoteCtaCard app={app} />
         </aside>
       </div>

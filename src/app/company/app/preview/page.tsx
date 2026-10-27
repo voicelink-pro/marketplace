@@ -21,6 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { PerCustomerAmount, PerCustomerNote, PlanRateCards } from "@/modules/catalog/components/plan-rates";
 import {
   formatCommissionPercent,
   formatCommissionRange,
@@ -75,11 +76,11 @@ export default async function CompanyAppPreviewPage() {
       <Alert>
         <AlertTitle>Private draft preview — visible only to {organization.name}</AlertTitle>
         <AlertDescription>
-          This preview shows how `/apps/{app.slug}` will look once your current working draft and subscription plans are approved by an administrator.
+          This preview shows how your public profile will look once your current working draft and subscription plans are approved by an administrator.
         </AlertDescription>
       </Alert>
 
-      <div className="grid items-start gap-8 lg:grid-cols-12">
+      <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
         <div className="flex flex-col gap-8 lg:col-span-8">
           <header className="flex flex-col gap-5 rounded-xl border bg-card p-5 sm:p-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
@@ -183,7 +184,12 @@ export default async function CompanyAppPreviewPage() {
                 </CardContent>
               </Card>
             ) : (
-              <div className="overflow-hidden rounded-xl border bg-card">
+              <>
+              <PlanRateCards
+                className="sm:hidden"
+                plans={activePlans.map((plan) => ({ ...plan, planName: plan.name }))}
+              />
+              <div className="hidden overflow-hidden rounded-xl border bg-card sm:block">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -207,15 +213,18 @@ export default async function CompanyAppPreviewPage() {
                           </span>
                         </TableCell>
                         <TableCell className="text-right">
-                          <span className="tabular inline-flex rounded-md bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
+                          <span className="tabular inline-flex rounded-md bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground">
                             {formatCommissionPercent(plan.commissionBps)} recurring
                           </span>
+                          <PerCustomerAmount plan={{ ...plan, planName: plan.name }} className="mt-1 block" />
                         </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
               </div>
+              <PerCustomerNote />
+              </>
             )}
           </section>
 
@@ -300,7 +309,7 @@ export default async function CompanyAppPreviewPage() {
           <Card className="border-primary/25">
             <CardHeader className="gap-2">
               <div className="text-xs font-medium text-muted-foreground">Creator commission</div>
-              <CardTitle className="tabular text-2xl font-semibold text-primary">
+              <CardTitle className="tabular text-2xl font-semibold text-foreground">
                 {minBps !== null && maxBps !== null
                   ? formatCommissionRange(minBps, maxBps)
                   : "Add a plan to preview rate"}

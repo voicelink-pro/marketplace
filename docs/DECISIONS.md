@@ -18,7 +18,7 @@ Dokument ma trzy rozłączne kategorie. Nie przenoś pozycji między nimi bez ja
 Skrót dla śledzenia w kodzie i testach. Pełne brzmienie: brief, sekcja A1.
 
 ### Marka i współpraca
-- **W-00 Nazwa platformy.** Właściciel zatwierdził nazwę **BoostLink** 26.10.2026. Wspólna konfiguracja `src/config/site.ts` zasila nazwę w interfejsie i metadanych. Nazwa repozytorium i identyfikator lokalnego stosu Supabase pozostają identyfikatorami technicznymi.
+- **W-00 Nazwa platformy.** Właściciel zatwierdził nazwę 26.10.2026; od 27.10.2026 obowiązuje pisownia wyłącznie małymi literami: **boostlink** — w interfejsie, metadanych i dokumentacji, także na początku zdania. Wspólna konfiguracja `src/config/site.ts` zasila nazwę w interfejsie i metadanych. Nazwa repozytorium i identyfikator lokalnego stosu Supabase pozostają identyfikatorami technicznymi.
 
 ### Marketplace publiczny
 - **W-01** `/` jest od razu katalogiem z wyszukiwarką; brak landing page przed katalogiem.
@@ -167,7 +167,7 @@ Status: **Przyjęte** = obowiązuje; **Do potwierdzenia w etapie N** = kierunek 
 - **T-51 Wybór kontekstu.** `/dashboard` kieruje do ostatnio używanego kontekstu (ciasteczko `mp_last_context`, httpOnly, ustawiane w proxy), potem twórca → firma → admin → `/onboarding`. Ciasteczko to tylko preferencja; uprawnienia zawsze z bazy. Przełącznik kontekstu w topbarze pojawia się, gdy użytkownik ma oba. *Przyjęte.*
 - **T-52 Typy bazy.** `src/lib/supabase/database.types.ts` napisany ręcznie zgodnie z migracją, bo generator wymaga działającej bazy. 26.10 zastąpiono typami z prawdziwego lokalnego Supabase; generator zapisuje atomowo, a CI blokuje różnicę. *Przyjęte.*
 - **T-53 Formularze i stany.** Server Actions + `useActionState` z jednym typem `FormState` (idle / error z błędami pól i zachowanymi wartościami / success). Przycisk pokazuje stan wysyłania; sukces → toast lub przekierowanie; błędy → komunikat + pola. Stany puste modułów opisują, co się pojawi i kiedy, bez przykładowych liczb. Komunikaty błędów nie zdradzają szczegółów technicznych; logi zawierają tylko kod i treść błędu. *Przyjęte.*
-- **T-54 Wygląd.** Kierunek: spokojne, chłodne neutralne tło, białe karty, jeden akcent (zieleń „prowizji”), font Instrument Sans (łaciński + rozszerzony), bez gradientów i etykiet wersalikami. Komponenty shadcn/ui (Radix, styl nova). Nazwa marki **BoostLink** w `src/config/site.ts` (zatwierdzona 26.10, W-00). Interfejs po angielsku (P-10 nadal otwarte). *Przyjęte; nazwa zatwierdzona.*
+- **T-54 Wygląd.** Kierunek: neutralne tło, białe karty, jeden akcent, font Plus Jakarta Sans (od 27.10, wcześniej Instrument Sans; nagłówki 800, tracking −0,02em), bez gradientów i etykiet wersalikami. Komponenty shadcn/ui (Radix, styl nova). Nazwa marki **boostlink** (małymi literami) w `src/config/site.ts` (zatwierdzona 26.10, W-00). Interfejs po angielsku (P-10 nadal otwarte). 26.10 właściciel zatwierdził brand board: tło `#F5F5F5`, tekst `#111111`, akcent żółty `#FFD600` (zastępuje zieleń), znak „b”, logotyp i nazwa małymi literami „boostlink” (W-00). Żółty to wyłącznie wypełnienie (przyciski, chipy prowizji); tekst akcentu używa `--primary-ink` `#7A5C00` (kontrast 6:1), a szary `#9CA3AF` tylko linii i dekoracji (jako tekst ma 2,5:1 — poniżej AA). Promienie: karty 20px, pola 12px, przyciski „pill”. Motyw: od 27.10 ciemny domyślnie w całej aplikacji (`#0B0B0B` tło, `#161616` karty, `#2A2A2A` linie, `#F5F5F5` tekst, `#9CA3AF` tekst drugorzędny, pola `#6B6B6B`), z przełącznikiem jasny/ciemny w nagłówku i menu konta (next-themes, zapamiętany wybór, bez motywu systemowego). Zastępuje wcześniejsze motywy według roli (ciemny panel twórcy, jasne panele firmy i administratora). Strona `/` ma krótki hero z kształtami „b” i ciemną sekcję dla twórców pod wynikami — katalog z wyszukiwarką pozostaje stroną główną (W-01). *Przyjęte; paleta zatwierdzona.*
 - **T-55 Zmienne środowiskowe.** Publiczne: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `NEXT_PUBLIC_SITE_URL`, walidowane leniwie przez Zod; aplikacja odmawia startu, jeśli w zmiennej publicznej jest klucz sekretny (`sb_secret_…` lub JWT `service_role`). `SUPABASE_SECRET_KEY` tylko w skryptach i testach; aplikacja webowa go w E1 nie czyta. *Przyjęte.*
 
 ### Etap 2 — publiczny katalog, plany i wersje warunków
@@ -276,9 +276,15 @@ Status: **Przyjęte** = obowiązuje; **Do potwierdzenia w etapie N** = kierunek 
 
 | 2026-10-26 | Etap 5 sandbox: tokeny kliknięć, API klienta, trwałe przypisanie, snapshoty i rzeczywiste statystyki; T-75…T-80. |
 
+| 2026-10-26 | Brand board BoostLink: żółto-czarna paleta, znak „b”, logotyp małymi literami (zmiana T-54). |
+
 | 2026-10-27 | Etap 6: trzy adaptery, trwały inbox/worker, mapowania, źródła, deduplikacja i metryki; T-81…T-88. |
 
 | 2026-10-27 | Etap 7 sandbox: prowizje, dziennik, korekty, finansowanie fixtures i zamknięcia; T-89…T-96, propozycje P-12…P-14; playbook dostawców. |
+
+| 2026-10-27 | Nazwa wyłącznie małymi literami: „boostlink” (zmiana W-00). |
+
+| 2026-10-27 | Ciemny motyw domyślnie w całej aplikacji z przełącznikiem jasny/ciemny (zmiana T-54). |
 
 | 2026-10-27 | Etap 8 sandbox: finansowanie, auto-doładowania, rezerwacje, osobne transfery i bank payouts, uzgadnianie i admin; T-97…T-104. |
 

@@ -3,7 +3,8 @@ export function PageHeader({
   description,
   actions,
 }: {
-  title: string;
+  /** Usually text; can hold a streamed part, e.g. a name behind <Suspense>. */
+  title: React.ReactNode;
   description?: string;
   actions?: React.ReactNode;
 }) {

@@ -8,6 +8,7 @@ import { AccountMenu } from "./account-menu";
 import { MobileNav } from "./mobile-nav";
 import { PANEL_LABELS, type PanelArea } from "./nav-config";
 import { PanelNav } from "./panel-nav";
+import { ThemeToggle } from "./theme-toggle";
 
 async function ContextSwitch({ area }: { area: PanelArea }) {
   const viewer = await getViewer();
@@ -61,26 +62,37 @@ async function PanelAccount() {
 export function PanelShell({ area, children }: { area: PanelArea; children: React.ReactNode }) {
   const home = area === "admin" ? "/admin" : `/${area}`;
   return (
-    <div className="min-h-dvh w-full lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)]">
+    <div className="min-h-dvh w-full bg-background text-foreground lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)]">
       <aside className="sticky top-0 hidden h-dvh flex-col gap-6 border-r bg-sidebar px-3 py-4 lg:flex">
         <div className="flex flex-col gap-1 px-2">
           <Logo href={home} />
-          <span className="pl-9 text-xs text-muted-foreground">{PANEL_LABELS[area]} workspace</span>
+          <span className="pl-[2.125rem] text-xs text-muted-foreground">{PANEL_LABELS[area]} workspace</span>
         </div>
         <Suspense fallback={null}>
           <PanelNav area={area} />
         </Suspense>
-        <div className="mt-auto px-2 text-xs text-muted-foreground">
-          <Link href="/" className="hover:text-foreground">
-            Browse the marketplace
-          </Link>
-        </div>
+        {/* Creators get "Browse apps" in the main navigation instead. */}
+        {area !== "creator" ? (
+          <div className="mt-auto px-2 text-xs text-muted-foreground">
+            <Link href="/" className="hover:text-foreground">
+              Browse the marketplace
+            </Link>
+          </div>
+        ) : null}
       </aside>
       <div className="flex min-w-0 flex-col">
         <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b bg-background/85 px-3 backdrop-blur sm:px-4 lg:px-8">
-          <MobileNav area={area} />
+          <MobileNav
+            area={area}
+            contextSwitch={
+              <Suspense fallback={null}>
+                <ContextSwitch area={area} />
+              </Suspense>
+            }
+          />
           <Logo href={home} className="lg:hidden" />
-          <div className="ml-auto flex items-center gap-3">
+          <div className="ml-auto flex items-center gap-2 sm:gap-3">
+            <ThemeToggle />
             <Suspense fallback={null}>
               <div className="hidden sm:block">
                 <ContextSwitch area={area} />

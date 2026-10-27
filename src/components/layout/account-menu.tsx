@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { signOut } from "@/modules/auth/actions";
+import { ThemeMenuItem } from "./theme-toggle";
 
 export type AccountSummary = {
   displayName: string;
@@ -77,8 +78,19 @@ export function AccountMenu({ account }: { account: AccountSummary }) {
               Account settings
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild><Link href="/notifications"><Bell />Notifications</Link></DropdownMenuItem>
-          <DropdownMenuItem asChild><Link href="/support"><LifeBuoy />Support</Link></DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/notifications">
+              <Bell />
+              Notifications
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/support">
+              <LifeBuoy />
+              Support
+            </Link>
+          </DropdownMenuItem>
+          <ThemeMenuItem />
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <form action={signOut}>

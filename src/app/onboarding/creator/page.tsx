@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StartCreatorForm } from "@/modules/accounts/components/forms";
+import { ONBOARDING_CARD, OnboardingIntro } from "@/modules/accounts/components/onboarding";
 import { requireViewer } from "@/modules/accounts/viewer";
 import { safeRedirectPath } from "@/modules/auth/redirect";
 
@@ -29,19 +29,19 @@ export default function CreatorOnboardingPage({
   searchParams,
 }: PageProps<"/onboarding/creator">) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-xl">Where do you post?</CardTitle>
-        <CardDescription>
-          Companies see where their app is being promoted. Add at least one profile before you start
-          promoting.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Suspense fallback={<Skeleton className="h-36 w-full" />}>
+    // Forms read best narrower than the 880px onboarding column.
+    <div className="mx-auto flex w-full max-w-xl flex-col gap-8">
+      <OnboardingIntro
+        step={2}
+        backHref="/onboarding"
+        title="Where do you post?"
+        description="Companies see where their app is being promoted. Add at least one profile before you start promoting."
+      />
+      <div className={ONBOARDING_CARD}>
+        <Suspense fallback={<Skeleton className="h-56 w-full" />}>
           <CreatorSetup searchParams={searchParams} />
         </Suspense>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

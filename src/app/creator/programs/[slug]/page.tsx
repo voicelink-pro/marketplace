@@ -37,7 +37,9 @@ import {
   CopyValueButton,
 } from "@/modules/programs/components/copy-value-button";
 import { CreateReferralLinkForm } from "@/modules/programs/components/create-referral-link-form";
+import { PerCustomerAmount, PerCustomerNote, PlanRateCards } from "@/modules/catalog/components/plan-rates";
 import { HowToPromoteGuide } from "@/modules/programs/components/how-to-promote-guide";
+import { ReferralLinkCards } from "@/modules/programs/components/referral-link-cards";
 import { getCreatorProgramDetailBySlug } from "@/modules/programs/queries";
 
 export const metadata: Metadata = { title: "Program details" };
@@ -86,19 +88,13 @@ export default async function CreatorProgramDetailPage({
       <div className="flex flex-col gap-8">
         {justJoined ? (
           <Alert>
-            <CircleCheck className="text-primary" />
+            <CircleCheck className="text-primary-ink" />
             <AlertTitle>You’ve joined the {program.appName} program</AlertTitle>
             <AlertDescription>
               Your referral code and primary referral link are ready to copy below. Review the quick guide and create named links for each channel you post on.
             </AlertDescription>
           </Alert>
         ) : null}
-
-        <HowToPromoteGuide
-          appName={program.appName}
-          attributionWindowDays={program.attributionWindowDays}
-          highlighted={justJoined}
-        />
 
         <Card>
           <CardHeader>
@@ -107,7 +103,7 @@ export default async function CreatorProgramDetailPage({
               Use your link for web sign-ups and your code when viewers install {program.appName} on mobile or enter a code at registration.
             </CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-5 md:grid-cols-2">
+          <CardContent className="grid grid-cols-1 gap-5 md:grid-cols-2">
             <CopyableField
               label="Referral code (tied to your account & this app)"
               value={program.referralCode}
@@ -127,6 +123,13 @@ export default async function CreatorProgramDetailPage({
             ) : null}
           </CardContent>
         </Card>
+
+        <HowToPromoteGuide
+          appName={program.appName}
+          attributionWindowDays={program.attributionWindowDays}
+          highlighted={justJoined}
+          collapsible
+        />
 
         <section aria-labelledby="named-links-heading" className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
@@ -160,7 +163,9 @@ export default async function CreatorProgramDetailPage({
             </CardContent>
           </Card>
 
-          <div className="overflow-hidden rounded-xl border bg-card">
+          <ReferralLinkCards links={program.links} className="sm:hidden" />
+
+          <div className="hidden overflow-hidden rounded-xl border bg-card sm:block">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -228,21 +233,28 @@ export default async function CreatorProgramDetailPage({
             </Badge>
           </div>
 
-          <div className="overflow-hidden rounded-xl border bg-card">
+          <PlanRateCards plans={program.plans} className="sm:hidden" />
+          <div className="hidden overflow-hidden rounded-xl border bg-card sm:block">
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Plan</TableHead>
-                  <TableHead>Billing cycle</TableHead>
-                  <TableHead className="text-right">Subscription price</TableHead>
-                  <TableHead className="text-right">Your commission</TableHead>
+                  <TableHead className="hidden sm:table-cell">Billing cycle</TableHead>
+                  <TableHead className="text-right">
+                    <span className="sm:hidden">Price</span>
+                    <span className="hidden sm:inline">Subscription price</span>
+                  </TableHead>
+                  <TableHead className="text-right">
+                    <span className="sm:hidden">Yours</span>
+                    <span className="hidden sm:inline">Your commission</span>
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {program.plans.map((plan) => (
                   <TableRow key={plan.id}>
                     <TableCell className="font-medium">{plan.planName}</TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell className="hidden text-muted-foreground sm:table-cell">
                       {BILLING_INTERVAL_LABELS[plan.billingInterval]}
                     </TableCell>
                     <TableCell className="tabular text-right">
@@ -252,15 +264,18 @@ export default async function CreatorProgramDetailPage({
                       </span>
                     </TableCell>
                     <TableCell className="text-right">
-                      <span className="tabular inline-flex rounded-md bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
-                        {formatCommissionPercent(plan.commissionBps)} recurring
+                      <span className="tabular inline-flex rounded-md bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground">
+                        {formatCommissionPercent(plan.commissionBps)}
+                        <span className="hidden sm:inline">&nbsp;recurring</span>
                       </span>
+                      <PerCustomerAmount plan={plan} className="mt-1 block" />
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </div>
+          <PerCustomerNote />
 
           <Card>
             <CardHeader>
