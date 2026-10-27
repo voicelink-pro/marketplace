@@ -2,27 +2,18 @@
 
 import { Check, Copy } from "lucide-react";
 import Link from "next/link";
-import { useSyncExternalStore } from "react";
 import { LogoMark } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
-import { MorphingText } from "@/components/ui/morphing-text";
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
+import { LayoutTextFlip } from "@/components/ui/layout-text-flip";
+import { usePrefersReducedMotion } from "./use-media-query";
 
 // "\n" + pre-line keeps each sentence on exactly two lines.
 const SENTENCES = ["Promote apps.\nEarn on every renewal.", "List your app.\nGet paying customers."];
-const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
 
-/** True on the server and before hydration, so the first paint is the static word. */
-function usePrefersReducedMotion(): boolean {
-  return useSyncExternalStore(
-    (onChange) => {
-      const query = window.matchMedia(REDUCED_MOTION);
-      query.addEventListener("change", onChange);
-      return () => query.removeEventListener("change", onChange);
-    },
-    () => window.matchMedia(REDUCED_MOTION).matches,
-    () => true,
-  );
-}
+/** Unboxes LayoutTextFlip's chip so it reads as the headline itself. */
+const FLIP_CLASSES =
+  "rounded-none border-0 bg-transparent p-0 text-[length:inherit] leading-none font-extrabold tracking-[inherit] text-foreground shadow-none ring-0 drop-shadow-none md:text-[length:inherit] dark:bg-transparent dark:text-foreground dark:shadow-none dark:ring-0 [&>span]:whitespace-pre-line";
 
 /** Illustration only: shows the product's own screens, with example values. */
 function PhoneMock({ kind }: { kind: "creator" | "company" }) {
@@ -85,8 +76,8 @@ function PhoneMock({ kind }: { kind: "creator" | "company" }) {
 }
 
 /**
- * Home hero: one large rounded stage. The headline morphs between the
- * creator and the company sentence; the CTAs below serve both.
+ * Home hero: one large rounded stage on a faint dot grid. The headline flips
+ * between the creator and the company sentence; the CTAs below serve both.
  */
 export function HomeHero() {
   const reducedMotion = usePrefersReducedMotion();
@@ -96,6 +87,12 @@ export function HomeHero() {
       aria-labelledby="home-hero-heading"
       className="relative flex overflow-hidden rounded-[2rem] bg-linear-to-r from-muted to-card px-6 py-8 sm:px-12 sm:py-14 lg:min-h-[34rem] lg:items-center lg:px-16"
     >
+      {/* Dot grid, faded out towards the edges. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 [background-image:radial-gradient(var(--foreground)_1px,transparent_1px)] [background-size:20px_20px] opacity-[0.14] [mask-image:radial-gradient(ellipse_at_center,black_35%,transparent_78%)] dark:opacity-[0.2]"
+      />
+
       {/* Brand stage: oversized mark with both sides of the product tilted over it. */}
       <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 hidden w-[44%] lg:block">
         <LogoMark className="absolute -right-24 -bottom-40 size-[36rem] rotate-[-8deg] xl:size-[40rem]" />
@@ -114,25 +111,38 @@ export function HomeHero() {
           aria-label="Promote apps. Earn on every renewal. List your app. Get paying customers."
           className="w-full text-[length:min(8.8cqi,4.75rem)] font-extrabold tracking-[-0.045em] whitespace-pre-line"
         >
-          {/* Fixed two-line box, so the morph never reflows the hero. */}
-          <span aria-hidden className="block h-[2em] leading-none">
+          {/* Fixed two-line box (plus room for descenders), clipped so the outgoing sentence never slides over the CTAs. */}
+          <span aria-hidden className="block h-[2.15em] overflow-hidden leading-none [&>span:first-child]:hidden">
             {reducedMotion ? (
               SENTENCES[0]
             ) : (
-              <MorphingText
-                texts={SENTENCES}
-                className="mx-0 h-[2em] max-w-none text-left font-extrabold text-[length:inherit] leading-none md:h-[2em] lg:text-[length:inherit]"
-              />
+              <LayoutTextFlip text="" words={SENTENCES} duration={4000} className={FLIP_CLASSES} />
             )}
           </span>
         </h1>
-        <div className="flex flex-wrap gap-2 sm:gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <Button asChild size="lg">
             <Link href="/signup">Start as a creator</Link>
           </Button>
-          <Button asChild size="lg" variant="outline">
-            <Link href="/onboarding/company">List your app</Link>
-          </Button>
+          {reducedMotion ? (
+            <Button asChild size="lg" variant="outline">
+              <Link href="/onboarding/company">List your app</Link>
+            </Button>
+          ) : (
+            <HoverBorderGradient
+              as="div"
+              duration={1.5}
+              containerClassName="bg-border dark:bg-border [--hover-border-highlight:var(--primary)] [--hover-border-spot:var(--primary)]"
+              className="bg-background p-0 text-foreground"
+            >
+              <Link
+                href="/onboarding/company"
+                className="inline-flex h-[2.375rem] items-center rounded-full px-5 text-sm font-semibold outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+              >
+                List your app
+              </Link>
+            </HoverBorderGradient>
+          )}
         </div>
       </div>
     </section>
