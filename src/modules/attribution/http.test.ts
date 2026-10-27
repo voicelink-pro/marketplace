@@ -33,6 +33,11 @@ describe('attribution HTTP boundary',()=>{
     register.mockResolvedValue({data:{error:'rate_limited'},error:null});
     expect((await handleCustomerRegistration(request({customer_id:'x'}),register)).status).toBe(429);
   });
+  it('reports a funding pause as a conflict instead of a server outage',async()=>{
+    const register=vi.fn().mockResolvedValue({data:null,error:{message:'program_paused_funding'}});
+    const response=await handleCustomerRegistration(request({customer_id:'new_customer'}),register);
+    expect(response.status).toBe(409);expect(await response.json()).toEqual({error:'program_paused_funding'});
+  });
   it('redirects only to HTTPS approved targets, replaces reserved token and keeps store links clean',()=>{
     expect(buildAttributionRedirect('https://app.example/signup?x=1&bl_ref=old#start','website',token)).toBe(`https://app.example/signup?x=1&bl_ref=${token}#start`);
     expect(buildAttributionRedirect('https://apps.apple.com/app/id1','ios_store',null)).toBe('https://apps.apple.com/app/id1');

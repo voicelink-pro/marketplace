@@ -33,7 +33,7 @@ type Register = (args: {p_api_key: string; p_customer_id: string; p_click_tokens
 }>;
 const knownErrors = new Set([
   "invalid_api_key", "invalid_registration", "program_unavailable", "unsupported_attribution_policy",
-  "invalid_referral_code", "invalid_click_token", "expired_click_token",
+  "invalid_referral_code", "invalid_click_token", "expired_click_token", "program_paused_funding",
 ]);
 function json(body: unknown, status: number) {
   return Response.json(body, {status, headers: noStoreHeaders});
@@ -80,7 +80,7 @@ export async function handleCustomerRegistration(request: Request, register: Reg
   });
   if (error) {
     const message=knownErrors.has(error.message) ? error.message : "registration_unavailable";
-    return json({error:message},message==='invalid_api_key' ? 401 : message==='registration_unavailable' ? 503 : 400);
+    return json({error:message},message==='program_paused_funding' ? 409 : message==='invalid_api_key' ? 401 : message==='registration_unavailable' ? 503 : 400);
   }
   const result=z.object({id:z.uuid(),created:z.boolean(),source:z.enum(['link','code','unattributed'])}).safeParse(data);
   if (data && typeof data==='object' && 'error' in data && data.error==='rate_limited') {

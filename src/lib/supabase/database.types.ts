@@ -969,6 +969,60 @@ isOneToOne: false
 "delete_app_plan":
 { Args: { "p_plan_id": string }; Returns: undefined
                            },
+"finance_claim":
+{ Args: { "p_app_id"?: string,"p_backend": string }; Returns: Json
+                           },
+"finance_complete_onboarding":
+{ Args: { "p_consent": boolean,"p_session": string }; Returns: undefined
+                           },
+"finance_defer":
+{ Args: { "p_backend": string,"p_job": string,"p_lease": string }; Returns: undefined
+                           },
+"finance_onboarding_session":
+{ Args: { "p_session": string }; Returns: Json
+                           },
+"finance_reconcile":
+{ Args: { "p_app_id"?: string,"p_backend": string }; Returns: number
+                           },
+"finance_request_funding":
+{ Args: { "p_amount": string,"p_app_id": string,"p_request_key": string }; Returns: string
+                           },
+"finance_request_payout":
+{ Args: { "p_currency"?: string,"p_expected_fee": string,"p_expected_minor": string,"p_request_key": string }; Returns: string
+                           },
+"finance_retry_bank":
+{ Args: { "p_payout": string }; Returns: undefined
+                           },
+"finance_review_case":
+{ Args: { "p_job": string,"p_note": string }; Returns: undefined
+                           },
+"finance_sandbox_exchange":
+{ Args: { "p_backend": string,"p_job": string,"p_lease": string }; Returns: Json
+                           },
+"finance_save_auto":
+{ Args: { "p_amount": string,"p_app_id": string,"p_enabled": boolean,"p_threshold": string }; Returns: undefined
+                           },
+"finance_schedule_auto":
+{ Args: { "p_app_id"?: string,"p_backend": string }; Returns: number
+                           },
+"finance_settle":
+{ Args: { "p_backend": string,"p_job": string,"p_lease": string }; Returns: string
+                           },
+"finance_start_onboarding":
+{ Args: { "p_app_id"?: string,"p_kind": string }; Returns: string
+                           },
+"finance_test_resolve":
+{ Args: { "p_job": string,"p_state": string }; Returns: undefined
+                           },
+"finance_test_return":
+{ Args: { "p_payout": string }; Returns: undefined
+                           },
+"finance_test_scenario":
+{ Args: { "p_job": string,"p_scenario": string }; Returns: undefined
+                           },
+"finance_workspace":
+{ Args: { "p_admin"?: boolean,"p_app_id"?: string }; Returns: Json
+                           },
 "fund_commission_sandbox":
 { Args: { "p_amount_minor": string,"p_app_id": string,"p_currency": string,"p_reference": string }; Returns: undefined
                            },
@@ -991,6 +1045,33 @@ isOneToOne: false
                            },
 "map_payment_transaction_reference":
 { Args: { "p_integration": string,"p_reference": string,"p_transaction": string }; Returns: undefined
+                           },
+"ops_admin_retry_event":
+{ Args: { "p_event": string,"p_reason": string }; Returns: undefined
+                           },
+"ops_admin_workspace":
+{ Args: Record<PropertyKey, never>; Returns: Json
+                           },
+"ops_create_ticket":
+{ Args: { "p_app_id"?: string,"p_body": string,"p_category": string,"p_request_key": string,"p_subject": string }; Returns: string
+                           },
+"ops_health":
+{ Args: { "p_backend": string }; Returns: Json
+                           },
+"ops_inbox":
+{ Args: Record<PropertyKey, never>; Returns: Json
+                           },
+"ops_mark_notification":
+{ Args: { "p_id": string }; Returns: undefined
+                           },
+"ops_reply_ticket":
+{ Args: { "p_body": string,"p_expected_revision": number,"p_request_key": string,"p_status"?: string,"p_ticket": string }; Returns: undefined
+                           },
+"ops_review_commission":
+{ Args: { "p_case": string,"p_note": string,"p_state": string }; Returns: undefined
+                           },
+"ops_worker_heartbeat":
+{ Args: { "p_backend": string,"p_ok"?: boolean,"p_scope"?: string,"p_worker": string }; Returns: undefined
                            },
 "payment_customer_timeline":
 { Args: { "p_app_id"?: string,"p_creator_id"?: string,"p_referral"?: string }; Returns: Json

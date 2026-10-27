@@ -63,7 +63,12 @@ export async function createTestDb(): Promise<TestDb> {
     .filter((file) => file.endsWith(".sql"))
     .sort();
   for (const file of files) {
-    await db.exec(readFileSync(join(migrationsDir, file), "utf8"));
+    try {
+      await db.exec(readFileSync(join(migrationsDir, file), "utf8"));
+    } catch (error) {
+      const detail = error as Error & { position?: string; internalQuery?: string };
+      throw new Error(`${file}: ${detail.message}; position=${detail.position ?? "unknown"}; ${detail.internalQuery ?? ""}`, { cause: error });
+    }
   }
   return db;
 }

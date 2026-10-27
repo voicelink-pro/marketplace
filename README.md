@@ -62,3 +62,11 @@ See [docs/PAYMENT_INTEGRATIONS.md](docs/PAYMENT_INTEGRATIONS.md) for authenticat
 ## Commission accounting (stage 7)
 
 See [docs/COMMISSION_ACCOUNTING.md](docs/COMMISSION_ACCOUNTING.md) for explicit sandbox policy/basis declarations, the immutable balanced journal, historical rates, corrections, operator month closure and fixture funding. Apply the E7 migration and run `pnpm commissions:worker` alongside the E6 worker. No platform fee is configured automatically. Provider access preparation: [docs/PROVIDER_SANDBOX_PLAYBOOK.md](docs/PROVIDER_SANDBOX_PLAYBOOK.md).
+
+## Company funding and creator payouts (stage 8 sandbox)
+
+See [docs/FUNDING_AND_PAYOUTS.md](docs/FUNDING_AND_PAYOUTS.md). Apply the E8 migrations, then run `pnpm finance:worker` alongside the payment and commission workers. Funding, automatic top-ups, recipient setup, Withdraw and reconciliation use a durable test provider; this is separate from Stripe app-sales sandbox. No real money moves and no live adapter is registered. Fault injection: `pnpm finance:operator` (explicit `--fixture` required). Funding failure notifications appear in the company panel.
+
+## Pilot operations (stage 9)
+
+See [docs/PILOT_CHECKLIST.md](docs/PILOT_CHECKLIST.md), [docs/OPERATIONS_AND_RECOVERY.md](docs/OPERATIONS_AND_RECOVERY.md) and [docs/FRONTEND_INTEGRATION.md](docs/FRONTEND_INTEGRATION.md). E9 adds real administrative queues, private support conversations, in-app notifications, append-only audit and worker heartbeats. `pnpm ops:check` reports actionable queue/liveness signals; `pnpm test:pilot` builds an isolated local HTTP acceptance environment and verifies the connected lifecycle plus nonempty backup/restore. `pnpm backup:local` is explicitly local-only. Hosted monitoring, off-site encrypted backups, the merged frontend acceptance and all live-money requirements need their separate checks.

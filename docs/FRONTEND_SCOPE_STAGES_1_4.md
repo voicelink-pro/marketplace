@@ -81,11 +81,11 @@ Ekrany: `/creator`, `/creator/programs`, `/creator/programs/[slug]`, `/creator/l
 
 Odbiór: nowy twórca dołącza do programu i otrzymuje swój link/kod; kolejne kliknięcie nie dubluje członkostwa. Nazwany link jest widoczny i kopiowalny na telefonie. Nie pokazujemy cudzych prywatnych linków.
 
-## Moduły przyszłych etapów
+## Moduły E5–E9 — aktualizacja 27.10.2026
 
-`/creator/referrals`, `/company/referrals`, `/creator/earnings`, `/creator/payouts`, `/company/integrations`, `/company/funding` i przyszłe moduły administratora można objąć wspólną stylistyką pustych stanów. Nie buduj tam jeszcze dashboardów, płatności, metryk ani formularzy konfiguracji bez kontraktu backendu. Rozróżniaj „jeszcze brak danych” i „funkcja jeszcze niedostępna”.
+Backend E5–E9 został zbudowany po ustaleniu tego pierwotnego zakresu. Referrals, Earnings, Integrations, Funding, Payouts, administracja, Support i Notifications mają już rzeczywiste zapytania i operacje sandbox. Nie zastępuj ich dawnymi pustymi modułami ani fikcyjnymi danymi.
 
-Zanim backend rozpocznie prace nad stronami E5, uzgodnij z Karolem ich właściciela. Rozwój nowych ekranów E5 będzie osobnym zadaniem po ustaleniu kontraktu.
+Pierwotny pakiet Rocha pozostaje E1–E4, lecz spójność docelowego produktu wymaga również wystylizowania nowych ekranów. Zachowaj kontrakty opisane w [FRONTEND_INTEGRATION.md](FRONTEND_INTEGRATION.md). Pierwsze połączenie kodu wykonujemy po udostępnieniu stabilnego motywu/wspólnych komponentów — nie czekamy na ukończenie całego UI. Końcowy odbiór na połączonym froncie opisuje [PILOT_CHECKLIST.md](PILOT_CHECKLIST.md).
 
 ## Kontrakty i ograniczenia techniczne
 

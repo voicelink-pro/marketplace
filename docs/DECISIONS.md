@@ -239,6 +239,27 @@ Status: **Przyjęte** = obowiązuje; **Do potwierdzenia w etapie N** = kierunek 
 - **T-95 Kontrolowane finansowanie.** Tylko operator tworzy jawny funding fixture i może symulować payout. Dopływ środków zwalnia wcześniej zamknięte pozycje bez kolejnego close. Brak dodatkowego 30-dniowego holda/minimum, brak realnej wpłaty/wypłaty i E8. *Przyjęte; P-14 sandbox.*
 - **T-96 Kontrakt frontendu i izolacja.** `getCommissionWorkspace` / `CommissionPanel`: Earnings, Overview, zestawienia firmy, szczegóły klienta. Pieniądze tekstowe per waluta, bez PII/sekretów. Jawny kontekst twórcy i firmy, RLS, brak browserowych mutacji pieniędzy. Kolega nadal prowadzi redesign. *Przyjęte.*
 
+## Etap 8 — finansowanie i wypłaty sandbox (27.10.2026)
+
+- **T-97 Osobny operator finansowania.** Zdarzenia zakupów E6 nie finansują marketplace. `sandbox-test` jest trwałym adapterem testowym, bez użycia konta sprzedaży firmy i bez adaptera live. Stripe Connect pozostaje kandydatem: kraj podmiotu, kraje odbiorców, akceptacja prefundingu i zatwierdzenie operatora są niepotwierdzone. Źródła i ograniczenia: `FUNDING_AND_PAYOUTS.md`. *Przyjęte technicznie; live blocked.*
+- **T-98 Potwierdzone środki i zgoda.** Firma autoryzuje testową metodę przez własną 30-minutową sesję onboardingu. Zapisujemy wersję zgody, czas i referencję testowego operatora; nie zbieramy kart, rachunków ani KYC. Tylko potwierdzenie dostępności operatora dopisuje kredyt do dziennika. Success URL nie finansuje konta. *Przyjęte.*
+- **T-99 Rezerwacja finansowania przed close.** Dostępne środki firmy pomniejszają rezerwacje brutto bieżących i zamkniętych prowizji. Bieżące naliczenia, także po wygranym sporze, pozostają niedostępne do zamknięcia właściwego miesiąca. Finansowanie starego zamkniętego miesiąca zwalnia należności od razu. Kolejność pełnych pozycji pozostaje P-14 sandbox. *Przyjęte technicznie.*
+- **T-100 Jedno przekroczenie progu.** Ustawienia wybiera właściciel; próg i kwota są jawne. Blokada aplikacji, jedna oczekująca wpłata i zatrzask przekroczenia wykluczają równoległe i nieograniczone następujące po sobie obciążenia. Ponowne uzbrojenie po powrocie nad próg albo świadomym zapisaniu ustawień. Definitywny błąd auto-doładowania daje trwałe powiadomienie w panelu i oddzielną blokadę nowych dołączeń/kliknięć/poleceń. Odnowienia pozostają naliczane. Skuteczna wpłata usuwa tylko blokadę finansowania, po pokryciu zaległości. E-mail nie jest deklarowany jako wdrożony. *Przyjęte.*
+- **T-101 Wypłata i dwie operacje operatora.** Zlecenie twórcy atomowo rezerwuje konkretne pozycje i utrwala kwotę/opłatę/odbiorcę. Potwierdzenie dotyczy aktualnej kwoty i kosztu. Transfer do operatora oraz wypłata bankowa mają osobne trwałe klucze i historię. Bank failure/return nie ponawia transferu ani nie tworzy dostępnego salda marketplace. Zwrot bankowy dopisuje przesunięcie paid → in_payout, po czym dozwolone jest ponowienie samego banku. *Przyjęte.*
+- **T-102 Lease i niewiadomy wynik.** Osobny worker, `SKIP LOCKED`, lease 60 s, backoff 5/10 s i maksymalnie trzy próby transportu. Kluczem operatora jest stały UUID zadania. Timeout pozostawia rezerwacje; po limicie powstaje sprawa, bez nowego klucza transferu. Kolejność blokad twórca → aplikacje UUID → zadanie → sprawa/scenariusz. *Przyjęte.*
+- **T-103 Uzgadnianie bez ręcznych sald.** Porównujemy operatora z zakresem, kwotą/walutą, stanem i funding journal; niezgodności mają dowody w panelu admina. Przegląd wymaga notatki i śladu audytu, a zamknięcie sprawy sprawdzenia operatora przez worker. Sprzeczne terminalne efekty są wstrzymane. Refund po wypłacie nadal wymaga P-06. *Przyjęte.*
+- **T-104 Możliwości operatora testowego.** EUR, minimum operatora 1 minor, opłata 0 minor, bez FX. To jawne możliwości testowe; nie są zatwierdzoną listą walut, krajów ani cennikiem live. Brak dodatkowego minimum platformy i stałego 30-dniowego holda. Dla banku maksymalnie trzy próby (pierwsza i dwa retry). *Przyjęte wyłącznie sandbox; P-08 i koszty live otwarte.*
+
+## Etap 9 — operacje i odbiór pilota (27.10.2026)
+
+- **T-105 Oddzielenie odbiorów.** Techniczny sandbox, połączony frontend, hosting i realne pieniądze mają odrębne wyniki pass/blocked. E9 nie może zamknąć niewidzianej gałęzi Rocha ani automatycznie aktywować live. Pierwszy merge po stabilnym punkcie motywu i wspólnych komponentów, dalszy polish małymi PR. *Przyjęte.*
+- **T-106 Zgłoszenia i notyfikacje.** Prywatne rozmowy użytkownik–zespół, request keys, revision oraz techniczne limity 10 zgłoszeń/dobę i 30 wiadomości/godzinę. Powiadomienia deduplikowane w aplikacji; e-mail nie jest deklarowany. Bez danych kart/KYC i sekretów w formularzach/logach. *Przyjęte technicznie dla pilota.*
+- **T-107 Audyt i rozpatrywanie.** Zdarzenia operacyjne append-only, admin retry wymaga przyczyny i dotyczy wyłącznie sandbox. Review prowizji in_review/awaiting_policy nie zmienia kwot ani nie rozstrzyga P-06. Pseudonimowe referencje audytu pozostają po usunięciu nadrzędnej encji; retencja środowiska docelowego otwarta. *Przyjęte technicznie.*
+- **T-108 Liveness a kolejka.** Globalne i scoped heartbeats oddzielne, stale po 2 min; brak reportu to unknown. Backlog/błędy są osobnymi sygnałami. CLI exit 0/2/1 oznacza odpowiednio brak sygnałów, uwagę operatora, błąd kontroli. Nadzór i kanał alarmów na hostingu wymagają konfiguracji. *Przyjęte.*
+- **T-109 Recovery lokalne.** Wspólny wyeksportowany snapshot dla dumpa i odcisków danych, osobny backup Storage, pliki 0600. Verify tworzy wyłącznie nową losową bazę/scratch, sprawdza dokładne dane, journal i RLS; nie resetuje źródła. DEFAULT ACL zarządzanych ról pomijane w lokalnym restore; jawne granty aplikacji zachowane. To nie uniwersalna procedura chmurowa ani szyfrowany off-site backup. *Przyjęte.*
+- **T-110 Powtarzalny odbiór HTTP.** `pnpm test:pilot` buduje osobny serwer i pełny E1–E9 suite, w tym rzeczywisty formularz i recovery z niepustymi finansami. CI uruchamia tę samą ścieżkę. Żadne fixtures nie aktywują realnego operatora. *Przyjęte.*
+- **T-111 Komunikacja pauzy.** API rejestracji zgłasza program_paused_funding jako 409; join wyjaśnia przyczynę. To oczekiwany stan biznesowy, nie pozorna awaria bazy. *Przyjęte.*
+
 ## Rejestr zmian
 
 | Data | Zmiana |
@@ -258,3 +279,7 @@ Status: **Przyjęte** = obowiązuje; **Do potwierdzenia w etapie N** = kierunek 
 | 2026-10-27 | Etap 6: trzy adaptery, trwały inbox/worker, mapowania, źródła, deduplikacja i metryki; T-81…T-88. |
 
 | 2026-10-27 | Etap 7 sandbox: prowizje, dziennik, korekty, finansowanie fixtures i zamknięcia; T-89…T-96, propozycje P-12…P-14; playbook dostawców. |
+
+| 2026-10-27 | Etap 8 sandbox: finansowanie, auto-doładowania, rezerwacje, osobne transfery i bank payouts, uzgadnianie i admin; T-97…T-104. |
+
+| 2026-10-27 | E9 techniczny sandbox: operacje, support, inbox, audit, monitoring, HTTP pilot/recovery; T-105…T-111. Odbiór po froncie Rocha, hosting i live pozostają blocked. |

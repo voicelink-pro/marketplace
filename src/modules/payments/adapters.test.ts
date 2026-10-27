@@ -7,6 +7,15 @@ const fixture=(name:string)=>readFileSync(new URL(`../../../tests/fixtures/payme
 const secret='fixture-only-signing-secret-not-a-provider-credential';
 function signature(raw:string,time=Math.floor(Date.now()/1000)){return `t=${time},v1=${createHmac('sha256',secret).update(time+'.'+raw).digest('hex')}`;}
 describe('E6 official-shaped sandbox adapter fixtures (not provider sandbox tests)',()=>{
+ it.each([
+  ['customer.subscription.deleted','canceled',false,false],
+  ['customer.subscription.updated','canceled',false,false],
+  ['customer.subscription.updated','active',true,false],
+  ['customer.subscription.updated','active',false,true],
+ ] as const)('maps renewal eligibility for %s / %s / cancel at period end %s', (type,status,cancelAtPeriodEnd,expected)=>{
+  const raw=JSON.stringify({id:'evt_cancel_regression',type,created:1793131200,livemode:false,data:{object:{id:'sub_cancel_regression',customer:'cus_cancel_regression',status,cancel_at_period_end:cancelAtPeriodEnd}}});
+  expect(normalizePaymentEvent('stripe',raw,'acct_fixture').auto_renew).toBe(expected);
+ });
  it('keeps exact money lexemes and rejects inexact/unsupported amounts',()=>{
   expect(parseExactJson('{"amount":9007199254740993,"price":14.99}')).toEqual({amount:'9007199254740993',price:'14.99'});
   expect(decimalToMinor('14.99','EUR')).toBe('1499');expect(decimalToMinor('12','JPY')).toBe('12');expect(decimalToMinor('-1.234','KWD')).toBe('1234');

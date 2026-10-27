@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, ShieldCheck, Store, UserRound } from "lucide-react";
+import { Bell, LifeBuoy, LogOut, ShieldCheck, Store, UserRound } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -77,6 +77,8 @@ export function AccountMenu({ account }: { account: AccountSummary }) {
               Account settings
             </Link>
           </DropdownMenuItem>
+          <DropdownMenuItem asChild><Link href="/notifications"><Bell />Notifications</Link></DropdownMenuItem>
+          <DropdownMenuItem asChild><Link href="/support"><LifeBuoy />Support</Link></DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <form action={signOut}>

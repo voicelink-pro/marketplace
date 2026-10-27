@@ -44,3 +44,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Local backups contain Auth data, private receipts and provider references.
+/.backups/
+/backups/

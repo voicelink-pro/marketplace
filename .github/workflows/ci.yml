@@ -72,4 +72,5 @@ jobs:
             echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$publishable"
             echo "SUPABASE_SECRET_KEY=$secret"
           } >> "$GITHUB_ENV"
-      - run: pnpm test:integration
+      # Builds an isolated HTTP server, runs E1–E9 integration and a local recovery drill.
+      - run: pnpm test:pilot

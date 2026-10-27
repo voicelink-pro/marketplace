@@ -70,6 +70,7 @@ export async function joinProgram(_prev: FormState, formData: FormData): Promise
           "The program terms were just updated. Reload the page to review the current terms.",
         );
       }
+      if (msg.includes("program_paused_funding")) return formError("New joins are paused while the company restores program funding. Existing memberships remain available.");
       if (msg.includes("app_not_published")) {
         return formError("This program is not currently open to new creators.");
       }
@@ -101,6 +102,7 @@ export async function joinProgram(_prev: FormState, formData: FormData): Promise
         "The program terms were just updated. Reload the page to review the current terms.",
       );
     }
+    if (error.message.includes("program_paused_funding")) return formError("New joins are paused while the company restores program funding. Existing memberships remain available.");
     if (error.message.includes("app_not_published")) {
       return formError("This program is not currently open to new creators.");
     }

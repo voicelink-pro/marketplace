@@ -134,7 +134,8 @@ export function normalizePaymentEvent(provider: PaymentProvider, raw: string, ac
   if (type.startsWith('customer.subscription.')) {
     const state = ['active', 'trialing', 'past_due', 'canceled', 'paused'].includes(String(e.status)) ? e.status : 'unknown';
     return paymentEventSchema.parse({ ...base, kind: 'subscription', customer_id: id(e.customer), subscription_id: id(e.id),
-      state: type === 'customer.subscription.deleted' ? 'canceled' : state, auto_renew: e.cancel_at_period_end === true ? false : true });
+      state: type === 'customer.subscription.deleted' ? 'canceled' : state,
+      auto_renew: type !== 'customer.subscription.deleted' && state !== 'canceled' && e.cancel_at_period_end !== true });
   }
   if (type === 'refund.created' || type === 'refund.updated' || type === 'refund.failed') {
     return paymentEventSchema.parse({ ...base, kind: 'refund', transaction_id: id(e.payment_intent ?? e.charge), adjustment_id: id(e.id),
