@@ -54,3 +54,7 @@ pnpm test:integration
 Company media can be uploaded from App profile (PNG/JPEG/WebP up to 10 MB, MP4/WebM up to 25 MB). Uploaded objects are immutable and private; only references in the current approved release become public through `/media/apps/...`. New files receive new paths. External URLs are already public and cannot be made private by this app. The in-memory demo does not emulate Storage and is always forbidden in production.
 
 The Stage 1–4 repair and verification record is in `docs/IMPLEMENTATION_STATUS.md`. Stage 5 sandbox attribution is documented in [docs/ATTRIBUTION_INTEGRATION.md](docs/ATTRIBUTION_INTEGRATION.md), including app-scoped credentials, redirects, customer registration and the local integration demo. Payment integrations remain stage 6.
+
+## Payment integrations (stage 6)
+
+See [docs/PAYMENT_INTEGRATIONS.md](docs/PAYMENT_INTEGRATIONS.md) for authenticated webhook delivery, durable asynchronous processing, identity/plan mapping and frontend contracts. Apply the E6 migration, run `pnpm payments:setup`, restart Next, then run `pnpm payments:worker`. Actual Stripe/RevenueCat sandbox acceptance requires provider access; local fixtures do not imply provider verification. Live processing and all commission/funding/payout features remain disabled.

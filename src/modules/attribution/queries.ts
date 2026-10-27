@@ -1,5 +1,6 @@
 import 'server-only';
 import { z } from 'zod';
+import { getViewer } from '@/modules/accounts/viewer';
 import { createClient } from '@/lib/supabase/server';
 import { logUnexpected } from '@/lib/log';
 
@@ -8,16 +9,17 @@ const summarySchema=z.object({
   clicks:count, registrations:count, code_registrations:count, unattributed:count,
   links:z.array(z.object({link_id:z.uuid(),label:z.string(),clicks:count,registrations:count})),
 });
-export async function getAttributionSummary(appId?: string) {
+export async function getAttributionSummary(appId?: string, company=false) {
   const client=await createClient();
-  const {data,error}=await client.rpc('attribution_summary',appId ? {p_app_id:appId} : {});
+  const viewer=await getViewer();if(!viewer)throw new Error('Authentication required.');
+  const {data,error}=await client.rpc('attribution_summary',{p_app_id:appId,p_creator_id:company?undefined:viewer.userId});
   if(error) {
     logUnexpected('attribution.summary',{code:error.code,message:'Cannot load referral summary.'});
     throw new Error('Referral statistics are temporarily unavailable.');
   }
   return summarySchema.parse(data);
 }
-export async function listCustomerReferrals(appId?: string, page=1) {
+export async function listCustomerReferrals(appId?: string, page=1, company=false) {
   const client=await createClient();
   const safePage=Math.max(1,Math.min(200,Math.floor(page)||1));
   let query=client.from('customer_referrals')
@@ -25,6 +27,7 @@ export async function listCustomerReferrals(appId?: string, page=1) {
     .neq('source','unattributed').order('registered_at',{ascending:false}).order('id')
     .range((safePage-1)*25,safePage*25);
   if(appId) query=query.eq('app_id',appId);
+  if(!company){const viewer=await getViewer();if(!viewer)throw new Error('Authentication required.');query=query.eq('creator_id',viewer.userId);}
   const {data,error}=await query;
   if(error) {
     logUnexpected('attribution.customers',{code:error.code,message:'Cannot load referred customers.'});

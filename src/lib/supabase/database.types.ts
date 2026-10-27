@@ -315,6 +315,38 @@ isOneToOne: false
       referencedColumns: ["user_id"]
     }
                   ]
+                },"customer_payment_timeline": {
+                  Row: {
+                    "amount_minor": number | null,"app_id": string,"currency": string | null,"environment": string,"event_id": string,"kind": string,"occurred_at": string,"referral_id": string,"state": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "amount_minor"?: number | null,"app_id": string,"currency"?: string | null,"environment": string,"event_id": string,"kind": string,"occurred_at": string,"referral_id": string,"state"?: string | null
+                  }
+                  Update: {
+                    "amount_minor"?: number | null,"app_id"?: string,"currency"?: string | null,"environment"?: string,"event_id"?: string,"kind"?: string,"occurred_at"?: string,"referral_id"?: string,"state"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "customer_payment_timeline_app_id_fkey"
+      columns: ["app_id"]
+isOneToOne: false
+      referencedRelation: "apps"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "customer_payment_timeline_event_id_fkey"
+      columns: ["event_id"]
+isOneToOne: true
+      referencedRelation: "payment_events"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "customer_payment_timeline_referral_id_fkey"
+      columns: ["referral_id"]
+isOneToOne: false
+      referencedRelation: "customer_referrals"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"customer_referrals": {
                   Row: {
                     "app_id": string,"click_id": string | null,"creator_id": string | null,"id": string,"link_id": string | null,"membership_id": string | null,"policy_version": string,"registered_at": string,"source": string,"terms_version_id": string | null
@@ -408,6 +440,212 @@ isOneToOne: false
       columns: ["created_by"]
 isOneToOne: false
       referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"payment_adjustments": {
+                  Row: {
+                    "amount_minor": number,"app_id": string,"environment": string,"event_ref": string,"id": string,"kind": string,"occurred_at": string,"referral_id": string,"state": string,"transaction_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "amount_minor": number,"app_id": string,"environment": string,"event_ref": string,"id"?: string,"kind": string,"occurred_at": string,"referral_id": string,"state": string,"transaction_id": string
+                  }
+                  Update: {
+                    "amount_minor"?: number,"app_id"?: string,"environment"?: string,"event_ref"?: string,"id"?: string,"kind"?: string,"occurred_at"?: string,"referral_id"?: string,"state"?: string,"transaction_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "payment_adjustments_app_id_fkey"
+      columns: ["app_id"]
+isOneToOne: false
+      referencedRelation: "apps"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "payment_adjustments_referral_id_fkey"
+      columns: ["referral_id"]
+isOneToOne: false
+      referencedRelation: "customer_referrals"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "payment_adjustments_transaction_id_fkey"
+      columns: ["transaction_id"]
+isOneToOne: false
+      referencedRelation: "payment_transactions"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"payment_events": {
+                  Row: {
+                    "app_id": string,"attempts": number,"conflicting_deliveries": number,"digest": string,"environment": string,"error_code": string | null,"event_ref": string,"id": string,"integration_id": string,"kind": string | null,"lease": string | null,"lease_until": string | null,"next_attempt_at": string,"processed_at": string | null,"received_at": string,"status": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "app_id": string,"attempts"?: number,"conflicting_deliveries"?: number,"digest": string,"environment": string,"error_code"?: string | null,"event_ref": string,"id"?: string,"integration_id": string,"kind"?: string | null,"lease"?: string | null,"lease_until"?: string | null,"next_attempt_at"?: string,"processed_at"?: string | null,"received_at"?: string,"status"?: string
+                  }
+                  Update: {
+                    "app_id"?: string,"attempts"?: number,"conflicting_deliveries"?: number,"digest"?: string,"environment"?: string,"error_code"?: string | null,"event_ref"?: string,"id"?: string,"integration_id"?: string,"kind"?: string | null,"lease"?: string | null,"lease_until"?: string | null,"next_attempt_at"?: string,"processed_at"?: string | null,"received_at"?: string,"status"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "payment_events_app_id_fkey"
+      columns: ["app_id"]
+isOneToOne: false
+      referencedRelation: "apps"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "payment_events_integration_id_fkey"
+      columns: ["integration_id"]
+isOneToOne: false
+      referencedRelation: "payment_integrations"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"payment_integrations": {
+                  Row: {
+                    "app_id": string,"configured_at": string,"credential_ref": string,"environment": string,"id": string,"last_processed_at": string | null,"last_received_at": string | null,"provider": string,"provider_account_id": string,"verified_at": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "app_id": string,"configured_at"?: string,"credential_ref": string,"environment": string,"id"?: string,"last_processed_at"?: string | null,"last_received_at"?: string | null,"provider": string,"provider_account_id": string,"verified_at"?: string | null
+                  }
+                  Update: {
+                    "app_id"?: string,"configured_at"?: string,"credential_ref"?: string,"environment"?: string,"id"?: string,"last_processed_at"?: string | null,"last_received_at"?: string | null,"provider"?: string,"provider_account_id"?: string,"verified_at"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "payment_integrations_app_id_fkey"
+      columns: ["app_id"]
+isOneToOne: false
+      referencedRelation: "apps"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"payment_plan_mappings": {
+                  Row: {
+                    "app_id": string,"external_plan_id": string,"integration_id": string,"plan_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "app_id": string,"external_plan_id": string,"integration_id": string,"plan_id": string
+                  }
+                  Update: {
+                    "app_id"?: string,"external_plan_id"?: string,"integration_id"?: string,"plan_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "payment_plan_mappings_app_id_fkey"
+      columns: ["app_id"]
+isOneToOne: false
+      referencedRelation: "apps"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "payment_plan_mappings_integration_id_fkey"
+      columns: ["integration_id"]
+isOneToOne: false
+      referencedRelation: "payment_integrations"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "payment_plan_mappings_plan_id_fkey"
+      columns: ["plan_id"]
+isOneToOne: false
+      referencedRelation: "app_plans"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"payment_sources": {
+                  Row: {
+                    "app_id": string,"environment": string,"integration_id": string,"store": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "app_id": string,"environment": string,"integration_id": string,"store": string
+                  }
+                  Update: {
+                    "app_id"?: string,"environment"?: string,"integration_id"?: string,"store"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "payment_sources_app_id_fkey"
+      columns: ["app_id"]
+isOneToOne: false
+      referencedRelation: "apps"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "payment_sources_integration_id_fkey"
+      columns: ["integration_id"]
+isOneToOne: false
+      referencedRelation: "payment_integrations"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"payment_subscriptions": {
+                  Row: {
+                    "app_id": string,"auto_renew": boolean | null,"environment": string,"id": string,"integration_id": string,"paid_until": string | null,"referral_id": string,"state": string,"state_at": string,"state_event": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "app_id": string,"auto_renew"?: boolean | null,"environment": string,"id"?: string,"integration_id": string,"paid_until"?: string | null,"referral_id": string,"state"?: string,"state_at"?: string,"state_event"?: string
+                  }
+                  Update: {
+                    "app_id"?: string,"auto_renew"?: boolean | null,"environment"?: string,"id"?: string,"integration_id"?: string,"paid_until"?: string | null,"referral_id"?: string,"state"?: string,"state_at"?: string,"state_event"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "payment_subscriptions_app_id_fkey"
+      columns: ["app_id"]
+isOneToOne: false
+      referencedRelation: "apps"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "payment_subscriptions_integration_id_fkey"
+      columns: ["integration_id"]
+isOneToOne: false
+      referencedRelation: "payment_integrations"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "payment_subscriptions_referral_id_fkey"
+      columns: ["referral_id"]
+isOneToOne: false
+      referencedRelation: "customer_referrals"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"payment_transactions": {
+                  Row: {
+                    "amount_minor": number,"app_id": string,"currency": string,"environment": string,"id": string,"is_trial": boolean,"kind": string,"occurred_at": string,"period_end": string,"plan_id": string,"plan_name": string,"referral_id": string,"subscription_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "amount_minor": number,"app_id": string,"currency": string,"environment": string,"id"?: string,"is_trial": boolean,"kind": string,"occurred_at": string,"period_end": string,"plan_id": string,"plan_name": string,"referral_id": string,"subscription_id": string
+                  }
+                  Update: {
+                    "amount_minor"?: number,"app_id"?: string,"currency"?: string,"environment"?: string,"id"?: string,"is_trial"?: boolean,"kind"?: string,"occurred_at"?: string,"period_end"?: string,"plan_id"?: string,"plan_name"?: string,"referral_id"?: string,"subscription_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "payment_transactions_app_id_fkey"
+      columns: ["app_id"]
+isOneToOne: false
+      referencedRelation: "apps"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "payment_transactions_plan_id_fkey"
+      columns: ["plan_id"]
+isOneToOne: false
+      referencedRelation: "app_plans"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "payment_transactions_referral_id_fkey"
+      columns: ["referral_id"]
+isOneToOne: false
+      referencedRelation: "customer_referrals"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "payment_transactions_subscription_id_fkey"
+      columns: ["subscription_id"]
+isOneToOne: false
+      referencedRelation: "payment_subscriptions"
       referencedColumns: ["id"]
     }
                   ]
@@ -529,8 +767,17 @@ isOneToOne: false
 "admin_review_app":
 { Args: { "p_app_id": string,"p_decision": string,"p_environment"?: string,"p_expected_revision"?: number,"p_reason"?: string }; Returns: string
                            },
+"apply_payment_event":
+{ Args: { "p_backend": string,"p_event": string,"p_failure"?: string,"p_lease": string,"p_normalized"?: Json }; Returns: string
+                           },
 "attribution_summary":
-{ Args: { "p_app_id"?: string }; Returns: Json
+{ Args: { "p_app_id"?: string,"p_creator_id"?: string }; Returns: Json
+                           },
+"claim_payment_events":
+{ Args: { "p_backend": string,"p_integration"?: string,"p_limit"?: number }; Returns: Json
+                           },
+"configure_payment_integration":
+{ Args: { "p_account": string,"p_app_id": string,"p_credential_ref": string,"p_environment": string,"p_provider": string }; Returns: string
                            },
 "create_app":
 { Args: { "p_name": string,"p_organization_id": string }; Returns: string
@@ -547,6 +794,9 @@ isOneToOne: false
 "delete_app_plan":
 { Args: { "p_plan_id": string }; Returns: undefined
                            },
+"ingest_payment_event":
+{ Args: { "p_backend": string,"p_environment": string,"p_event_ref": string,"p_integration": string,"p_raw": string }; Returns: Json
+                           },
 "join_program":
 { Args: { "p_accepted_terms"?: boolean,"p_accepted_terms_version_id": string,"p_app_id": string }; Returns: string
                            },
@@ -555,17 +805,47 @@ isOneToOne: false
               "app_id": string,"categories": (Database["public"]['Enums']["app_category"])[],"cover_image_url": string,"languages": (string)[],"logo_url": string,"max_commission_bps": number,"min_commission_bps": number,"name": string,"organization_name": string,"platforms": (Database["public"]['Enums']["app_platform"])[],"published_at": string,"slug": string,"tagline": string,"total_count": number
             }[]
                            },
+"map_payment_customer":
+{ Args: { "p_app_api_key"?: string,"p_customer_id": string,"p_integration": string,"p_provider_customer": string }; Returns: undefined
+                           },
+"map_payment_plan":
+{ Args: { "p_external_id": string,"p_integration": string,"p_plan_id": string }; Returns: undefined
+                           },
+"map_payment_transaction_reference":
+{ Args: { "p_integration": string,"p_reference": string,"p_transaction": string }; Returns: undefined
+                           },
+"payment_customer_timeline":
+{ Args: { "p_app_id"?: string,"p_creator_id"?: string,"p_referral"?: string }; Returns: Json
+                           },
+"payment_integration_for_ingest":
+{ Args: { "p_backend": string,"p_integration": string }; Returns: Json
+                           },
+"payment_metrics":
+{ Args: { "p_app_id"?: string,"p_creator_id"?: string }; Returns: Json
+                           },
 "record_referral_click":
 { Args: { "p_link_token": string }; Returns: Json
                            },
 "register_referred_customer":
 { Args: { "p_api_key": string,"p_click_tokens"?: (string)[],"p_code"?: string,"p_customer_id": string }; Returns: Json
                            },
+"retry_payment_event":
+{ Args: { "p_event": string }; Returns: undefined
+                           },
+"revoke_payment_backend_token":
+{ Args: { "p_token": string }; Returns: undefined
+                           },
 "rotate_attribution_api_key":
 { Args: { "p_app_id": string }; Returns: string
                            },
 "save_app_draft":
 { Args: { "p_android_store_url"?: string,"p_app_id": string,"p_attribution_window_days"?: number,"p_categories"?: (Database["public"]['Enums']["app_category"])[],"p_cover_image_url"?: string,"p_description"?: string,"p_ios_store_url"?: string,"p_languages"?: (string)[],"p_logo_url"?: string,"p_name": string,"p_platforms"?: (Database["public"]['Enums']["app_platform"])[],"p_screenshots"?: Json,"p_slug"?: string,"p_tagline"?: string,"p_terms_text"?: string,"p_video_url"?: string,"p_website_url"?: string }; Returns: string
+                           },
+"set_payment_backend_token":
+{ Args: { "p_token": string }; Returns: undefined
+                           },
+"set_payment_source":
+{ Args: { "p_integration": string,"p_store": string }; Returns: undefined
                            },
 "submit_app_for_review":
 { Args: { "p_app_id": string }; Returns: string
