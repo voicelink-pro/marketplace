@@ -5,10 +5,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { getViewer } from "@/modules/accounts/viewer";
 import { AccountMenu } from "./account-menu";
-import { DarkPortalScope } from "./dark-portal-scope";
 import { MobileNav } from "./mobile-nav";
 import { PANEL_LABELS, type PanelArea } from "./nav-config";
 import { PanelNav } from "./panel-nav";
+import { ThemeToggle } from "./theme-toggle";
 
 async function ContextSwitch({ area }: { area: PanelArea }) {
   const viewer = await getViewer();
@@ -61,16 +61,8 @@ async function PanelAccount() {
  */
 export function PanelShell({ area, children }: { area: PanelArea; children: React.ReactNode }) {
   const home = area === "admin" ? "/admin" : `/${area}`;
-  // Brand themes by role: creators work on dark, companies and admins on light.
-  const dark = area === "creator";
   return (
-    <div
-      className={cn(
-        "min-h-dvh w-full bg-background text-foreground lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)]",
-        dark && "dark",
-      )}
-    >
-      {dark ? <DarkPortalScope /> : null}
+    <div className="min-h-dvh w-full bg-background text-foreground lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)]">
       <aside className="sticky top-0 hidden h-dvh flex-col gap-6 border-r bg-sidebar px-3 py-4 lg:flex">
         <div className="flex flex-col gap-1 px-2">
           <Logo href={home} />
@@ -96,7 +88,8 @@ export function PanelShell({ area, children }: { area: PanelArea; children: Reac
             }
           />
           <Logo href={home} className="lg:hidden" />
-          <div className="ml-auto flex items-center gap-3">
+          <div className="ml-auto flex items-center gap-2 sm:gap-3">
+            <ThemeToggle />
             <Suspense fallback={null}>
               <div className="hidden sm:block">
                 <ContextSwitch area={area} />
