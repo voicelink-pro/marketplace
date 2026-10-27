@@ -34,7 +34,7 @@ export function HomeFacts() {
       <dl className="grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-4 lg:gap-x-4">
         {facts.map((fact) => (
           // dt before dd for screen readers; shown value-first like a stat.
-          <div key={fact.label} className="flex flex-col-reverse justify-end gap-1 lg:w-36 lg:items-center lg:text-center">
+          <div key={fact.label} className="flex flex-col-reverse justify-end gap-1 lg:w-28 lg:items-center xl:w-36 lg:text-center">
             <dt className="text-sm text-muted-foreground">{fact.label}</dt>
             <dd className="tabular text-3xl leading-none font-extrabold tracking-[-0.04em] sm:text-4xl">
               {fact.value}

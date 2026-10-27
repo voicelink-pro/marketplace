@@ -1,42 +1,30 @@
 "use client";
 
-import { Check, ChevronLeft, ChevronRight, Copy } from "lucide-react";
+import { Check, Copy } from "lucide-react";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { LogoMark } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { MorphingText } from "@/components/ui/morphing-text";
 
-type Slide = {
-  id: string;
-  label: string;
-  title: string;
-  body: string;
-  cta: { href: string; label: string };
-  phone: "creator" | "company";
-};
+const MORPH_WORDS = ["income.", "customers."];
+const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
 
-const SLIDES: Slide[] = [
-  {
-    id: "creators",
-    label: "For creators",
-    title: "Share apps, earn every month",
-    body: "Join an app’s offer, share your link, and get a share of every subscription payment your audience makes.",
-    cta: { href: "/signup", label: "Start as a creator" },
-    phone: "creator",
-  },
-  {
-    id: "companies",
-    label: "For companies",
-    title: "Let creators grow your app",
-    body: "List your app, set a commission for each plan, and pay creators when the customers they bring keep subscribing.",
-    cta: { href: "/signup", label: "List your app" },
-    phone: "company",
-  },
-];
+/** True on the server and before hydration, so the first paint is the static word. */
+function usePrefersReducedMotion(): boolean {
+  return useSyncExternalStore(
+    (onChange) => {
+      const query = window.matchMedia(REDUCED_MOTION);
+      query.addEventListener("change", onChange);
+      return () => query.removeEventListener("change", onChange);
+    },
+    () => window.matchMedia(REDUCED_MOTION).matches,
+    () => true,
+  );
+}
 
 /** Illustration only: shows the product's own screens, with example values. */
-function PhoneMock({ kind }: { kind: Slide["phone"] }) {
+function PhoneMock({ kind }: { kind: "creator" | "company" }) {
   return (
     <div className="w-60 rounded-[2.75rem] border-[9px] border-foreground bg-background p-4 shadow-2xl lg:w-64">
       <div className="mx-auto mb-4 h-1.5 w-16 rounded-full bg-foreground/15" />
@@ -95,123 +83,59 @@ function PhoneMock({ kind }: { kind: Slide["phone"] }) {
   );
 }
 
-function ArrowButton({ direction, onClick, className }: { direction: "prev" | "next"; onClick: () => void; className?: string }) {
-  const Icon = direction === "prev" ? ChevronLeft : ChevronRight;
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={direction === "prev" ? "Previous slide" : "Next slide"}
-      className={cn(
-        "inline-flex size-10 items-center justify-center rounded-full border bg-background text-foreground shadow-sm outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50",
-        className,
-      )}
-    >
-      <Icon aria-hidden className="size-5" />
-    </button>
-  );
-}
-
 /**
- * Home hero: one large rounded stage with a slide for each side of the
- * marketplace. No autoplay; arrows, dots and swipe move between slides.
+ * Home hero: one large rounded stage. The last word of the headline morphs
+ * between what a link brings each side; everything else is static.
  */
 export function HomeHero() {
-  const [index, setIndex] = useState(0);
-  const touchX = useRef<number | null>(null);
-  const go = (next: number) => setIndex((next + SLIDES.length) % SLIDES.length);
+  const reducedMotion = usePrefersReducedMotion();
 
   return (
-    <section aria-roledescription="carousel" aria-label="What boostlink does" className="relative flex flex-col gap-3">
-      <div
-        className="relative grid overflow-hidden rounded-[2rem] bg-linear-to-r from-muted to-card"
-        onTouchStart={(event) => {
-          touchX.current = event.touches[0]?.clientX ?? null;
-        }}
-        onTouchEnd={(event) => {
-          const start = touchX.current;
-          const end = event.changedTouches[0]?.clientX;
-          touchX.current = null;
-          if (start === null || end === undefined || Math.abs(end - start) < 40) return;
-          go(index + (end < start ? 1 : -1));
-        }}
-      >
-        {SLIDES.map((slide, i) => {
-          const active = i === index;
-          const Heading = i === 0 ? "h1" : "h2";
-          return (
-            <div
-              key={slide.id}
-              role="group"
-              aria-roledescription="slide"
-              aria-label={`${i + 1} of ${SLIDES.length}: ${slide.label}`}
-              aria-hidden={!active}
-              inert={!active}
-              className={cn(
-                "relative col-start-1 row-start-1 flex items-center px-6 py-7 motion-safe:transition-opacity motion-safe:duration-500 sm:px-12 md:min-h-[30rem] lg:min-h-[34rem] lg:px-16",
-                active ? "opacity-100" : "pointer-events-none opacity-0",
-              )}
-            >
-              {/* Brand stage: oversized mark with the product screen tilted over it. */}
-              <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 hidden w-1/2 md:block">
-                <LogoMark
-                  className={cn(
-                    "absolute size-[34rem] lg:size-[40rem]",
-                    slide.phone === "creator" ? "-right-24 -bottom-40 rotate-[-8deg]" : "-right-44 -bottom-24 rotate-[16deg]",
-                  )}
-                />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                  <div
-                    className={cn(
-                      "motion-safe:transition-transform motion-safe:duration-700",
-                      slide.phone === "creator" ? "rotate-[-9deg]" : "rotate-[7deg]",
-                      active ? "translate-y-0" : "translate-y-8",
-                    )}
-                  >
-                    <PhoneMock kind={slide.phone} />
-                  </div>
-                </div>
-              </div>
-
-              <div className="relative flex max-w-xl flex-col items-start gap-3 sm:gap-6 md:max-w-[46%]">
-                <Heading className="text-4xl leading-[0.95] font-extrabold tracking-[-0.045em] sm:text-6xl lg:text-7xl">
-                  {slide.title}
-                </Heading>
-                <p className="max-w-md text-sm text-muted-foreground sm:text-lg">{slide.body}</p>
-                <Button asChild size="lg">
-                  <Link href={slide.cta.href}>{slide.cta.label}</Link>
-                </Button>
-              </div>
-            </div>
-          );
-        })}
+    <section
+      aria-labelledby="home-hero-heading"
+      className="relative flex overflow-hidden rounded-[2rem] bg-linear-to-r from-muted to-card px-6 py-7 sm:px-12 md:min-h-[30rem] md:items-center lg:min-h-[34rem] lg:px-16"
+    >
+      {/* Brand stage: oversized mark with both sides of the product tilted over it. */}
+      <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 hidden w-1/2 md:block">
+        <LogoMark className="absolute -right-24 -bottom-40 size-[34rem] rotate-[-8deg] lg:size-[40rem]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-[15%] -translate-y-[56%] rotate-[8deg] scale-90 opacity-95 max-lg:hidden">
+          <PhoneMock kind="company" />
+        </div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-[78%] -translate-y-[46%] rotate-[-9deg] max-lg:-translate-x-1/2">
+          <PhoneMock kind="creator" />
+        </div>
       </div>
 
-      <ArrowButton direction="prev" onClick={() => go(index - 1)} className="absolute top-[calc(50%-1.5rem)] -left-5 hidden -translate-y-1/2 lg:inline-flex" />
-      <ArrowButton direction="next" onClick={() => go(index + 1)} className="absolute top-[calc(50%-1.5rem)] -right-5 hidden -translate-y-1/2 lg:inline-flex" />
-
-      <div className="flex items-center justify-center gap-3">
-        <ArrowButton direction="prev" onClick={() => go(index - 1)} className="size-9 lg:hidden" />
-        <div className="flex items-center gap-1">
-          {SLIDES.map((slide, i) => (
-            <button
-              key={slide.id}
-              type="button"
-              onClick={() => setIndex(i)}
-              aria-label={`Show slide ${i + 1}: ${slide.label}`}
-              aria-current={i === index}
-              className="group flex h-6 items-center px-1 outline-none focus-visible:ring-3 focus-visible:ring-ring/50 rounded-full"
-            >
-              <span
-                className={cn(
-                  "block h-1.5 rounded-full motion-safe:transition-all",
-                  i === index ? "w-6 bg-foreground" : "w-1.5 bg-muted-foreground/50 group-hover:bg-muted-foreground",
-                )}
+      <div className="relative flex max-w-xl flex-col items-start gap-3 sm:gap-6 md:max-w-[46%]">
+        <h1
+          id="home-hero-heading"
+          aria-label="Every link brings income and customers."
+          className="text-4xl leading-[0.95] font-extrabold tracking-[-0.045em] sm:text-6xl md:text-5xl lg:text-6xl xl:text-7xl"
+        >
+          <span aria-hidden>Every link brings</span>
+          {/* Own line at a fixed height, so the morph never reflows the hero. */}
+          <span aria-hidden className="block h-[0.95em] text-primary-ink dark:text-primary">
+            {reducedMotion ? (
+              MORPH_WORDS[0]
+            ) : (
+              <MorphingText
+                texts={MORPH_WORDS}
+                className="mx-0 h-[0.95em] max-w-none text-left font-extrabold text-[length:inherit] leading-[inherit] md:h-[0.95em] lg:text-[length:inherit]"
               />
-            </button>
-          ))}
+            )}
+          </span>
+        </h1>
+        <p className="max-w-md text-sm text-muted-foreground sm:text-lg">
+          Creators earn on every renewal. Apps pay only for real subscribers.
+        </p>
+        <div className="flex flex-wrap gap-2 sm:gap-3">
+          <Button asChild size="lg">
+            <Link href="/signup">Start as a creator</Link>
+          </Button>
+          <Button asChild size="lg" variant="outline">
+            <Link href="/onboarding/company">List your app</Link>
+          </Button>
         </div>
-        <ArrowButton direction="next" onClick={() => go(index + 1)} className="size-9 lg:hidden" />
       </div>
     </section>
   );
