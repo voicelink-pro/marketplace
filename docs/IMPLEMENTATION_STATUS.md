@@ -1,7 +1,7 @@
 # Status implementacji
 
 Brief: `MARKETPLACE_BRIEF_I_PROMPTY.md` • Decyzje: `docs/DECISIONS.md`
-Ostatnia aktualizacja: 2026-10-26 (odbiór etapu 5 w sandboxie)
+Ostatnia aktualizacja: 2026-10-27 (odbiór backendu etapu 6)
 
 Każda nowa rozmowa zaczyna od przeczytania briefu i tego pliku.
 Wyniki testów zapisujemy wyłącznie jako `pass`, `fail` albo `blocked`, z opisem, co faktycznie uruchomiono.
@@ -11,7 +11,7 @@ Wyniki testów zapisujemy wyłącznie jako `pass`, `fail` albo `blocked`, z opis
 - Marka platformy: **BoostLink**, zatwierdzona 26.10.2026; konfiguracja nazwy i metadane korzystają z `src/config/site.ts`.
 - Zakres dla frontend developera: [FRONTEND_SCOPE_STAGES_1_4.md](FRONTEND_SCOPE_STAGES_1_4.md), w tym pakiety E1–E4, właściciele plików i kryteria odbioru.
 - Status dopracowania UI/UX: **zakres przygotowany; realizacja i odbiór poszczególnych pakietów jeszcze nie rozpoczęte**. Wcześniejsze wyniki testów funkcjonalnych pozostają historią weryfikacji backendu.
-- Backend E5: prowadzi Karol z Codexem; aktualny odbiór opisano niżej w sekcji E5. Zakres frontendu E1–E4 pozostaje niezależny.
+- Backend E5/E6: prowadzi Karol z Codexem; aktualny odbiór opisano niżej w sekcjach E5/E6. Zakres frontendu E1–E4 pozostaje niezależny.
 - Weryfikacja zmiany marki i dokumentacji (26.10): **pass** — `pnpm lint`, `pnpm typecheck`, `pnpm build` (38 tras), nazwa BoostLink w wygenerowanym HTML/metadanych i brak poprzedniej nazwy w wygenerowanych plikach HTML. Testów logiki i integracji nie powtarzano w tym zadaniu: nie zmieniono backendu ani kontraktów.
 
 ## Podsumowanie etapów
@@ -24,8 +24,8 @@ Wyniki testów zapisujemy wyłącznie jako `pass`, `fail` albo `blocked`, z opis
 | 3 | Firma dodaje aplikację, admin publikuje | **Ukończony; poprawki, PGlite i prawdziwy PostgREST `pass` (26.10)** |
 | 4 | Dołączenie twórcy, przewodnik, programy, linki | **Ukończony; historyczne warunki i izolacja przez prawdziwy PostgREST `pass` (26.10)** |
 | 5 | Przypisanie klientów, statystyki poleceń | **Ukończony w sandboxie; testy i odbiór lokalny pass (26.10)** |
-| 6 | Integracje płatności (Stripe, RevenueCat, Generic API) | Nie rozpoczęty — **następny** |
-| 7 | Prowizje, historia stawek, zamknięcie miesiąca | Nie rozpoczęty |
+| 6 | Integracje płatności (Stripe, RevenueCat, Generic API) | **Backend i odbiór lokalnego pipeline pass; rzeczywiste zakupy u dostawców blocked** |
+| 7 | Prowizje, historia stawek, zamknięcie miesiąca | Nie rozpoczęty — **następny** |
 | 8 | Finansowanie firm, auto-doładowania, wypłaty (sandbox) | Nie rozpoczęty |
 | 9 | Domknięcie MVP, pilotaż | Nie rozpoczęty |
 
@@ -344,6 +344,44 @@ Instrukcja integracji, kontrakt dla frontendu i pełny scenariusz ręczny: [ATTR
 
 Tylko sandbox/demo. P-03/P-04/P-05/P-07 nadal wymagają zatwierdzenia dla live. Liczba kliknięć nie oznacza unikalnych ludzi i może obejmować boty; nie stosujemy fingerprintingu. Dane i konta aplikacji demonstracyjnej są w pamięci, a certyfikat jest lokalny i jednodniowy. Nie uruchomiono płatności, naliczania prowizji, finansowania ani wypłat. Cloud/pilotaż nadal wymagają B-02/B-03/B-04.
 
-## Następny krok
+## Historyczny następny krok po E5
 
 **ETAP 6** — integracje płatności Stripe/RevenueCat/Generic API po osobnym zleceniu. E5 zapisuje stabilny identyfikator przypisania i historyczną wersję warunków potrzebne kolejnym etapom. Frontend może niezależnie dopracowywać etapy 1–4 według swojego zakresu; przy zmianie wspólnych stron uzgadnia kontrakt modułu atrybucji.
+
+## Etap 6 — zakupy, odnowienia i integracje backendu (27.10.2026)
+
+### Wdrożono
+
+- Wspólny `PaymentEvent` i adaptery Stripe/RevenueCat/Generic, po sprawdzeniu aktualnej oficjalnej dokumentacji. Weryfikacja podpisów na raw body, Bearer RC, kont i środowisk, brak sekretów w przeglądarce i brak pozornego dowodu sprzedaży Generic.
+- Trwały inbox przed HTTP 200, prywatne payloady i osobny worker CLI. Lease, równoległe pobieranie SKIP LOCKED, backoff, limit prób, przejęcie po awarii i ręczny retry. Cały efekt biznesowy oraz zmiana statusu atomowe. Osobne serwerowe tokeny E6 nie naruszają kluczy E5.
+- Oddzielne mapowania klientów aplikacji/operatora, produktów/planów i referencji charge/payment intent do faktury. Braki trafiają do waiting, nie znikają. Wewnętrzny identyfikator kupionego planu jest utrwalony dla przyszłego E7, bez publicznego grantu odczytu.
+- Deduplikacja eventów, zakupów i korekt; sprzeczny payload zachowuje oryginał. Jeden autorytatywny provider na sklep/aplikację/środowisko zapobiega lustrzanemu liczeniu Stripe i RC. Zakup nie dubluje się w timeline przy drugiej notyfikacji faktury.
+- Zakupy/odnowienia, stany subskrypcji, wyłączenie odnowienia, refundy i spory. Płatność 0/trial nie kwalifikuje; refund nie wynika z samego anulowania. Zdarzenia są porządkowane czasem dostawcy; niejednoznaczny remis stanów wstrzymuje aktywność/płatną kwalifikację do nowszego autorytatywnego zdarzenia.
+- Panel Integrations: konfiguracja, instrukcja, mapowania, ostatni odbiór/sukces, odróżnienie Configured/Verified, diagnoza błędów i ponowienie. Brak nowego redesignu; wydzielone kontrakty serwerowe dla kolegi.
+- Płacący klienci i aktywni płacący subskrybenci w istniejących panelach, timeline konkretnego klienta bez PII. Odczyty RLS oraz jawne rozdzielenie kontekstów przy obu rolach na jednym koncie.
+- Live zapisany osobno i zablokowany. Nie wdrożono prowizji, dziennika, finansowania ani wypłat.
+
+### Migracja i środowisko
+
+Migracja: `supabase/migrations/20261026225312_payment_integrations.sql`. Nie zmieniono wcześniejszych migracji ani nie resetowano bazy użytkownika. `pnpm exec supabase db push --local --yes`, `pnpm db:types`, `pnpm db:advisors`, `pnpm payments:setup`, restart Next; osobno `pnpm payments:worker`. Nowe zmienne serwerowe: `PAYMENT_BACKEND_TOKEN`, `PAYMENT_WEBHOOK_SECRETS_JSON`. Klucze uprzywilejowane Supabase nadal wyłącznie w skryptach/testach. Szczegółowy kontrakt i odbiór ręczny: [PAYMENT_INTEGRATIONS.md](PAYMENT_INTEGRATIONS.md).
+
+### Weryfikacja lokalna
+
+- **pass — `pnpm test`: 18 plików / 168 testów.** Cały łańcuch migracji na PGlite, RLS, brak podwójnego zakupu, 0/trial, refund/spór, kolejność i remisy stanów, brakujące mapowania, retry, lease, izolacja live oraz kontekst obu ról.
+- **pass — `pnpm test:integration`: 6 plików / 28 testów** przez rzeczywisty lokalny Supabase Auth/PostgREST. E6 obejmuje 12 równoległych dostarczeń, dodatkowe dostarczenia podczas przetwarzania i dwóch konkurujących workerów; jeden zakup, bez utraty eventów. Nie jest to test sandboxa operatora.
+- **pass — `pnpm lint`, `pnpm typecheck`, `pnpm build`.** Sprawdzono bieżący build, w tym odczyt dat PostgreSQL ze strefą czasową w timeline.
+- **pass — `pnpm db:types`: brak różnic względem zapisanych typów; `pnpm db:advisors`: No issues found.** Lokalna baza użytkownika nie była resetowana.
+- **pass — rzeczywisty lokalny HTTP + CLI worker na jawnych fixtures.** Stripe, RevenueCat i Generic dotarły do kolejki i zostały przetworzone; zakup i odnowienie widoczne, lustrzany event RC/Stripe pominięty. Dodatkowy odbiór po wznowieniu potwierdził HTTP 401 dla fałszywego podpisu, brak zakupu przed workerem, zapis po workerze i brak duplikatu po ponownym dostarczeniu. Brak mapowania pozostawił event w waiting z instrukcją naprawy.
+- **pass — odczyt czterech widoków przez HTTP SSR** z oddzielnymi sesjami syntetycznej firmy/twórcy: Integrations, Referrals i szczegóły klienta po obu stronach. Obie role widzą poprawne płatne metryki i timeline; Configured/Verified wynika z backendu. Nie zmieniano sesji przeglądarkowej użytkownika. Osobnego odbioru wizualnego w Chrome nie wykonano — ta przeglądarka nie była dostępna w narzędziu.
+- **pass — skan `.next/static`: brak rzeczywistych sekretów testowych i tokenu backendu.** Usunięto wyłącznie jednorazową aplikację QA, jej trzy syntetyczne konta i trzy sekrety; zachowano wcześniejsze konta i dane. Uruchomiono ponownie Next i osobny lokalny worker bez tych sekretów.
+- Brak nierozwiązanych wyników **fail** w wykonanych końcowych kontrolach. Nie oznacza to odbioru live ani prawdziwego zakupu u dostawcy.
+
+### Testy dostawców i granice
+
+- **blocked — prawdziwy zakup/odnowienie Stripe sandbox:** brak skonfigurowanego dostępu i sekretów konta dostawcy. Poprawnie podpisany lokalny fixture nie jest takim zakupem.
+- **blocked — prawdziwy zakup/odnowienie RevenueCat sandbox:** brak dostępu do projektu/aplikacji i transakcji sklepowej. Fixtures są opisane jawnie, a dashboard TEST sam nie daje Verified.
+- Obsługiwane ograniczenia adapterów są jawne w instrukcji: Stripe snapshot, pojedyncza pozycja abonamentowa; złożone/proracyjne faktury i nieznane waluty nie są zgadywane. Niejednoznaczne stany wymagają nowszego autorytatywnego zdarzenia. To nie jest odbiór live/pilotażu.
+
+## Następny krok
+
+**ETAP 7 — prowizje, historia stawek i zamknięcie miesiąca**, wyłącznie po osobnym zleceniu. Równolegle operator może dostarczyć dostępy do rzeczywistego odbioru Stripe/RevenueCat, a kolega kontynuować UI/UX na kontraktach modułów E5/E6.

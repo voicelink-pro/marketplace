@@ -13,6 +13,8 @@
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "payments:worker": "node --env-file-if-exists=.env.local scripts/payment-worker.mjs",
+    "payments:setup": "node --env-file-if-exists=.env.local scripts/configure-payment-backend.mjs --local",
     "test:integration": "node scripts/test-integration.mjs",
     "db:start": "supabase start",
     "db:stop": "supabase stop",
