@@ -17,7 +17,7 @@ export type PlanRate = {
  * Display-only: the real amount depends on the commission basis (P-02) and
  * the platform fee taken from it (W-31, P-01).
  */
-function perCustomerMinor(plan: PlanRate): bigint {
+export function perCustomerMinor(plan: Pick<PlanRate, "priceMinor" | "commissionBps">): bigint {
   return (toMinorBigInt(plan.priceMinor) * BigInt(plan.commissionBps)) / 10_000n;
 }
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowRight } from "lucide-react";
 import { useActionState } from "react";
 import {
   FieldErrors,
@@ -18,6 +19,10 @@ import {
   startCreator,
   updateDisplayName,
 } from "../actions";
+import { SocialProfileField } from "./social-profile-field";
+
+/** Onboarding CTA: 52px yellow pill with the arrow, full width on phones. */
+const ONBOARDING_SUBMIT = "h-13 w-full px-7 text-base font-semibold sm:w-auto sm:self-start";
 
 function invalid(state: FormState, field: string): boolean {
   return Boolean(state.status === "error" && state.fieldErrors?.[field]);
@@ -30,26 +35,10 @@ export function StartCreatorForm({ next = "" }: { next?: string }) {
       <input type="hidden" name="next" value={next} />
       <FieldGroup>
         <FormMessage state={state} />
-        <Field data-invalid={invalid(state, "url")}>
-          <FieldLabel htmlFor="url">Link to one of your social profiles</FieldLabel>
-          <Input
-            id="url"
-            name="url"
-            inputMode="url"
-            autoComplete="url"
-            placeholder="https://www.instagram.com/yourname"
-            required
-            defaultValue={valueFor(state, "url")}
-            aria-describedby="url-hint"
-            aria-invalid={invalid(state, "url")}
-          />
-          <FieldDescription id="url-hint">
-            Instagram, TikTok, YouTube, X or any public page where you post. You can add more later. We show the link as provided and don’t verify ownership yet.
-          </FieldDescription>
-          <FieldErrors state={state} field="url" />
-        </Field>
-        <SubmitButton size="lg" className="w-full sm:w-auto sm:self-start" pendingLabel="Saving…">
+        <SocialProfileField state={state} />
+        <SubmitButton className={ONBOARDING_SUBMIT} pendingLabel="Saving…">
           Continue
+          <ArrowRight data-icon="inline-end" aria-hidden />
         </SubmitButton>
       </FieldGroup>
     </form>
@@ -71,12 +60,15 @@ export function CreateOrganizationForm() {
             required
             maxLength={120}
             defaultValue={valueFor(state, "name")}
+            aria-describedby="company-name-hint"
             aria-invalid={invalid(state, "name")}
           />
+          <FieldDescription id="company-name-hint">You can rename it later.</FieldDescription>
           <FieldErrors state={state} field="name" />
         </Field>
-        <SubmitButton size="lg" className="w-full sm:w-auto sm:self-start" pendingLabel="Creating…">
+        <SubmitButton className={ONBOARDING_SUBMIT} pendingLabel="Creating…">
           Create company account
+          <ArrowRight data-icon="inline-end" aria-hidden />
         </SubmitButton>
       </FieldGroup>
     </form>

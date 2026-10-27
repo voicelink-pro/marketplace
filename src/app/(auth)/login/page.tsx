@@ -13,8 +13,8 @@ export default function LoginPage() {
 
   return (
     <AuthCard
-      title="Log in"
-      description="Welcome back. Log in to your creator or company workspace."
+      title="Welcome back"
+      description="Log in to your creator or app workspace."
       footer={
         <span>
           New here?{" "}

@@ -10,7 +10,7 @@ export function HeaderSearchButton() {
   return (
     <Link
       href="/#offers"
-      aria-label="Search offers"
+      aria-label="Search apps"
       onClick={(event) => {
         if (pathname !== "/") return;
         const input = document.getElementById("catalog-search");

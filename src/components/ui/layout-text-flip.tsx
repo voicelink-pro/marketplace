@@ -12,7 +12,7 @@ export const LayoutTextFlip = ({
   text: string;
   words: string[];
   duration?: number;
-  /** Extra classes for the flipping box (boostlink: unboxed, two-line headline). */
+  /** Extra classes for the flipping box (boostlink: dark chip with a yellow word). */
   className?: string;
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);

@@ -62,7 +62,7 @@ function LogoTile({ tile, focusable = true }: { tile: Tile; focusable?: boolean 
 }
 
 /**
- * Logos of the apps on the current catalog page, in three rows that scroll
+ * Logos of the apps on the first catalog page, in three rows that scroll
  * in alternating directions. With reduced motion it is a static grid.
  */
 export function LogoCloud({ apps }: { apps: LogoCloudApp[] }) {

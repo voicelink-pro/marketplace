@@ -1,0 +1,53 @@
+/*
+ * "How it works" card glow and beam, desktop only. One 16s cycle shared by
+ * every element, offset with animation-delay (how-it-works.tsx):
+ *   0-3.5s card 1 glows · 3.5-5s beam 1→2 · 5-8.5s card 2 · 8.5-10s beam 2→3
+ *   10-13.5s card 3 · 13.5-16s all off.
+ * Runs only while the section has the `running` class (how-it-works-section.tsx);
+ * removing it resets the cycle. Only transform and opacity animate.
+ */
+
+.beam,
+.cardGlow {
+  opacity: 0;
+}
+
+@media (min-width: 64rem) and (prefers-reduced-motion: no-preference) {
+  .running .beam {
+    animation: beam 16s linear infinite both;
+  }
+
+  .running .cardGlow {
+    animation: card-glow 16s linear infinite both;
+  }
+}
+
+/* 1.5s across the connector (9.375% of 16s). */
+@keyframes beam {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  2%,
+  7.5% {
+    opacity: 1;
+  }
+  9.375%,
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* 0.4s fade in, held until 3.5s, 0.4s fade out while the beam leaves; low peak. */
+@keyframes card-glow {
+  0%,
+  24.375%,
+  100% {
+    opacity: 0;
+  }
+  2.5%,
+  21.875% {
+    opacity: 0.6;
+  }
+}

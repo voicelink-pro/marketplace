@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useActionState } from "react";
@@ -11,6 +12,8 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { idleFormState } from "@/lib/forms";
 import { signIn, signInSandboxAccount } from "../actions";
+import { AUTH_SUBMIT_CLASS } from "./auth-card";
+import { PasswordInput } from "./password-input";
 
 const LINK_ERRORS: Record<string, string> = {
   link_invalid: "That link is invalid or has expired. Request a new one.",
@@ -74,18 +77,18 @@ export function LoginForm({ sandboxEnabled = false }: { sandboxEnabled?: boolean
                 Forgot password?
               </Link>
             </div>
-            <Input
+            <PasswordInput
               id="password"
               name="password"
-              type="password"
               autoComplete="current-password"
               required
               aria-invalid={Boolean(state.status === "error" && state.fieldErrors?.password)}
             />
             <FieldErrors state={state} field="password" />
           </Field>
-          <SubmitButton size="lg" className="w-full" pendingLabel="Logging in…">
+          <SubmitButton className={AUTH_SUBMIT_CLASS} pendingLabel="Logging in…">
             Log in
+            <ArrowRight data-icon="inline-end" aria-hidden />
           </SubmitButton>
         </FieldGroup>
       </form>

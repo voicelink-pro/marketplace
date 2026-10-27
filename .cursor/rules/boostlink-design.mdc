@@ -1,0 +1,59 @@
+---
+description: boostlink UI/UX design guide (homepage is the reference). Apply to every frontend change.
+alwaysApply: true
+---
+
+# boostlink design guide
+
+Reference page: the homepage (`/`, components in `src/modules/catalog/components/home-*`).
+New and redesigned pages must look and behave like it. File ownership rules are in AGENTS.md.
+
+## Brand
+- Name: **boostlink**, always lowercase. Tagline: "Apps. Faster together."
+- Logo mark: black "b" on a yellow rounded square (app-icon style).
+- Two sides of the marketplace: **Creators** and **Apps** (never "advertisers", "brands", "partners").
+
+## Color (use tokens from `src/app/globals.css`, never hardcoded hex in components)
+- Default theme: dark. Light theme must work too.
+- Yellow `--primary` (#FFD600) is the only accent: primary buttons, active states, key numbers, highlights.
+- Text on yellow is always `--primary-foreground` (near black).
+- Never use yellow as text on light backgrounds. To emphasize a word, use the marker style:
+  yellow highlight behind the word, black text.
+- Side colors exist only in illustrations, never in buttons or body text:
+  Creators coral (#FF6B4A dark / #E5482A light), Apps violet (#8B5CF6 dark / #7C3AED light).
+- Flat fills. No decorative gradients, glows, blur blobs or "AI-looking" gradient lines.
+
+## Typography
+- Font: Instrument Sans (bundled). Headings bold with tight letter-spacing; body regular/medium.
+- Headlines short (2 lines max). Subtitles max 3 lines on desktop, last line shorter, never a single word.
+- Section copy: one or two lines per item. No internal/dev wording in UI text.
+
+## Shape and layout
+- Rounded, chunky shapes like the logo: cards ~20px radius, inputs 12px, buttons pill.
+- Generous spacing, one clear focal point per section.
+- Mobile first: check every change at 375px. No horizontal page scroll. Tables become cards on mobile.
+- CTA buttons: 52px tall, yellow primary with arrow; secondary uses Hover Border Gradient.
+
+## Motion
+- Calm and purposeful: 300-500ms ease-out, small movements, no bounce or spin.
+- Max 2-3 animated elements per page. Prefer CSS (transform/opacity) over JS animation.
+- Start animations when in view; pause when off screen.
+- Every animation respects `prefers-reduced-motion` (show the final state).
+
+## Components
+- Base: shadcn/ui in `src/components/ui`. Forms: `FieldGroup`/`Field` + `useActionState`.
+- Already installed effects (reuse before adding new ones): bento-grid, canvas-text (dark mode only),
+  layout-text-flip, glowing-effect, hover-border-gradient, infinite-moving-cards, animated-list,
+  number-ticker, orbiting-circles.
+- New effects come from Aceternity UI or Magic UI via the shadcn CLI (`pnpm dlx shadcn@latest add ...`).
+
+## Content honesty (hard rules)
+- No invented people, testimonials, logos, counts, rankings or metrics. Empty states are honest.
+- Example numbers in illustrations must be clearly examples and mathematically consistent
+  (e.g. 20% of a $39 plan = $7.80). Keep one currency per page.
+- Don't promise features that don't exist yet (e.g. click tracking before stage 5).
+- One name per thing across the UI (e.g. "Discover apps" everywhere).
+
+## Checks before finishing
+- 375px and desktop, light and dark, both toggle versions where relevant.
+- Keyboard navigation and visible focus. WCAG AA contrast for every text/background pair.
