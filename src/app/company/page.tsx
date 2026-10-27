@@ -23,6 +23,8 @@ import {
 } from "@/components/ui/card";
 import { formatCommissionRange } from "@/lib/money";
 import { primaryOrganization, requireViewer } from "@/modules/accounts/viewer";
+import { appReadiness } from "@/modules/company-app/components/app-readiness";
+import { PublicationChecklistSummary } from "@/modules/company-app/components/publication-checklist";
 import {
   getCompanyWorkspaceApp,
   listCompanyCreators,
@@ -112,6 +114,12 @@ export default async function CompanyOverviewPage() {
               )}
             </CardAction>
           </CardHeader>
+
+          {app ? (
+            <CardContent className="border-t pt-4">
+              <PublicationChecklistSummary checklist={appReadiness(app)} />
+            </CardContent>
+          ) : null}
 
           {app ? (
             <CardContent className="flex flex-wrap items-center justify-between gap-3 border-t pt-4 text-xs text-muted-foreground">
