@@ -116,7 +116,33 @@ export function PlansManager({
               No subscription plans added yet. Add at least one plan below before submitting your app for review.
             </p>
           ) : (
-            <div className="overflow-hidden rounded-xl border">
+            <>
+            {/* Phones: one tile per plan, so price and commission stay visible without side-scrolling. */}
+            <ul className="flex flex-col gap-2 sm:hidden">
+              {activePlans.map((plan) => (
+                <li key={plan.id} className="flex flex-col gap-2 rounded-lg border p-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="font-semibold">{plan.name}</span>
+                    <span className="tabular shrink-0 rounded-md bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground">
+                      {formatCommissionPercent(plan.commissionBps)} recurring
+                    </span>
+                  </div>
+                  <span className="tabular text-sm">
+                    {formatMinorCurrency(plan.priceMinor, plan.currency)}{" "}
+                    <span className="text-xs text-muted-foreground">
+                      {BILLING_INTERVAL_SUFFIX[plan.billingInterval]}
+                    </span>
+                  </span>
+                  <div className="flex items-center justify-between gap-2">
+                    <code className="min-w-0 truncate rounded bg-muted px-1.5 py-0.5 font-mono text-xs">
+                      {plan.externalPlanKey}
+                    </code>
+                    {isOwner ? <RemovePlanButton plan={plan} /> : null}
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <div className="hidden overflow-hidden rounded-xl border sm:block">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -161,6 +187,7 @@ export function PlansManager({
                 </TableBody>
               </Table>
             </div>
+            </>
           )}
 
           {isOwner ? (

@@ -79,7 +79,7 @@ export default async function CompanyAppPreviewPage() {
         </AlertDescription>
       </Alert>
 
-      <div className="grid items-start gap-8 lg:grid-cols-12">
+      <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
         <div className="flex flex-col gap-8 lg:col-span-8">
           <header className="flex flex-col gap-5 rounded-xl border bg-card p-5 sm:p-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start">

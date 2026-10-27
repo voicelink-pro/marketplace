@@ -12,7 +12,7 @@ import {
   Trash,
 } from "lucide-react";
 import Link from "next/link";
-import { useActionState, useState } from "react";
+import { useActionState, useCallback, useState } from "react";
 import {
   FieldErrors,
   FormMessage,
@@ -24,7 +24,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -48,10 +47,25 @@ import {
 } from "@/modules/catalog/constants";
 import { saveAppDraft, submitAppForReview } from "../actions";
 import type { CompanyWorkspaceApp } from "../queries";
+import { type MediaTarget, useMediaTargetHandler } from "./media-target";
 import { checkAppSubmissionReadiness } from "../schemas";
 
 const textareaClassName =
   "min-h-28 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
+
+const EDITOR_SECTIONS = [
+  { id: "editor-basics", label: "Basics" },
+  { id: "editor-listing", label: "Categories & platforms" },
+  { id: "editor-links", label: "Links" },
+  { id: "editor-media", label: "Media" },
+  { id: "editor-terms", label: "Terms" },
+] as const;
+
+const MEDIA_FIELD_IDS: Record<Exclude<MediaTarget, "screenshot">, string> = {
+  coverImageUrl: "cover-image-url",
+  logoUrl: "logo-url",
+  videoUrl: "video-url",
+};
 
 function invalid(state: FormState, field: string): boolean {
   return Boolean(state.status === "error" && state.fieldErrors?.[field]);
@@ -105,7 +119,7 @@ export function AppSubmissionStatusCard({
             <Badge variant={statusMeta.variant}>{statusMeta.label}</Badge>
             <Badge variant="outline">Demo environment</Badge>
           </div>
-          <CardAction className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Button variant="outline" size="sm" asChild>
               <Link href="/company/app/preview">
                 <Eye data-icon="inline-start" />
@@ -120,7 +134,7 @@ export function AppSubmissionStatusCard({
                 </Link>
               </Button>
             ) : null}
-          </CardAction>
+          </div>
         </div>
 
         <CardDescription>
@@ -215,7 +229,34 @@ export function AppDraftEditorForm({
       : [{ url: "", alt: "" }],
   );
 
+  // Unsaved = edited since the last result, or the last save failed.
+  const [editedAt, setEditedAt] = useState<FormState | null>(null);
+  const dirty = editedAt !== null && (editedAt === state || state.status !== "success");
+  const markEdited = () => setEditedAt(state);
+
+  const receiveMedia = useCallback(
+    (target: MediaTarget, url: string) => {
+      if (target === "screenshot") {
+        setScreenshots((rows) => {
+          const empty = rows.findIndex((row) => !row.url);
+          if (empty >= 0) return rows.map((row, i) => (i === empty ? { ...row, url } : row));
+          return rows.length < 6 ? [...rows, { url, alt: "" }] : rows;
+        });
+        document.getElementById("editor-media")?.scrollIntoView({ block: "start" });
+      } else {
+        ({ coverImageUrl: setCoverImageUrl, logoUrl: setLogoUrl, videoUrl: setVideoUrl })[target](url);
+        const field = document.getElementById(MEDIA_FIELD_IDS[target]);
+        field?.scrollIntoView({ block: "center" });
+        field?.focus({ preventScroll: true });
+      }
+      setEditedAt(state);
+    },
+    [state],
+  );
+  useMediaTargetHandler(receiveMedia);
+
   function fillDemoVisuals() {
+    markEdited();
     setLogoUrl("/demo/logo-pulse.svg");
     setCoverImageUrl("/demo/cover-pulse.svg");
     setVideoUrl("https://pulsecoach.example.com/demo/overview.mp4");
@@ -226,14 +267,28 @@ export function AppDraftEditorForm({
   }
 
   return (
-    <form action={action} noValidate>
+    <form action={action} noValidate onChange={markEdited}>
       <input type="hidden" name="appId" value={app.id} />
 
       <div className="flex flex-col gap-6">
+        <nav
+          aria-label="Profile sections"
+          className="sticky top-16 z-20 flex gap-1 overflow-x-auto rounded-full border bg-card/95 p-1 backdrop-blur"
+        >
+          {EDITOR_SECTIONS.map((section) => (
+            <a
+              key={section.id}
+              href={`#${section.id}`}
+              className="shrink-0 rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+            >
+              {section.label}
+            </a>
+          ))}
+        </nav>
         {state.status === "error" ? <FormMessage state={state} /> : null}
 
         {/* 1. Identity & descriptions */}
-        <Card>
+        <Card id="editor-basics" className="scroll-mt-32">
           <CardHeader>
             <CardTitle>App identity & descriptions</CardTitle>
             <CardDescription>
@@ -313,7 +368,7 @@ export function AppDraftEditorForm({
         </Card>
 
         {/* 2. Categories, platforms, languages */}
-        <Card>
+        <Card id="editor-listing" className="scroll-mt-32">
           <CardHeader>
             <CardTitle>Categories, platforms & languages</CardTitle>
             <CardDescription>
@@ -390,7 +445,7 @@ export function AppDraftEditorForm({
         </Card>
 
         {/* 3. Product & Store Links */}
-        <Card>
+        <Card id="editor-links" className="scroll-mt-32">
           <CardHeader>
             <CardTitle>Product website & app store links</CardTitle>
             <CardDescription>
@@ -447,7 +502,7 @@ export function AppDraftEditorForm({
         </Card>
 
         {/* 4. Visuals: Cover, Logo, Screenshots, Video */}
-        <Card>
+        <Card id="editor-media" className="scroll-mt-32">
           <CardHeader className="gap-2">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <CardTitle>Visual assets, screenshots & video</CardTitle>
@@ -556,7 +611,10 @@ export function AppDraftEditorForm({
                         variant="ghost"
                         size="icon"
                         aria-label={`Remove screenshot ${idx + 1}`}
-                        onClick={() => setScreenshots(screenshots.filter((_, i) => i !== idx))}
+                        onClick={() => {
+                          markEdited();
+                          setScreenshots(screenshots.filter((_, i) => i !== idx));
+                        }}
                       >
                         <Trash />
                       </Button>
@@ -570,7 +628,7 @@ export function AppDraftEditorForm({
         </Card>
 
         {/* 5. Program terms & attribution window */}
-        <Card>
+        <Card id="editor-terms" className="scroll-mt-32">
           <CardHeader>
             <CardTitle>Program terms & attribution window</CardTitle>
             <CardDescription>
@@ -615,18 +673,32 @@ export function AppDraftEditorForm({
           </CardContent>
         </Card>
 
+        <p className="text-xs text-muted-foreground">
+          Subscription plans and their commission rates are managed in{" "}
+          <Link href="/company/plans" className="font-medium text-foreground underline underline-offset-4">
+            Plans & commissions
+          </Link>
+          .
+        </p>
+
         {isOwner ? (
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="text-xs text-muted-foreground">
-              Saving updates your working draft. Manage subscription plans in{" "}
-              <Link href="/company/plans" className="font-medium text-foreground underline underline-offset-4">
-                Plans & commissions
-              </Link>
-              .
+          <div className="sticky bottom-3 z-20 flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-card/95 p-3 shadow-sm backdrop-blur">
+            <p role="status" className="text-sm">
+              {dirty ? (
+                <span className="font-semibold">Unsaved changes</span>
+              ) : (
+                <span className="text-muted-foreground">All changes saved to your private draft</span>
+              )}
             </p>
-            <SubmitButton size="lg" pendingLabel="Saving draft…">
-              Save draft
-            </SubmitButton>
+            <div className="flex gap-2">
+              <Button variant="outline" asChild>
+                <Link href="/company/app/preview">
+                  <Eye data-icon="inline-start" />
+                  Preview saved draft
+                </Link>
+              </Button>
+              <SubmitButton pendingLabel="Saving draft…">Save draft</SubmitButton>
+            </div>
           </div>
         ) : null}
       </div>
