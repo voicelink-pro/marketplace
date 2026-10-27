@@ -1,3 +1,4 @@
+import { AttributionPanel } from "@/modules/attribution/components/attribution-panel";
 import { ExternalLink, Link2 } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -83,6 +84,7 @@ export default async function CreatorLinksPage({
       />
 
       <div className="flex flex-col gap-6">
+        <AttributionPanel appId={visiblePrograms.length === 1 ? visiblePrograms[0]!.appId : undefined} />
         {programs.length > 1 ? (
           <div className="flex flex-wrap items-center gap-1.5">
             <Button

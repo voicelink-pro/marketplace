@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import { MetricsRow } from "@/components/layout/metrics-row";
 import { PageHeader } from "@/components/layout/page-header";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,6 +12,8 @@ import {
   type Viewer,
   type ViewerOrganization,
 } from "@/modules/accounts/viewer";
+import { AttributionPanel } from "@/modules/attribution/components/attribution-panel";
+import { CommissionPanel } from "@/modules/commissions/components/commission-panel";
 import { appReadiness } from "@/modules/company-app/components/app-readiness";
 import {
   AddAppCard,
@@ -39,37 +40,39 @@ async function OrganizationName({ organization }: { organization: OrganizationPr
   return (await organization).name;
 }
 
-/** Its own query after the app's: streams into the metrics row without holding the rest back. */
-async function CreatorsJoinedCount({ appId }: { appId: string }) {
-  return (await listCompanyCreators(appId)).length;
+/** Its own query after the app's: streams into the results heading without holding the rest back. */
+async function CreatorsJoined({ appId }: { appId: string }) {
+  const count = (await listCompanyCreators(appId)).length;
+  return (
+    <Link href="/company/creators" className="text-sm font-medium underline-offset-4 hover:underline">
+      <span className="tabular">{count}</span> {count === 1 ? "creator joined" : "creators joined"}
+    </Link>
+  );
 }
 
-function Metrics({ appId }: { appId: string | null }) {
+/** Clicks, registrations, payments and commission from the tracking backend; the panels load their own data. */
+function Results({ appId }: { appId: string | null }) {
   return (
-    <MetricsRow
-      metrics={[
-        {
-          label: "Creators joined",
-          // Without an app nobody can have joined: a real zero, no query needed.
-          value: appId ? (
-            <Suspense fallback={<Skeleton className="inline-block h-[1em] w-8 align-top" />}>
-              <CreatorsJoinedCount appId={appId} />
-            </Suspense>
-          ) : (
-            0
-          ),
-          caption: appId ? (
-            <Link href="/company/creators" className="font-medium underline-offset-4 hover:text-foreground hover:underline">
-              View creators
-            </Link>
-          ) : (
-            "Once your app is listed"
-          ),
-        },
-        { label: "Paying customers" },
-        { label: "Commission this month" },
-      ]}
-    />
+    <section aria-labelledby="results-heading" className="flex flex-col gap-3">
+      <div className="flex min-h-5 flex-wrap items-center justify-between gap-2">
+        <h2 id="results-heading" className="text-lg font-bold tracking-[-0.02em]">
+          Referral & subscription results
+        </h2>
+        {appId ? (
+          <Suspense fallback={<Skeleton className="h-4 w-28" />}>
+            <CreatorsJoined appId={appId} />
+          </Suspense>
+        ) : null}
+      </div>
+      {appId ? (
+        <Suspense fallback={<Skeleton aria-busy className="h-72 w-full rounded-[20px]" />}>
+          <AttributionPanel company appId={appId} />
+          <CommissionPanel company appId={appId} summary />
+        </Suspense>
+      ) : (
+        <p className="text-sm text-muted-foreground">Create an app to see referral results.</p>
+      )}
+    </section>
   );
 }
 
@@ -93,7 +96,7 @@ async function Overview({ organization }: { organization: OrganizationPromise })
     return (
       <>
         <AddAppCard />
-        <Metrics appId={null} />
+        <Results appId={null} />
       </>
     );
   }
@@ -109,7 +112,7 @@ async function Overview({ organization }: { organization: OrganizationPromise })
       ) : null}
       <StatusTimeline app={app} />
       <OverviewGrid checklist={<SetupChecklist checklist={appReadiness(app)} app={app} />} preview={<OfferPreview app={app} />} />
-      <Metrics appId={app.id} />
+      <Results appId={app.id} />
     </>
   );
 }
@@ -119,13 +122,12 @@ function OverviewSkeleton() {
     <>
       <StatusTimelineSkeleton />
       <OverviewGrid checklist={<SetupChecklistSkeleton />} preview={<OfferPreviewSkeleton />} />
-      <MetricsRow
-        metrics={[
-          { label: "Creators joined", value: <Skeleton className="inline-block h-[1em] w-8 align-top" />, caption: " " },
-          { label: "Paying customers" },
-          { label: "Commission this month" },
-        ]}
-      />
+      <section aria-labelledby="results-heading-loading" aria-busy className="flex flex-col gap-3">
+        <h2 id="results-heading-loading" className="text-lg font-bold tracking-[-0.02em]">
+          Referral & subscription results
+        </h2>
+        <Skeleton className="h-72 w-full rounded-[20px]" />
+      </section>
     </>
   );
 }

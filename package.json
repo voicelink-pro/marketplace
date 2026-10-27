@@ -13,13 +13,22 @@
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "payments:worker": "node --env-file-if-exists=.env.local scripts/payment-worker.mjs",
+    "payments:setup": "node --env-file-if-exists=.env.local scripts/configure-payment-backend.mjs --local",
     "test:integration": "node scripts/test-integration.mjs",
     "db:start": "supabase start",
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
     "db:types": "node scripts/db-types.mjs",
     "db:advisors": "supabase db advisors --local --type all --fail-on warn",
-    "admin:grant": "node --env-file-if-exists=.env.local scripts/grant-admin.mjs"
+    "admin:grant": "node --env-file-if-exists=.env.local scripts/grant-admin.mjs",
+    "commissions:worker": "node --env-file-if-exists=.env.local scripts/commission-worker.mjs",
+    "commissions:operator": "node --env-file-if-exists=.env.local scripts/commission-operator.mjs",
+    "finance:worker": "node --env-file-if-exists=.env.local scripts/finance-worker.mjs",
+    "finance:operator": "node --env-file-if-exists=.env.local scripts/finance-operator.mjs",
+    "ops:check": "node --env-file-if-exists=.env.local scripts/operations-check.mjs",
+    "backup:local": "node scripts/local-backup.mjs",
+    "test:pilot": "node scripts/test-pilot.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.7",

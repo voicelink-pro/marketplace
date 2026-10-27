@@ -23,6 +23,7 @@ export default function ErrorPage({ error, retry }: { error: unknown; retry: () 
       >
         <div className="flex flex-wrap justify-center gap-2">
           <Button onClick={() => retry()}>Try again</Button>
+          <Button variant="outline" asChild><Link href="/support">Contact support</Link></Button>
           <Button variant="outline" asChild>
             <Link href="/">Go to the marketplace</Link>
           </Button>

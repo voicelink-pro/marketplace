@@ -53,4 +53,20 @@ pnpm test:integration
 
 Company media can be uploaded from App profile (PNG/JPEG/WebP up to 10 MB, MP4/WebM up to 25 MB). Uploaded objects are immutable and private; only references in the current approved release become public through `/media/apps/...`. New files receive new paths. External URLs are already public and cannot be made private by this app. The in-memory demo does not emulate Storage and is always forbidden in production.
 
-The Stage 1–4 repair and verification record is in `docs/IMPLEMENTATION_STATUS.md`. Stage 5 (redirects, clicks, customer attribution) has not been implemented.
+The Stage 1–4 repair and verification record is in `docs/IMPLEMENTATION_STATUS.md`. Stage 5 sandbox attribution is documented in [docs/ATTRIBUTION_INTEGRATION.md](docs/ATTRIBUTION_INTEGRATION.md), including app-scoped credentials, redirects, customer registration and the local integration demo. Payment integrations remain stage 6.
+
+## Payment integrations (stage 6)
+
+See [docs/PAYMENT_INTEGRATIONS.md](docs/PAYMENT_INTEGRATIONS.md) for authenticated webhook delivery, durable asynchronous processing, identity/plan mapping and frontend contracts. Apply the E6 migration, run `pnpm payments:setup`, restart Next, then run `pnpm payments:worker`. Actual Stripe/RevenueCat sandbox acceptance requires provider access; local fixtures do not imply provider verification. Live payment processing remains disabled. Stage 7 adds explicitly configured sandbox commission accounting; real funding and payout execution remain disabled.
+
+## Commission accounting (stage 7)
+
+See [docs/COMMISSION_ACCOUNTING.md](docs/COMMISSION_ACCOUNTING.md) for explicit sandbox policy/basis declarations, the immutable balanced journal, historical rates, corrections, operator month closure and fixture funding. Apply the E7 migration and run `pnpm commissions:worker` alongside the E6 worker. No platform fee is configured automatically. Provider access preparation: [docs/PROVIDER_SANDBOX_PLAYBOOK.md](docs/PROVIDER_SANDBOX_PLAYBOOK.md).
+
+## Company funding and creator payouts (stage 8 sandbox)
+
+See [docs/FUNDING_AND_PAYOUTS.md](docs/FUNDING_AND_PAYOUTS.md). Apply the E8 migrations, then run `pnpm finance:worker` alongside the payment and commission workers. Funding, automatic top-ups, recipient setup, Withdraw and reconciliation use a durable test provider; this is separate from Stripe app-sales sandbox. No real money moves and no live adapter is registered. Fault injection: `pnpm finance:operator` (explicit `--fixture` required). Funding failure notifications appear in the company panel.
+
+## Pilot operations (stage 9)
+
+See [docs/PILOT_CHECKLIST.md](docs/PILOT_CHECKLIST.md), [docs/OPERATIONS_AND_RECOVERY.md](docs/OPERATIONS_AND_RECOVERY.md) and [docs/FRONTEND_INTEGRATION.md](docs/FRONTEND_INTEGRATION.md). E9 adds real administrative queues, private support conversations, in-app notifications, append-only audit and worker heartbeats. `pnpm ops:check` reports actionable queue/liveness signals; `pnpm test:pilot` builds an isolated local HTTP acceptance environment and verifies the connected lifecycle plus nonempty backup/restore. `pnpm backup:local` is explicitly local-only. Hosted monitoring, off-site encrypted backups, the merged frontend acceptance and all live-money requirements need their separate checks.

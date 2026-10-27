@@ -1,7 +1,7 @@
 # Status implementacji
 
 Brief: `MARKETPLACE_BRIEF_I_PROMPTY.md` • Decyzje: `docs/DECISIONS.md`
-Ostatnia aktualizacja: 2026-10-26 (naprawy i odbiór etapów 1–4 przed E5)
+Ostatnia aktualizacja: 2026-10-27 (Etap 9 — odbiór techniczny sandbox, integracja frontendu oczekuje)
 
 Każda nowa rozmowa zaczyna od przeczytania briefu i tego pliku.
 Wyniki testów zapisujemy wyłącznie jako `pass`, `fail` albo `blocked`, z opisem, co faktycznie uruchomiono.
@@ -10,8 +10,8 @@ Wyniki testów zapisujemy wyłącznie jako `pass`, `fail` albo `blocked`, z opis
 
 - Marka platformy: **boostlink** (małymi literami od 27.10.2026, W-00), zatwierdzona 26.10.2026; konfiguracja nazwy i metadane korzystają z `src/config/site.ts`.
 - Zakres dla frontend developera: [FRONTEND_SCOPE_STAGES_1_4.md](FRONTEND_SCOPE_STAGES_1_4.md), w tym pakiety E1–E4, właściciele plików i kryteria odbioru.
-- Status dopracowania UI/UX: **zakres przygotowany; realizacja i odbiór poszczególnych pakietów jeszcze nie rozpoczęte**. Wcześniejsze wyniki testów funkcjonalnych pozostają historią weryfikacji backendu.
-- Backend E5: kolejny zakres Karola z Codexem; ten wpis nie oznacza jego implementacji.
+- Status dopracowania UI/UX: zmiany Rocha (marka, motyw, home page, rejestracja i logowanie, onboarding, przeglądy `/creator` i `/company`) udostępnione na gałęzi `frontend/auth-onboarding-overviews` i połączone z backendem E5–E9 (wpis o merge’u niżej); szczegóły i wyniki weryfikacji w wpisach poniżej, odbiór po review.
+- Backend E5/E6/E7/E8/E9: prowadzi Karol z Codexem; aktualny odbiór opisano niżej w sekcjach E5/E6/E7/E8/E9. Zakres frontendu E1–E4 pozostaje niezależny.
 - Marka wizualna (26.10, gałąź `frontend/brand-refresh`): paleta z brand boardu w tokenach `globals.css`, nowy znak „b” w `Logo`, `icon.svg`, `apple-icon.png`, `favicon.ico`; tekst akcentu przez `text-primary-ink`. Zmiana dotyczy wyłącznie klas i zasobów — bez zmian w danych, akcjach i przekierowaniach.
 - Nazwa małymi literami (27.10, W-00): `siteConfig.name = "boostlink"` zasila nagłówki, logo, tytuły stron i metadane; logo nie potrzebuje już `lowercase` w CSS. Wcześniejsze wpisy historyczne z 26.10 zostają bez zmian.
 - Rebrand 27.10 (ta sama gałąź): font Plus Jakarta Sans, promienie 20/12/pill, ciemny panel twórcy, hero i sekcja twórców na `/`, karta oferty z prowizją jako główną liczbą i CTA „Join offer”, tagline „Apps. Faster together.” w `siteConfig`. Ręczna weryfikacja przez CDP na lokalnym Supabase (1280 i 390 px): logowanie, onboarding twórcy i firmy, dołączenie do oferty, panele twórcy/firmy/admina — **pass**, bez poziomego przewijania strony. Karta oferty: budżet, liczba twórców i akceptowane platformy społecznościowe — **blocked** (brak w modelu danych; backend). Znane, wcześniejsze ograniczenie: na 390 px pola kodu/linku i tabela planów na `/creator/programs/[slug]` są przycinane w karcie — do pakietu E4.
@@ -50,6 +50,8 @@ Wyniki testów zapisujemy wyłącznie jako `pass`, `fail` albo `blocked`, z opis
 - Insight Next.js „uncached data during prerendering or a navigation” na `/creator` i `/company` (27.10, ta sama gałąź): strony nic nie czekają na najwyższym poziomie — `requireViewer` (sam też wyzwalał insight) i zapytania startują jako obietnice, a każda zależna sekcja czeka na nie we własnym `<Suspense>`; zapytania bez zmian. `/creator`: imię w „Hi, …”, checklista (bez placeholdera — widoczna tylko przy otwartych krokach), „Your programs” i „Similar apps” (wywoływane tylko przy co najmniej jednym programie) streamują osobno; nagłówek, metryki i „How you get paid” od razu. `/company`: nazwa firmy, karta aplikacji z alertem i licznik „creators joined” (osobno, nie blokuje już karty); sekcja wyników od razu. `PageHeader.title` przyjmuje `ReactNode`. Szkielety box-for-box: zmierzone przy sztucznym opóźnieniu (usuniętym) przy 1280 i 375 px — wymiary sekcji i pozycje kolejnych identyczne przed i po załadowaniu; karta firmy dopasowana do stanu tuż po utworzeniu aplikacji (szkic, domyślny opis, 6 otwartych punktów), przy innych stanach może się zmienić wysokość. Insight nie pojawia się dla `/creator` ani `/company` przy wejściu z adresu i przy nawigacji w panelu — **pass**; `pnpm lint`, `pnpm typecheck`, `pnpm test` (132), `pnpm build` — **pass**. Konta QA, ich organizacja i aplikacja usunięte. Ten sam insight nadal na m.in. `/creator/links`, `/creator/settings`, `/creator/programs`, `/creator/programs/[slug]`, `/company/app`, `/company/settings`, `/company/plans`.
 - Checklista „Get started” na `/creator` (27.10, ta sama gałąź): zrobione kroki to jeden kompaktowy, wyciszony wiersz (żółty znacznik + tytuł, bez opisu i strzałki, nie link); otwarte kroki bez zmian (pełny wiersz z opisem i strzałką). Tytuły wyrównane w obu wariantach (ten sam 32 px slot ikony, padding i ramka). Weryfikacja CDP na lokalnym Supabase (konto QA usunięte): stany 1/3 i 2/3, 1280 i 375 px, jasny i ciemny, wiersz zrobiony 34 px vs otwarty 78 px, brak elementów poza ekranem — **pass**; `pnpm lint`, `pnpm typecheck`, `pnpm test` — **pass**.
 - Przegląd firmy `/company` (28.10, ta sama gałąź): komponenty w `src/modules/company-app/components/company-overview.tsx`, zapytania i akcje bez zmian. Oś statusu Draft → Submitted → Approved → Live z obecnego statusu (`rejected` = Draft z „Changes requested”, `published` + `demo` = Approved, `published` + `live` = Live — dziś nieosiągalne, podpis „Needs integration and funding”), bieżący krok na żółto; „Setup checklist” z paskiem i „X of 6 done”, każdy punkt linkuje do kotwicy edytora `/company/app` (plany → `/company/plans`), jeden główny przycisk dla pierwszego otwartego punktu („Next: add name & description” itd.), po komplecie „Next: submit for review” lub krótka informacja; po prawej (desktop) / pod checklistą (telefon) „This is how creators see your offer” — `AppCard` z katalogu na danych szkicu, link do `/company/app/preview`; bez aktywnego planu karta pokazuje „—” / „commission not set” (zmiana w `AppCard`: stawka 0 występuje tylko w podglądzie szkicu, realne to 1–90%); rząd metryk Creators joined (prawdziwa liczba, osobny stream) / Paying customers / Commission this month („—”, „Tracking starts soon”) zamiast dużej pustej karty wyników; bez aplikacji karta „Add your app”. Wspólny `MetricsRow` w `src/components/layout/metrics-row.tsx` (też `/creator`); metadane punktów checklisty w `checklist-items.ts` (wspólne dla edytora i przeglądu); `PublicationChecklistSummary` usunięty (nieużywany). Checklista w jednej kolumnie — w dwóch najdłuższa etykieta zawijała się zależnie od szerokości. Weryfikacja CDP na lokalnym Supabase: stany bez aplikacji, szkic (0/6) i Approved (tymczasowe członkostwo konta QA w organizacji z seeda, usunięte), 1280 i 375 px, jasny i ciemny, brak elementów poza ekranem; szkielety box-for-box dla świeżego szkicu (identyczne wymiary przed i po załadowaniu przy 1280 i 375 px, sztuczne opóźnienie usunięte); insight nawigacji dla `/company` nie wraca — **pass**; `pnpm lint`, `pnpm typecheck`, `pnpm test` (132), `pnpm build` — **pass**. Dane QA usunięte.
+- Merge `origin/codex/stage-8-9-funding-and-pilot` (28.10, gałąź `frontend/auth-onboarding-overviews`): w konfliktach frontend z gałęzi Rocha, backend z gałęzi Karola. `/creator` i `/company`: układ z przeglądów powyżej, a w miejscu rzędu metryk („—”, „Tracking starts soon”, po etapach 5–8 już nieprawdziwy) panele backendu bez zmian — `AttributionPanel` i `CommissionPanel summary` (u firmy z `company appId`), w osobnym `<Suspense>` z placeholderem, więc strony nadal nie blokują nawigacji; liczba „creators joined” przeniesiona do nagłówka sekcji wyników u firmy; `MetricsRow` usunięty (nieużywany). `/creator/links`: układ Rocha (lista, karty na telefonie, formularz na końcu) + `AttributionPanel` na górze jak w backendzie. Menu konta: przełącznik motywu oraz „Notifications” i „Support” z backendu. `DECISIONS.md`: wiersze obu stron w kolejności dat. Weryfikacja po merge’u — wynik w kolejnym wpisie.
+- Weryfikacja po merge’u (28.10): `pnpm typecheck`, `pnpm lint`, `pnpm test` (220, w tym nowe testy E5–E9), `pnpm build` — **pass**. Po `supabase migration up` (8 migracji E5–E9, bez resetu danych) weryfikacja CDP na lokalnym Supabase: `/creator` i `/company` z panelami backendu w nowym układzie, kliknięcie linku twórcy (`/r/…` → 302) widoczne jako „Clicks 1” u firmy, „creators joined” w nagłówku wyników, menu konta z Notifications / Support / motywem, 1280 i 375 px bez elementów poza ekranem, brak insightu nawigacji dla `/creator` i `/company` — **pass**. Konta QA usunięte. Panele backendu mają na razie własny, prostszy wygląd (karty i tabele) — do dopracowania osobno.
 - Weryfikacja zmiany marki i dokumentacji (26.10): **pass** — `pnpm lint`, `pnpm typecheck`, `pnpm build` (38 tras), nazwa BoostLink w wygenerowanym HTML/metadanych i brak poprzedniej nazwy w wygenerowanych plikach HTML. Testów logiki i integracji nie powtarzano w tym zadaniu: nie zmieniono backendu ani kontraktów.
 
 ## Podsumowanie etapów
@@ -61,11 +63,11 @@ Wyniki testów zapisujemy wyłącznie jako `pass`, `fail` albo `blocked`, z opis
 | 2 | Publiczny katalog i strony aplikacji | **Ukończony; poprawki, PGlite i prawdziwy PostgREST `pass` (26.10)** |
 | 3 | Firma dodaje aplikację, admin publikuje | **Ukończony; poprawki, PGlite i prawdziwy PostgREST `pass` (26.10)** |
 | 4 | Dołączenie twórcy, przewodnik, programy, linki | **Ukończony; historyczne warunki i izolacja przez prawdziwy PostgREST `pass` (26.10)** |
-| 5 | Przypisanie klientów, statystyki poleceń | Nie rozpoczęty — **następny** |
-| 6 | Integracje płatności (Stripe, RevenueCat, Generic API) | Nie rozpoczęty |
-| 7 | Prowizje, historia stawek, zamknięcie miesiąca | Nie rozpoczęty |
-| 8 | Finansowanie firm, auto-doładowania, wypłaty (sandbox) | Nie rozpoczęty |
-| 9 | Domknięcie MVP, pilotaż | Nie rozpoczęty |
+| 5 | Przypisanie klientów, statystyki poleceń | **Ukończony w sandboxie; testy i odbiór lokalny pass (26.10)** |
+| 6 | Integracje płatności (Stripe, RevenueCat, Generic API) | **Backend pass; Stripe sandbox zakup/odnowienie/refund pass; RevenueCat blocked** |
+| 7 | Prowizje, historia stawek, zamknięcie miesiąca | **Ukończony w sandboxie; testy lokalne pass, live wyłączone** |
+| 8 | Finansowanie firm, auto-doładowania, wypłaty (sandbox) | **Ukończony z adapterem testowym; live wyłączone** |
+| 9 | Domknięcie MVP, pilotaż | **Część techniczna sandbox pass; odbiór po integracji frontendu i hostingu blocked** |
 
 ---
 
@@ -346,7 +348,211 @@ Historyczne tabele testów z 24–25.10 pozostają zapisem ówczesnego stanu, ni
 | B-04 | Otwarte decyzje biznesowe P-01…P-09 | Blokują wyłącznie operacje live z prawdziwymi pieniędzmi | Sandbox zgodnie z `DECISIONS.md`; live wyłączone |
 | R-01 | Superpowers i react-best-practices tylko w tymczasowym cache Codexa; Trail of Bits brak | Możliwa utrata dostępu do instrukcji | Zalecana stała instalacja skilli w projekcie |
 
+## Etap 5 — bezpieczne przekierowania, przypisanie i statystyki (26.10.2026)
+
+### Co wdrożono
+
+- `/r/[token]`: sprawdzony cel z aktualnego zatwierdzonego wydania, brak dowolnych redirectów, niecache'owane 302, oddzielny losowy token kliknięcia przekazywany do web przez `bl_ref`. HEAD/prefetch nie tworzą kliknięć. Dla mobile kod przy rejestracji; brak obietnicy zachowania polecenia przez instalację.
+- `POST /api/v1/customers`: uwierzytelnienie sekretem konkretnej aplikacji, ścisła walidacja i limity, komunikacja backend–backend. Bez konta klienta na BoostLink. Sekrety i tokeny są przechowywane w bazie jako prywatne skróty; klient aplikacji nie otrzymuje sekretu.
+- `private.attribution_policy()`: jedna konfiguracja propozycji sandbox P-03/P-04/P-05. Jawny kod przed linkiem, ostatnie ważne kliknięcie, okno 30 dni, blokada trybu live i odmiennego reklamowanego okna.
+- Atomowa mapa tożsamości klienta, blokada wyścigów, unikalność per aplikacja, niezmienne przypisanie i idempotentne retry. Także konto organiczne pozostaje organiczne; instrukcja wymaga zgłaszania wszystkich rejestracji i wprowadzenia starych kont przed integracją.
+- Snapshot wersji całej tabeli warunków/stawek z chwili rejestracji i zachowanie odczytu historii twórcy po republikacji. Brak płatności i wyliczeń prowizji.
+- Rzeczywiste kliknięcia/rejestracje w Overview twórcy i firmy, Links oraz Referrals. Osobne źródło kodu, porównanie wyników poszczególnych linków, stronicowana lista pseudonimów klientów. Dostęp ograniczony przez RLS; brak PII i źródłowego ID klienta w panelach.
+- Skrypt nadania/rotacji klucza `scripts/attribution-key.mjs` i samodzielna lokalna aplikacja HTTPS `examples/attribution-demo/server.mjs`, która trzyma sekret i przechwycone tokeny na swoim backendzie.
+
+### Migracja i uruchomienie
+
+Nowa migracja: `supabase/migrations/20261026222235_referral_attribution.sql`. Nie zmieniono wcześniejszych migracji. Dla istniejącej lokalnej bazy: `pnpm exec supabase db push --local --yes`, następnie `pnpm db:types`, `pnpm db:advisors`, `pnpm test:integration`. BoostLink nie wymaga nowej zmiennej środowiskowej ani uprzywilejowanego klucza w serwerze web. Zewnętrzny backend aplikacji przechowuje `BOOSTLINK_API_URL` i `BOOSTLINK_APP_API_KEY`; demo ma własny szablon konfiguracji.
+
+Instrukcja integracji, kontrakt dla frontendu i pełny scenariusz ręczny: [ATTRIBUTION_INTEGRATION.md](ATTRIBUTION_INTEGRATION.md).
+
+### Weryfikacja
+
+- **pass — `pnpm lint`:** 0 błędów i ostrzeżeń.
+- **pass — `pnpm typecheck`:** typy tras i TypeScript, także testy integracyjne.
+- **pass — `pnpm test`:** 16 plików, 147 testów. Obejmuje pełny łańcuch migracji na PGlite, granicę HTTP, wygaśnięcie, ostatnie ważne kliknięcie, pierwszeństwo kodu, retry, organiczne konto bez możliwości przejęcia, obcą aplikację, próby zapisu z frontendu, niezmienność, niedozwolony redirect, niezgodne okno i limity.
+- **pass — `pnpm test:integration`:** 5 plików, 23 testy na prawdziwym lokalnym Supabase, bez pominięć. Osiem równoległych przypisań dwóch twórców daje jeden rekord i jedną odpowiedź `created`; izolacja dwóch firm i twórców, kontrakt HTTP z prawdziwym RPC, rotacja oraz snapshot stawek po dwóch republikacjach. Pozostałe testy E1–E4 również pass.
+- **pass — `pnpm build`:** 39 stron w generowaniu; nowe trasy `/r/[token]` i `/api/v1/customers` są dynamiczne. Cache Components i Partial Prefetching pozostają aktywne.
+- **pass — `pnpm db:advisors`:** `results: []`, brak problemów. Migracja E5 zastosowana lokalnie; podczas prac funkcje dopracowano bez resetowania bazy. Pełna finalna migracja była wykonywana od zera w testach PGlite; odbiór funkcji i uprawnień wykonano przez realny PostgREST. Nie resetowano potrzebnych danych użytkownika ani innych stosów.
+- **pass — rzeczywisty HTTP Next:** 302 z tokenem `bl_ref` i no-store; próba podania redirectu daje 400, HEAD daje 405; link/kod tworzą 201, retry tego samego klienta daje 200 i ten sam rekord, brak sekretu daje 401.
+- **pass — aplikacja demonstracyjna HTTPS:** przechwycenie tokenu we własnej sesji, rejestracja z backendu do Next, retry 200 i brak sekretu w HTML. Sprawdzono również brak konkretnego sekretu QA w `.next/static`. Certyfikat i konta były wyłącznie lokalne i jednorazowe.
+- **pass — UI z prawdziwymi sesjami:** panele Referrals twórcy i firmy pokazują 1 rzeczywiste kliknięcie, 2 rejestracje linkiem i 1 kodem z testowego flow; kod nie zwiększa wyniku linku. Są pseudonimy i nazwa aplikacji, bez źródłowych ID/PII. Szerokości 390 i 1280 px: brak poziomego overflow całej strony, brak błędów/ostrzeżeń konsoli. Dowód: `docs/verification/stage-5-referrals.png`.
+- Jednorazowe konta, aplikację i klucz QA usunięto po odbiorze; statystyk demonstracyjnych nie zapisano w seedzie. Katalog wraca do lokalnych ofert seeda. Odbiór nie oznacza uruchomienia live ani etapu 6.
+
+
+### Granice etapu
+
+Tylko sandbox/demo. P-03/P-04/P-05/P-07 nadal wymagają zatwierdzenia dla live. Liczba kliknięć nie oznacza unikalnych ludzi i może obejmować boty; nie stosujemy fingerprintingu. Dane i konta aplikacji demonstracyjnej są w pamięci, a certyfikat jest lokalny i jednodniowy. Nie uruchomiono płatności, naliczania prowizji, finansowania ani wypłat. Cloud/pilotaż nadal wymagają B-02/B-03/B-04.
+
+## Historyczny następny krok po E5
+
+**ETAP 6** — integracje płatności Stripe/RevenueCat/Generic API po osobnym zleceniu. E5 zapisuje stabilny identyfikator przypisania i historyczną wersję warunków potrzebne kolejnym etapom. Frontend może niezależnie dopracowywać etapy 1–4 według swojego zakresu; przy zmianie wspólnych stron uzgadnia kontrakt modułu atrybucji.
+
+## Etap 6 — zakupy, odnowienia i integracje backendu (27.10.2026)
+
+### Wdrożono
+
+- Wspólny `PaymentEvent` i adaptery Stripe/RevenueCat/Generic, po sprawdzeniu aktualnej oficjalnej dokumentacji. Weryfikacja podpisów na raw body, Bearer RC, kont i środowisk, brak sekretów w przeglądarce i brak pozornego dowodu sprzedaży Generic.
+- Trwały inbox przed HTTP 200, prywatne payloady i osobny worker CLI. Lease, równoległe pobieranie SKIP LOCKED, backoff, limit prób, przejęcie po awarii i ręczny retry. Cały efekt biznesowy oraz zmiana statusu atomowe. Osobne serwerowe tokeny E6 nie naruszają kluczy E5.
+- Oddzielne mapowania klientów aplikacji/operatora, produktów/planów i referencji charge/payment intent do faktury. Braki trafiają do waiting, nie znikają. Wewnętrzny identyfikator kupionego planu jest utrwalony dla przyszłego E7, bez publicznego grantu odczytu.
+- Deduplikacja eventów, zakupów i korekt; sprzeczny payload zachowuje oryginał. Jeden autorytatywny provider na sklep/aplikację/środowisko zapobiega lustrzanemu liczeniu Stripe i RC. Zakup nie dubluje się w timeline przy drugiej notyfikacji faktury.
+- Zakupy/odnowienia, stany subskrypcji, wyłączenie odnowienia, refundy i spory. Płatność 0/trial nie kwalifikuje; refund nie wynika z samego anulowania. Zdarzenia są porządkowane czasem dostawcy; niejednoznaczny remis stanów wstrzymuje aktywność/płatną kwalifikację do nowszego autorytatywnego zdarzenia.
+- Panel Integrations: konfiguracja, instrukcja, mapowania, ostatni odbiór/sukces, odróżnienie Configured/Verified, diagnoza błędów i ponowienie. Brak nowego redesignu; wydzielone kontrakty serwerowe dla kolegi.
+- Płacący klienci i aktywni płacący subskrybenci w istniejących panelach, timeline konkretnego klienta bez PII. Odczyty RLS oraz jawne rozdzielenie kontekstów przy obu rolach na jednym koncie.
+- Live zapisany osobno i zablokowany. Nie wdrożono prowizji, dziennika, finansowania ani wypłat.
+
+### Migracja i środowisko
+
+Migracja: `supabase/migrations/20261026225312_payment_integrations.sql`. Nie zmieniono wcześniejszych migracji ani nie resetowano bazy użytkownika. `pnpm exec supabase db push --local --yes`, `pnpm db:types`, `pnpm db:advisors`, `pnpm payments:setup`, restart Next; osobno `pnpm payments:worker`. Nowe zmienne serwerowe: `PAYMENT_BACKEND_TOKEN`, `PAYMENT_WEBHOOK_SECRETS_JSON`. Klucze uprzywilejowane Supabase nadal wyłącznie w skryptach/testach. Szczegółowy kontrakt i odbiór ręczny: [PAYMENT_INTEGRATIONS.md](PAYMENT_INTEGRATIONS.md).
+
+### Weryfikacja lokalna
+
+- **pass — `pnpm test`: 18 plików / 168 testów.** Cały łańcuch migracji na PGlite, RLS, brak podwójnego zakupu, 0/trial, refund/spór, kolejność i remisy stanów, brakujące mapowania, retry, lease, izolacja live oraz kontekst obu ról.
+- **pass — `pnpm test:integration`: 6 plików / 28 testów** przez rzeczywisty lokalny Supabase Auth/PostgREST. E6 obejmuje 12 równoległych dostarczeń, dodatkowe dostarczenia podczas przetwarzania i dwóch konkurujących workerów; jeden zakup, bez utraty eventów. Nie jest to test sandboxa operatora.
+- **pass — `pnpm lint`, `pnpm typecheck`, `pnpm build`.** Sprawdzono bieżący build, w tym odczyt dat PostgreSQL ze strefą czasową w timeline.
+- **pass — `pnpm db:types`: brak różnic względem zapisanych typów; `pnpm db:advisors`: No issues found.** Lokalna baza użytkownika nie była resetowana.
+- **pass — rzeczywisty lokalny HTTP + CLI worker na jawnych fixtures.** Stripe, RevenueCat i Generic dotarły do kolejki i zostały przetworzone; zakup i odnowienie widoczne, lustrzany event RC/Stripe pominięty. Dodatkowy odbiór po wznowieniu potwierdził HTTP 401 dla fałszywego podpisu, brak zakupu przed workerem, zapis po workerze i brak duplikatu po ponownym dostarczeniu. Brak mapowania pozostawił event w waiting z instrukcją naprawy.
+- **pass — odczyt czterech widoków przez HTTP SSR** z oddzielnymi sesjami syntetycznej firmy/twórcy: Integrations, Referrals i szczegóły klienta po obu stronach. Obie role widzą poprawne płatne metryki i timeline; Configured/Verified wynika z backendu. Nie zmieniano sesji przeglądarkowej użytkownika. Osobnego odbioru wizualnego w Chrome nie wykonano — ta przeglądarka nie była dostępna w narzędziu.
+- **pass — skan `.next/static`: brak rzeczywistych sekretów testowych i tokenu backendu.** Usunięto wyłącznie jednorazową aplikację QA, jej trzy syntetyczne konta i trzy sekrety; zachowano wcześniejsze konta i dane. Uruchomiono ponownie Next i osobny lokalny worker bez tych sekretów.
+- Brak nierozwiązanych wyników **fail** w wykonanych końcowych kontrolach. Nie oznacza to odbioru live ani prawdziwego zakupu u dostawcy.
+
+### Testy dostawców i granice
+
+- **blocked — prawdziwy zakup/odnowienie Stripe sandbox:** brak skonfigurowanego dostępu i sekretów konta dostawcy. Poprawnie podpisany lokalny fixture nie jest takim zakupem.
+- **blocked — prawdziwy zakup/odnowienie RevenueCat sandbox:** brak dostępu do projektu/aplikacji i transakcji sklepowej. Fixtures są opisane jawnie, a dashboard TEST sam nie daje Verified.
+- Obsługiwane ograniczenia adapterów są jawne w instrukcji: Stripe snapshot, pojedyncza pozycja abonamentowa; złożone/proracyjne faktury i nieznane waluty nie są zgadywane. Niejednoznaczne stany wymagają nowszego autorytatywnego zdarzenia. To nie jest odbiór live/pilotażu.
+
+## Historyczny następny krok po E6
+
+**ETAP 7 — prowizje, historia stawek i zamknięcie miesiąca**, zlecony w kolejnym kroku. Równolegle operator może dostarczyć dostępy do rzeczywistego odbioru Stripe/RevenueCat, a kolega kontynuować UI/UX na kontraktach modułów E5/E6.
+
+## Etap 7 — prowizje, dziennik i zamknięcie miesiąca (27.10.2026)
+
+### Wdrożono
+
+- Prowizje od zakupów i odnowień E6 z historycznej tabeli klienta E5. Oddzielne sprzedaż/basis/brutto/opłata/kwota twórcy, bigint i zgodna reguła half-up SQL/TS. Brak domyślnej stawki platformy; policy i basis są jawne. Nieznany plan/waluta tworzy sprawę; trial/0/organiczne/live nie naliczają prowizji.
+- Niezmienny, bilansowany dziennik z constraintem sumy postings zero i prywatną projekcją. Korekty dopisywane, zapis i status atomowe; współbieżne zadania są serializowane per aplikacja, bez podwójnego skutku.
+- Częściowe/full refundy, cofnięcia i spory. Blokada held; przywrócenie kwoty nie przekracza ponownie użytego finansowania. Refund po symulowanym payout tworzy sprawę bez automatycznego przypisania kosztu.
+- Idempotentne zamknięcie ukończonego miesiąca UTC oraz niezmienne zestawienia firmy/twórcy per waluta. Późne zdarzenia mają oryginalną transakcję/okres, czas źródłowy i otwarty miesiąc księgowania. Starszy niezamknięty miesiąc nie uwalnia się przy close innego okresu.
+- Kontrolowane funding fixtures dostępne wyłącznie operatorowi. Późniejsze sfinansowanie zwalnia wcześniejsze zamknięte należności bez kolejnego close. Symulacja in_payout/paid służy testom, bez realnego przelewu.
+- Earnings, Overview, zestawienia w Funding & statements i szczegóły klienta podłączone do danych E7. Bez PII, sekretów i mutacji finansowych frontendu. Osobny worker, narzędzie operatora, instrukcja i playbook dostępów dla właściciela. Redesign nadal u kolegi.
+
+### Migracja i uruchomienie
+
+`20261027185130_commission_ledger.sql`; zastosowano lokalnie bez resetu. `pnpm db:types`, `pnpm db:advisors`; worker `pnpm commissions:worker` obok E6. Brak nowych zmiennych: używany jest serwerowy ograniczony token E6. Konfiguracja polityki/funding fixtures wymaga operatora; nic nie ustawia automatycznie stawki 10%. Kontrakt i ręczny odbiór: [COMMISSION_ACCOUNTING.md](COMMISSION_ACCOUNTING.md). Dostępy: [PROVIDER_SANDBOX_PLAYBOOK.md](PROVIDER_SANDBOX_PLAYBOOK.md).
+
+### Weryfikacja
+
+- **pass — `pnpm test`: 20 plików / 180 testów**, w tym 10 migracyjnych testów E7 i 2 kalkulatora. Historyczne stawki i zmiana planu/odnowienie, roczna płatność, dokładne kwoty, trial/0/live, nieznany plan, częściowe/full refundy i cofnięcia, spór, sprawa po payout, niezmienne zestawienie, brak przekroczenia ponownie użytego finansowania i ochrona własnego miesiąca zamknięcia.
+- **pass — `pnpm test:integration`: 7 plików / 34 testy** na prawdziwym lokalnym Supabase, w tym 6 E7. Dwa równoległe workery, dwa równoległe close, jednoczesne powtórzone funding oraz refund dały pojedynczy skutek finansowy. Sprawdzono RLS i odmowę mutacji przez frontend/obcego użytkownika.
+- **pass — rzeczywisty CLI E7 worker** z ograniczonym tokenem, bez klucza uprzywilejowanego i z filtrem własnej aplikacji testowej. Późna zadeklarowana płatność została zaksięgowana raz.
+- **pass — HTTP SSR** aktualnego builda: Earnings twórcy, Funding & statements firmy i szczegóły klienta, na odrębnych sesjach jednorazowych kont QA. Widoki zawierały wyliczenia, zestawienia i korekty bez błędów serwera. Nie zmieniano cookies użytkownika. To odbiór danych/SSR, nie nowy redesign ani wizualny test w przeglądarce.
+- **pass — `pnpm lint`, `pnpm typecheck`, `pnpm build`, zgodność `pnpm db:types`, `pnpm db:advisors` bez problemów.** Lokalna baza nie była resetowana; jednorazowe aplikacje, konta, tokeny i polityki testowe usunięto przez cleanup suite.
+- Brak nierozwiązanych wyników **fail** w końcowych kontrolach. Brakujące rzeczywiste zakupy dostawców i live nadal **blocked**; nie są zaliczane jako pass.
+
+### Granice
+
+P-01/P-02/P-06/P-07/P-09/P-12…P-14 pozostają propozycjami sandbox. Realne pieniądze i live są wyłączone. Prawdziwe zakupy Stripe/RevenueCat nadal **blocked** przez brak dostępów; E7 nie zmienia tego statusu. Testy nie zastępują odbioru kont dostawców.
+
 ## Następny krok
 
-1. **ETAP 5** — bezpieczne przekierowania linków (`/r/[token]`), rejestrowanie kliknięć, API przypisujące konto klienta aplikacji do twórcy (po tokenie linku lub kodzie polecającym), wydzielony moduł polityk pierwszeństwa i okna przypisania, podłączenie rzeczywistych kliknięć i rejestracji do dashboardów twórcy i firmy oraz aplikacja demonstracyjna integracji — po wklejeniu promptu E5.
-2. Dla każdej zmiany bazy wykonać `pnpm db:advisors && pnpm test:integration`; nie pomijać regresji historycznych warunków, zatwierdzania rewizji i izolacji mediów. Testy tego obszaru działają już na prawdziwym lokalnym Supabase.
+Historyczny następny krok po E7: Etap 8. Zrealizowany na osobne zlecenie 27.10; aktualny odbiór i następny krok znajdują się niżej.
+
+
+## Odbiór Stripe sandbox — 27.10.2026
+
+Aktualizacja historycznych wpisów blocked dla Stripe; RevenueCat pozostaje blocked.
+
+- **pass:** rzeczywisty zakup Stripe sandbox 10 USD i odnowienie 10 USD przez symulację czasu; dwa rekordy transakcji, bez dodatkowych zakupów od podwójnych notyfikacji faktury.
+- **pass:** częściowy refund 3 USD; refund.created i refund.updated dały jeden refund succeeded. Brak referencji płatności zatrzymał zdarzenia w waiting_transaction; po zweryfikowaniu powiązania PaymentIntent–Invoice i zapisaniu mapowania oba zostały processed.
+- **pass:** natychmiastowe anulowanie subskrypcji potwierdzone w Stripe, webhook processed, brak dodatkowego refundu. paid_until zachowuje historię opłaconego okresu do 27.12.2026; stan canceled nie oznacza aktywnego dostępu do tej daty.
+- Znaleziono i poprawiono adapter: terminalna subskrypcja Stripe nie może mieć auto_renew=true tylko dlatego, że cancel_at_period_end=false. Skorygowano wyłącznie flagę jednego lokalnego rekordu QA zgodnie ze stanem Stripe; nie zmieniano webhooków ani zakupów.
+- **pass:** 11 testów adapterów, w tym cztery przypadki regresji auto_renew.
+- Nie odebrano jeszcze anulowania na koniec okresu ani terminalnego wygaśnięcia tej zaplanowanej anulacji. Klient testowy jest organiczny (unattributed), więc ten przebieg nie potwierdza prowizji twórcy E7. Spory, zakup mobilny RevenueCat oraz live nie są zaliczone jako rzeczywisty odbiór w tej sesji.
+- Integracja lokalna korzysta ze Stripe CLI; brak stałego hostowanego endpointu. Na moment tego odbioru E8 nie rozpoczęto; aktualny status niżej.
+
+## Etap 8 — finansowanie firm, auto-doładowania i wypłaty sandbox (27.10.2026)
+
+### Wdrożono
+
+- Oddzielny trwały adapter **sandbox-test**, worker `pnpm finance:worker` i narzędzie operatora `pnpm finance:operator`. Żadne dane sprzedażowej integracji Stripe nie są używane do obciążeń finansowania. Zdarzenia zakupów E6 nie zasilają salda marketplace. Adapter live nie istnieje.
+- Funding firmy: rzeczywiste odczyty dziennika (dostępne, zarezerwowane brutto, oczekujące na finansowanie), wpłata, ustawienia progu/kwoty auto-doładowania, historia i powiadomienia w panelu. Konta istniejących aplikacji inicjalizowane bez środków, z zachowaniem historycznych danych E7.
+- Właściciel autoryzuje testową metodę przez osobistą, wygasającą sesję onboardingu. Zgoda ma wersję/czas/referencję; nie zbieramy danych kart, kont bankowych ani KYC. Success URL nie zwiększa środków; finansuje wyłącznie potwierdzona dostępność operatora, z pojedynczym kredytem w niezmiennym dzienniku.
+- Blokada i jedna pending wpłata per aplikacja, stałe klucze, zatrzask jednego przekroczenia progu i ograniczone retry. Definitywny błąd automatycznego zasilenia tworzy in-app notification i blokuje nowe joins/kliknięcia/polecenia; zachowuje istniejących klientów, retry rejestracji i naliczanie odnowień. Udana wpłata rozlicza zaległości i usuwa tylko blokadę finansowania, o ile kwota wystarczy.
+- Środki firmy rezerwowane także na bieżące naliczenia, z zachowaniem warunku właściwego zamknięcia miesiąca. Wygrany spór w otwartym miesiącu nie udostępnia przedwcześnie finansowanej prowizji. Starsze zamknięte należności sfinansowane później zwalniają się natychmiast.
+- Payouts twórcy: konto odbiorcy operatora testowego, dostępne finansowane i uzgodnione kwoty z zamkniętych okresów, potwierdzenie kwoty/kosztu, Withdraw, statusy i historia. Zmiana salda/opłaty wymaga świeżego potwierdzenia. Brak własnego minimum i dodatkowego holda.
+- Wypłata atomowo rezerwuje konkretne pozycje. Transfer do operatora i przelew bankowy mają osobne klucze oraz referencje. Timeout zachowuje pozycje i identyfikator transferu. Bank failure/return nie wykonuje drugiego transferu; zwrot dopisuje paid → in_payout, retry dotyczy wyłącznie banku.
+- Lease 60 sekund, `SKIP LOCKED`, backoff i maks. 3 próby transportu. Nieznany wynik po limicie wymaga review bez zwolnienia rezerwacji. Kolejność twórca → aplikacje UUID → job → case/scenario; wykluczono inwersję blokad przeglądu admina i workera.
+- `/admin/finance` i `/admin/payouts`: kolejka, finansowanie, wypłaty, rozbieżności, kwoty/waluty/status operatora obok oczekiwań dziennika, notatki review i audyt. Admin nie może ustawić salda; powtórzenie wymaga dowodów operatora. Sprzeczne terminalne transfery nie odwracają ani nie odtwarzają efektu automatycznie.
+- Wszystkie nowe tabele w `private`, RLS i brak bezpośrednich grantów frontendu. Autoryzowane RPC, izolacja organizacji i twórców; operator fixtures dostępny tylko service_role. Kwoty tekstowe/bigint, EUR-only test provider, bez FX i bez sekretów/PII w panelach.
+
+### Migracje i uruchomienie
+
+Zastosowano lokalnie **bez resetowania bazy**: `20261027202931_funding_and_payouts.sql`, `20261027203921_finance_recovery_hardening.sql`, `20261027204305_finance_reconciliation_evidence.sql`, `20261027204653_finance_lock_ordering.sql`. Zaktualizowano generowane typy. Nowy worker korzysta z istniejącego serwerowego `PAYMENT_BACKEND_TOKEN` E6, bez nowych sekretów klienta.
+
+Instrukcja, kontrakt adaptera, scenariusze timeout/decline/pending/return, zasady retry i źródła operatora: [FUNDING_AND_PAYOUTS.md](FUNDING_AND_PAYOUTS.md). Decyzje T-97…T-104. Strony pozostają za istniejącymi gate/Suspense; osobny onboarding też renderuje sesję w Suspense.
+
+### Weryfikacja końcowa
+
+- **pass — `pnpm test`: 22 pliki / 210 testów.** W E8 16 testów bazy i 10 walidacji kwot: wpłata, pending settlement, idempotencja, konsumpcja rezerwacji, otwarty miesiąc i spory, close, stale lease, timeout po stworzeniu transferu, failed/returned bank payout, limity retry, auto-doładowanie, brak pętli obciążeń, zatrzymanie nowych poleceń i wznowienie po pokryciu zaległości, nieznany wynik, rozbieżne kwoty, terminalna sprzeczność, izolacja i zbilansowanie dziennika. Pełna regresja E1–E7 pozostaje pass.
+- **pass — pełne `pnpm test:integration`: 8 plików / 42 testy** na prawdziwym lokalnym Supabase, uruchomione z `E8_HTTP_BASE_URL` wskazującym aktualny lokalny build. Osiem nowych testów E8: 8 równoległych deposit requests, 8 równoległych claims, 8 Withdraw, równoległe auto-topups i bank retries, timeout transferu, zwrócona wypłata, pauza/wznowienie, uzgadnianie admina równolegle z workerem oraz izolacja. Pojedyncze efekty finansowe i brak powtórzonego transferu.
+- **pass — faktyczny CLI `finance-worker.mjs`** z ograniczonym tokenem i filtrem własnej aplikacji, bez klucza uprzywilejowanego.
+- **pass — HTTP SSR aktualnego builda:** Funding firmy, Payouts twórcy, Finance i Payouts admina oraz własna sesja onboardingu operatora. Osobne jednorazowe sesje QA; poprawna treść i brak błędów serwera. Suite usuwa swoje aplikacje, konta, tokeny i politykę.
+- **pass — przegląd wizualny w przeglądarce:** Funding i Payouts na istniejącej sesji, w tym szerokość 390 px; czytelne stany puste, działające etykiety i brak poziomego wycieku layoutu. Nie deklarujemy ręcznego odbioru realnego operatora ani pełnego audytu dostępności E9.
+- **pass — `pnpm lint`, `pnpm typecheck`, `pnpm build`** (43 wygenerowane strony, nowa trasa onboardingu), generowanie typów oraz `pnpm db:advisors` bez zgłoszonych problemów. `git diff --check` pass.
+- Brak nierozwiązanych wyników **fail** w końcowych kontrolach.
+
+### Granice i blocked
+
+- **blocked — realny operator finansowania/wypłat i live.** Nie podano kraju podmiotu/listy krajów odbiorców, nie potwierdzono dopuszczalności firmowego prefundingu u operatora. Stripe Connect jest kandydatem, a nie zagwarantowaną obsługą tego modelu. Zbadane ograniczenia i źródła w instrukcji; nie utworzono portfela ani realnego KYC.
+- Ukończenie E8 dotyczy działającego adaptera testowego i produktu sandbox. Nie oznacza zakończenia Stripe Connect sandbox. Sprzedażowy Stripe sandbox został odebrany wcześniej zgodnie z wpisem wyżej; RevenueCat nadal blocked.
+- EUR, minimum 1 cent i fee 0 są jawnymi możliwościami operatora testowego. P-01/P-02/P-06/P-08/P-09/P-12…P-14 i koszty/dokumenty live pozostają otwarte. Brak własnego minimum platformy, brak dodatkowego holda.
+- Powiadomienia o błędzie auto-doładowania są w panelu. Dostarczanie maili, pełny monitoring/backup/pilotaż oraz całościowy odbiór E2E należą do E9 i nie są tu deklarowane jako wykonane.
+- Refund wpłaty finansującej i cofnięcie terminalnego transferu wymagają decyzji/rozpatrzenia, nie automatycznej zmiany salda. Nieznany wynik po wyczerpaniu retry utrzymuje rezerwację do dowodów lub przeglądu operatora.
+
+## Następny krok po E8
+
+Historyczny następny krok po E8: E9, zlecony następnie przez Karola. Aktualny odbiór poniżej. Realne pieniądze pozostają wyłączone.
+
+
+## Etap 9 — domknięcie techniczne i odbiór lokalnego pilota (27.10.2026)
+
+### Wdrożono
+
+- `/admin/integrations` zastępuje pusty moduł: rzeczywiste konfiguracje, czasy received/processed, configured/verified, kolejka i błędy, powód admin retry oraz heartbeat workerów. Brak raw payloadów i sekretów. Retry respektuje aktywny lease i nie uruchamia live.
+- `/admin/issues`: zadania i sprawy prowizji, zgłoszenia z odpowiedziami, linki do finansów/wypłat oraz append-only audyt. Przegląd prowizji może oznaczyć in_review/awaiting_policy; nie ustawia salda i nie przypisuje kosztu refundu po wypłacie.
+- `/support`: prywatne zgłoszenia, kategorie, historia odpowiedzi, idempotencja, kontrola rewizji i limity nadużyć. Administrator odpowiada i zmienia status; obce konto nie czyta ani nie zmienia rozmowy.
+- `/notifications`: własne powiadomienia o ocenie oferty, problemach zakupów, nieudanym auto-doładowaniu, statusie wypłat, review prowizji i odpowiedzi wsparcia. Deduplikacja i oznaczenie przeczytania wyłącznie przez odbiorcę. Nowe pozycje menu konta i odsyłacz ze strony błędu.
+- Audyt konfiguracji integracji, ocen ofert, problemów płatniczych, funding failures, stanów wypłat, spraw i obsługi zgłoszeń. Finanse nadal korzystają z dziennika E7/E8; nie dodano zapisu dowolnego salda.
+- Trzy workery raportują liveness; scoped QA nie oznacza zdrowia globalnego procesu. `pnpm ops:check` i panel rozróżniają unknown/stale/error/ok oraz błędy/backlog kolejek. Błędy żądań Next mają stałe bezpieczne logi przez `src/instrumentation.ts` / `src/lib/log.ts`.
+- Powtarzalne `pnpm test:pilot`: build, odrębny lokalny serwer HTTP, cały E1–E9 integration suite i próba recovery z niepustymi danymi. CI Supabase korzysta z tego samego odbioru.
+- `pnpm backup:local`: spójny snapshot PostgreSQL, rzeczywiste pliki Storage, manifest SHA-256/odcisków tabel, pliki 0600. Restore wyłącznie do nowej losowej bazy i katalogu scratch; porównanie danych, bilansowania dziennika i odtworzonego RLS. Bez resetowania źródła.
+- Poprawka wykryta w spiętym flow: pauza finansowania zwraca przez API klienta 409 zamiast pozornej awarii 503; join pokazuje czytelny powód. Zapytania admina odmawiają dostępu przez notFound przed pobieraniem operacji.
+
+### Migracja i kontrakty
+
+`20261027214043_pilot_operations.sql` zastosowana lokalnie bez resetu; typy wygenerowane z bazy. Tabele prywatne z RLS, minimalne EXECUTE i kontrolą auth/admin. `src/modules/operations` oddziela zapytania/akcje od komponentów prezentacyjnych. Nowe funkcje używają istniejącego ograniczonego tokenu backendu; brak nowego sekretu w przeglądarce.
+
+Dokumenty: [PILOT_CHECKLIST.md](PILOT_CHECKLIST.md), [OPERATIONS_AND_RECOVERY.md](OPERATIONS_AND_RECOVERY.md), [COMPANY_INTEGRATION.md](COMPANY_INTEGRATION.md), [FRONTEND_INTEGRATION.md](FRONTEND_INTEGRATION.md). Zaktualizowano historyczny zakres E1–E4, aby nie zastępować działających ekranów E5–E9 starymi pustymi modułami.
+
+### Końcowa weryfikacja techniczna
+
+- **pass — `pnpm lint`, `pnpm typecheck`, `pnpm test`: 24 pliki / 220 testów**. W tym 6 testów migracji/izolacji operacji, 3 walidacji/monitoringu oraz nowa regresja HTTP dla pauzy finansowania. Historyczne testy E1–E8 pozostają pass.
+- **pass — `pnpm test:pilot`: build oraz 9 plików / 53 testy integracyjne**, bez skip, na prawdziwym lokalnym Supabase i osobnym serwerze HTTP z jednorazowymi fixtures. Pełny flow: firma/oferta/plany/integracja/funding/akceptacja → twórca/profil/join/nazwany link → redirect i API klienta HTTP → podpisany webhook zakup/odnowienie → prowizje/refund/close/Withdraw/transfer/bank → failed auto-funding/pauza/odnowienie/zaległość/wznowienie → support/notyfikacje/audyt. Refund po wypłacie pozostaje sprawą awaiting_policy bez zmiany wypłaconej kwoty.
+- **pass — formularz HTTP:** POST rzeczywistego renderowanego formularza Server Action tworzy właściwe zgłoszenie na sesji użytkownika. Równoległe create/reply respektują nonce i revision. Obce konto nie odczytuje skrzynki ani admin workspace.
+- **pass — SSR rodzin ekranów:** publiczny profil, konto, panele twórcy i firmy (w tym szczegóły klienta), administracja, Support i Notifications na odrębnych sesjach. Odmowa danych administratora obcemu użytkownikowi.
+- **pass — rzeczywiste procesy CLI payments/commissions/finance**, ze scoped fixture, bez klucza uprzywilejowanego; zapisały trzy właściwe heartbeats. Nie przetwarzano globalnie istniejących zdarzeń użytkownika dla samego testu monitoringu.
+- **pass — backup/restore:** 105 tabel z dokładnymi odciskami i liczbami wierszy, z niepustymi prowizjami, payout, powiadomieniami i zgłoszeniami; zachowane zbilansowanie dziennika i odmowa dostępu obcego użytkownika; pliki Storage odtworzone do scratch. Odtworzenie pomija DEFAULT ACL zarządzanych ról, zachowuje jawne granty i RLS. Baza źródłowa nie była resetowana. Tymczasowe archiwa i odtworzona baza testowa zostały usunięte.
+- **pass — `pnpm db:advisors` bez zgłoszonych problemów**, generowanie typów i `git diff --check`.
+- **pass — przegląd bieżącego UI:** Support na 390 px i przejście klawiaturą do pola Subject z widocznym focusem; Notifications i admin Integrations. To weryfikacja obecnego kodu, nie akceptacja motywu Rocha.
+- **pass — monitor wykrywa stan attention:** lokalny check zwrócił exit 2, zero błędów kolejek oraz unknown dla globalnych workerów, które nie zostały uruchomione/zrestartowane w tym zadaniu. Nie deklarujemy działającego stale nadzoru infrastruktury.
+- Brak nierozwiązanych wyników **fail** w końcowych kontrolach technicznych.
+
+### Granice odbioru — blocked
+
+- **blocked — całościowy E9 na froncie Rocha.** Wymagana opublikowana stabilna gałąź, pierwsze połączenie i powtórzenie flow oraz desktop/mobile/klawiatury/200% zoom na wspólnych ekranach. Nie trzeba czekać na koniec całej kosmetyki UI. Rochu nie realizuje osobnego „backendowego Etapu 9”; ma dostarczyć działającą prezentację obecnych kontraktów.
+- **blocked — gotowość hostowanego pilota.** Brak odebranego hostingu/stałego endpointu, nadzorowanych workerów, zewnętrznego alertowania, SMTP i zaplanowanego szyfrowanego backupu poza hostem. Odtworzenie całej infrastruktury staging nie zostało wykonane. Lokalne recovery nie zastępuje tego testu.
+- **blocked — live i operator finansowania/wypłat.** Wymagane decyzje właścicieli, kraje/waluty, zasady kosztów i refundów, zgoda operatora na przepływ, rzeczywisty adapter i niezależny odbiór. Sprzedażowy Stripe sandbox nie potwierdza Connect/prefundingu; RevenueCat nadal nieodebrany rzeczywistym zakupem.
+- Powiadomienia E9 działają w aplikacji. Nie deklarujemy mailowego dostarczania tych powiadomień. Audyt zachowuje pseudonimowe referencje po usunięciu nadrzędnych danych; docelową retencję trzeba ustalić.
+
+**Wynik: część techniczna E9 dla lokalnego sandboxa pass. Pełnego odbioru produktu/pilota i gotowości produkcyjnej nie oznaczamy jako ukończonych przed spełnieniem powyższych zależności.**

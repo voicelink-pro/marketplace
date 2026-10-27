@@ -1,22 +1,11 @@
-import { Users } from "lucide-react";
-import type { Metadata } from "next";
-import { PageHeader } from "@/components/layout/page-header";
-import { EmptyModule } from "@/components/states/empty-module";
-
-export const metadata: Metadata = { title: "Referrals" };
-
-export default function CreatorReferralsPage() {
-  return (
-    <>
-      <PageHeader
-        title="Referrals"
-        description="Customers who signed up through your links or code. We never show their personal details."
-      />
-      <EmptyModule
-        icon={Users}
-        title="No referred customers yet"
-        description="Each customer appears with an anonymous ID, their payments and your commission."
-      />
-    </>
-  );
+import type { Metadata } from 'next';
+import { PageHeader } from '@/components/layout/page-header';
+import { requireViewer } from '@/modules/accounts/viewer';
+import { AttributionPanel } from '@/modules/attribution/components/attribution-panel';
+export const metadata: Metadata={title:'Referrals'};
+export default async function CreatorReferralsPage({searchParams}:PageProps<'/creator/referrals'>) {
+  await requireViewer('/creator/referrals');
+  const search=await searchParams;
+  const page=typeof search.page==='string' ? Number(search.page) : 1;
+  return <><PageHeader title="Referrals" description="Actual clicks and referred registrations, without customer personal information."/><AttributionPanel customers page={page}/></>;
 }
