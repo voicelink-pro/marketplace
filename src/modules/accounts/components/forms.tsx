@@ -44,7 +44,7 @@ export function StartCreatorForm({ next = "" }: { next?: string }) {
             aria-invalid={invalid(state, "url")}
           />
           <FieldDescription id="url-hint">
-            Instagram, TikTok, YouTube, X or any public page where you post. You can add more later.
+            Instagram, TikTok, YouTube, X or any public page where you post. You can add more later. We show the link as provided and don’t verify ownership yet.
           </FieldDescription>
           <FieldErrors state={state} field="url" />
         </Field>

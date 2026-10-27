@@ -22,12 +22,27 @@ export function SignupForm() {
 
   if (state.status === "success") {
     return (
-      <div role="status" className="flex flex-col items-center gap-3 py-4 text-center">
-        <span className="grid size-10 place-items-center rounded-full bg-muted">
-          <MailCheck aria-hidden className="size-5 text-primary-ink" />
-        </span>
-        <p className="font-medium">Check your inbox</p>
-        <p className="text-sm text-muted-foreground">{state.message}</p>
+      <div role="status" className="flex flex-col gap-5 py-2">
+        <div className="flex flex-col items-center gap-3 text-center">
+          <span className="grid size-12 place-items-center rounded-full bg-primary">
+            <MailCheck aria-hidden className="size-6 text-primary-foreground" />
+          </span>
+          <p className="text-lg font-bold">Check your inbox</p>
+          <p className="text-sm text-muted-foreground">{state.message}</p>
+        </div>
+        <ol className="flex flex-col gap-2 rounded-lg bg-muted p-4 text-sm">
+          <li className="flex gap-3">
+            <span className="tabular font-bold">1</span>
+            Open the link in the email to confirm your address.
+          </li>
+          <li className="flex gap-3">
+            <span className="tabular font-bold">2</span>
+            Choose how you’ll use your account: promote apps, list your own, or both.
+          </li>
+        </ol>
+        <p className="text-center text-xs text-muted-foreground">
+          No email after a few minutes? Check your spam folder.
+        </p>
       </div>
     );
   }
