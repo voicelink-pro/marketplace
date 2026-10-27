@@ -5,6 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { getViewer } from "@/modules/accounts/viewer";
 import { AccountMenu } from "./account-menu";
+import { DarkPortalScope } from "./dark-portal-scope";
 import { MobileNav } from "./mobile-nav";
 import { PANEL_LABELS, type PanelArea } from "./nav-config";
 import { PanelNav } from "./panel-nav";
@@ -60,12 +61,20 @@ async function PanelAccount() {
  */
 export function PanelShell({ area, children }: { area: PanelArea; children: React.ReactNode }) {
   const home = area === "admin" ? "/admin" : `/${area}`;
+  // Brand themes by role: creators work on dark, companies and admins on light.
+  const dark = area === "creator";
   return (
-    <div className="min-h-dvh w-full lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)]">
+    <div
+      className={cn(
+        "min-h-dvh w-full bg-background text-foreground lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)]",
+        dark && "dark",
+      )}
+    >
+      {dark ? <DarkPortalScope /> : null}
       <aside className="sticky top-0 hidden h-dvh flex-col gap-6 border-r bg-sidebar px-3 py-4 lg:flex">
         <div className="flex flex-col gap-1 px-2">
           <Logo href={home} />
-          <span className="pl-9 text-xs text-muted-foreground">{PANEL_LABELS[area]} workspace</span>
+          <span className="pl-[2.125rem] text-xs text-muted-foreground">{PANEL_LABELS[area]} workspace</span>
         </div>
         <Suspense fallback={null}>
           <PanelNav area={area} />

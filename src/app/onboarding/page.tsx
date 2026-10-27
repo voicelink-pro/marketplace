@@ -56,7 +56,7 @@ async function ContextChoices({
             <CardHeader className="gap-3">
               <div className="flex items-center justify-between">
                 <span className="grid size-10 place-items-center rounded-lg bg-muted">
-                  <Icon aria-hidden className="size-5 text-primary" />
+                  <Icon aria-hidden className="size-5 text-primary-ink" />
                 </span>
                 {active ? <Badge variant="secondary">Set up</Badge> : null}
               </div>

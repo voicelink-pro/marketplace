@@ -8,10 +8,13 @@ Wyniki testów zapisujemy wyłącznie jako `pass`, `fail` albo `blocked`, z opis
 
 ## Równoległe dopracowanie UI/UX etapów 1–4
 
-- Marka platformy: **BoostLink**, zatwierdzona 26.10.2026; konfiguracja nazwy i metadane korzystają z `src/config/site.ts`.
+- Marka platformy: **boostlink** (małymi literami od 27.10.2026, W-00), zatwierdzona 26.10.2026; konfiguracja nazwy i metadane korzystają z `src/config/site.ts`.
 - Zakres dla frontend developera: [FRONTEND_SCOPE_STAGES_1_4.md](FRONTEND_SCOPE_STAGES_1_4.md), w tym pakiety E1–E4, właściciele plików i kryteria odbioru.
 - Status dopracowania UI/UX: **zakres przygotowany; realizacja i odbiór poszczególnych pakietów jeszcze nie rozpoczęte**. Wcześniejsze wyniki testów funkcjonalnych pozostają historią weryfikacji backendu.
 - Backend E5: kolejny zakres Karola z Codexem; ten wpis nie oznacza jego implementacji.
+- Marka wizualna (26.10, gałąź `frontend/brand-refresh`): paleta z brand boardu w tokenach `globals.css`, nowy znak „b” w `Logo`, `icon.svg`, `apple-icon.png`, `favicon.ico`; tekst akcentu przez `text-primary-ink`. Zmiana dotyczy wyłącznie klas i zasobów — bez zmian w danych, akcjach i przekierowaniach.
+- Nazwa małymi literami (27.10, W-00): `siteConfig.name = "boostlink"` zasila nagłówki, logo, tytuły stron i metadane; logo nie potrzebuje już `lowercase` w CSS. Wcześniejsze wpisy historyczne z 26.10 zostają bez zmian.
+- Rebrand 27.10 (ta sama gałąź): font Plus Jakarta Sans, promienie 20/12/pill, ciemny panel twórcy, hero i sekcja twórców na `/`, karta oferty z prowizją jako główną liczbą i CTA „Join offer”, tagline „Apps. Faster together.” w `siteConfig`. Ręczna weryfikacja przez CDP na lokalnym Supabase (1280 i 390 px): logowanie, onboarding twórcy i firmy, dołączenie do oferty, panele twórcy/firmy/admina — **pass**, bez poziomego przewijania strony. Karta oferty: budżet, liczba twórców i akceptowane platformy społecznościowe — **blocked** (brak w modelu danych; backend). Znane, wcześniejsze ograniczenie: na 390 px pola kodu/linku i tabela planów na `/creator/programs/[slug]` są przycinane w karcie — do pakietu E4.
 - Weryfikacja zmiany marki i dokumentacji (26.10): **pass** — `pnpm lint`, `pnpm typecheck`, `pnpm build` (38 tras), nazwa BoostLink w wygenerowanym HTML/metadanych i brak poprzedniej nazwy w wygenerowanych plikach HTML. Testów logiki i integracji nie powtarzano w tym zadaniu: nie zmieniono backendu ani kontraktów.
 
 ## Podsumowanie etapów

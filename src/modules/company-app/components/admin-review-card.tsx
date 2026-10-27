@@ -167,7 +167,7 @@ export function AdminReviewCard({ app }: { app: CompanyWorkspaceApp }) {
                 >
                   <span className="truncate">{item.label}</span>
                   {item.complete ? (
-                    <span className="inline-flex shrink-0 items-center gap-1 font-medium text-primary">
+                    <span className="inline-flex shrink-0 items-center gap-1 font-medium text-primary-ink">
                       <Check aria-hidden className="size-3.5" />
                       OK
                     </span>
@@ -231,7 +231,7 @@ export function AdminReviewCard({ app }: { app: CompanyWorkspaceApp }) {
                         {BILLING_INTERVAL_SUFFIX[plan.billingInterval]}
                       </span>
                     </TableCell>
-                    <TableCell className="tabular text-right font-semibold text-primary">
+                    <TableCell className="tabular text-right font-semibold text-primary-ink">
                       {formatCommissionPercent(plan.commissionBps)} recurring
                     </TableCell>
                   </TableRow>

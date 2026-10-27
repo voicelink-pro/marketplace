@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AppCard } from "@/modules/catalog/components/app-card";
 import { CatalogFilterBar } from "@/modules/catalog/components/catalog-filter-bar";
+import { CatalogHero, CreatorPitch } from "@/modules/catalog/components/catalog-hero";
 import { CatalogPagination } from "@/modules/catalog/components/catalog-pagination";
 import {
   hasActiveCatalogFilters,
@@ -90,17 +91,13 @@ async function CatalogContent({
 export default function CatalogPage({ searchParams }: PageProps<"/">) {
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex max-w-2xl flex-col gap-2">
-        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Apps to promote</h1>
-        <p className="text-lg text-muted-foreground">
-          Pick an app, share it with your audience, and earn a share of every subscription they pay
-          for.
-        </p>
-      </div>
+      <CatalogHero />
 
       <Suspense fallback={<CatalogSkeleton />}>
         <CatalogContent searchParams={searchParams} />
       </Suspense>
+
+      <CreatorPitch />
     </div>
   );
 }

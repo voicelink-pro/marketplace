@@ -156,7 +156,7 @@ export function AppSubmissionStatusCard({
               className="flex items-start gap-2.5 rounded-lg border bg-muted/30 p-3 text-xs"
             >
               {item.complete ? (
-                <Check aria-hidden className="mt-0.5 size-4 shrink-0 text-primary" />
+                <Check aria-hidden className="mt-0.5 size-4 shrink-0 text-primary-ink" />
               ) : (
                 <CircleAlert aria-hidden className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
               )}

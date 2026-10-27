@@ -25,7 +25,7 @@ export function PanelNav({ area, onNavigate }: { area: PanelArea; onNavigate?: (
               active && "bg-sidebar-accent text-foreground",
             )}
           >
-            <Icon aria-hidden className={cn("size-4 shrink-0", active && "text-primary")} />
+            <Icon aria-hidden className={cn("size-4 shrink-0", active && "text-primary-ink")} />
             {label}
           </Link>
         );

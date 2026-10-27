@@ -24,7 +24,7 @@ export function SignupForm() {
     return (
       <div role="status" className="flex flex-col items-center gap-3 py-4 text-center">
         <span className="grid size-10 place-items-center rounded-full bg-muted">
-          <MailCheck aria-hidden className="size-5 text-primary" />
+          <MailCheck aria-hidden className="size-5 text-primary-ink" />
         </span>
         <p className="font-medium">Check your inbox</p>
         <p className="text-sm text-muted-foreground">{state.message}</p>

@@ -86,7 +86,7 @@ export default async function CreatorProgramDetailPage({
       <div className="flex flex-col gap-8">
         {justJoined ? (
           <Alert>
-            <CircleCheck className="text-primary" />
+            <CircleCheck className="text-primary-ink" />
             <AlertTitle>You’ve joined the {program.appName} program</AlertTitle>
             <AlertDescription>
               Your referral code and primary referral link are ready to copy below. Review the quick guide and create named links for each channel you post on.
@@ -252,7 +252,7 @@ export default async function CreatorProgramDetailPage({
                       </span>
                     </TableCell>
                     <TableCell className="text-right">
-                      <span className="tabular inline-flex rounded-md bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
+                      <span className="tabular inline-flex rounded-md bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground">
                         {formatCommissionPercent(plan.commissionBps)} recurring
                       </span>
                     </TableCell>

@@ -143,7 +143,7 @@ export default async function CreatorLinksPage({
                     <div className="flex flex-col gap-0.5">
                       <Link
                         href={`/creator/programs/${link.appSlug}`}
-                        className="hover:text-primary hover:underline underline-offset-4"
+                        className="hover:text-primary-ink hover:underline underline-offset-4"
                       >
                         {link.appName}
                       </Link>

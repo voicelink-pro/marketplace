@@ -123,7 +123,7 @@ export default async function CreatorOverviewPage() {
                         </div>
                       </div>
                       <CardAction>
-                        <span className="tabular rounded-md bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
+                        <span className="tabular rounded-md bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground">
                           {formatCommissionRange(
                             program.minCommissionBps,
                             program.maxCommissionBps,
@@ -221,7 +221,7 @@ export default async function CreatorOverviewPage() {
                           </CardDescription>
                         </div>
                       </div>
-                      <span className="tabular shrink-0 rounded-md bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
+                      <span className="tabular shrink-0 rounded-md bg-primary px-2 py-0.5 text-xs font-semibold text-primary-foreground">
                         {formatCommissionRange(app.minCommissionBps, app.maxCommissionBps)}
                       </span>
                     </div>
