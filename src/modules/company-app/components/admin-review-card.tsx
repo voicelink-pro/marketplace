@@ -21,7 +21,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -52,6 +51,7 @@ export function AdminReviewCard({ app }: { app: CompanyWorkspaceApp }) {
   useSuccessToast(approveState);
   useSuccessToast(rejectState);
 
+  const reviewing = app.status === "submitted";
   const activePlans = app.plans.filter((p) => p.isActive);
   const checklist = checkAppSubmissionReadiness({
     name: app.name,
@@ -70,7 +70,7 @@ export function AdminReviewCard({ app }: { app: CompanyWorkspaceApp }) {
   });
 
   return (
-    <Card className={app.status === "submitted" ? "border-primary/40" : undefined}>
+    <Card className={reviewing ? "ring-2 ring-primary" : undefined}>
       <CardHeader className="gap-2">
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div className="flex items-center gap-3">
@@ -129,6 +129,7 @@ export function AdminReviewCard({ app }: { app: CompanyWorkspaceApp }) {
         </div>
       </CardHeader>
 
+      <ReviewBody collapsed={!reviewing}>
       <CardContent className="flex flex-col gap-5 border-t pt-4">
         <div className="grid gap-4 lg:grid-cols-2">
           <div className="flex flex-col gap-2 text-sm">
@@ -248,7 +249,8 @@ export function AdminReviewCard({ app }: { app: CompanyWorkspaceApp }) {
           <span className="text-muted-foreground">{app.termsText || "—"}</span>
         </div>
 
-        {/* Decision Controls */}
+        {/* Decision Controls — only while a decision is possible; the server enforces this too. */}
+        {reviewing ? (
         <div className="grid gap-4 border-t pt-4 md:grid-cols-2">
           <form action={approveAction} className="flex flex-col justify-between gap-3 rounded-lg border p-3.5">
             <input type="hidden" name="appId" value={app.id} />
@@ -286,12 +288,15 @@ export function AdminReviewCard({ app }: { app: CompanyWorkspaceApp }) {
                 <FieldLabel htmlFor={`reject-reason-${app.id}`}>
                   Send back for changes (reason required)
                 </FieldLabel>
-                <Input
+                <textarea
                   id={`reject-reason-${app.id}`}
                   name="reason"
                   required
+                  rows={3}
                   placeholder="Explain what the company needs to clarify or fix…"
                   defaultValue={valueFor(rejectState, "reason") ?? app.rejectionReason ?? ""}
+                  aria-invalid={Boolean(rejectState.status === "error" && rejectState.fieldErrors?.reason)}
+                  className="w-full rounded-lg border border-input bg-card px-3 py-2 text-sm text-foreground outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive"
                 />
                 <FieldErrors state={rejectState} field="reason" />
               </Field>
@@ -307,7 +312,27 @@ export function AdminReviewCard({ app }: { app: CompanyWorkspaceApp }) {
             </FieldGroup>
           </form>
         </div>
+        ) : (
+          <p className="border-t pt-4 text-xs text-muted-foreground">
+            Approve and send-back decisions open when the company submits this listing for review.
+          </p>
+        )}
       </CardContent>
+      </ReviewBody>
     </Card>
+  );
+}
+
+/** Listings that need no decision stay collapsed, so the review queue stays short. */
+function ReviewBody({ collapsed, children }: { collapsed: boolean; children: React.ReactNode }) {
+  if (!collapsed) return children;
+  return (
+    <details className="group/details border-t">
+      <summary className="cursor-pointer list-none px-(--card-spacing) py-3 text-sm font-medium text-muted-foreground outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 [&::-webkit-details-marker]:hidden">
+        <span className="group-open/details:hidden">Show listing details</span>
+        <span className="hidden group-open/details:inline">Hide listing details</span>
+      </summary>
+      {children}
+    </details>
   );
 }
