@@ -51,7 +51,7 @@
 }
 
 :root {
-  /* BoostLink brand board: #F5F5F5 canvas, white surfaces, #111111 ink, one
+  /* boostlink brand board: #F5F5F5 canvas, white surfaces, #111111 ink, one
      accent (#FFD600). Yellow is a fill only — it fails contrast as text, so
      accent text uses --primary-ink (#7A5C00, 6:1 on white and on yellow tints). */
   --background: oklch(0.970 0 0);

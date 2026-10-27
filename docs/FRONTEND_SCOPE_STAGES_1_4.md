@@ -1,4 +1,4 @@
-# BoostLink — zakres prac frontend / UI / UX, etapy 1–4
+# boostlink — zakres prac frontend / UI / UX, etapy 1–4
 
 Uzgodniony podział pracy: 26.10.2026. Odbiorca: osoba rozwijająca frontend.
 
@@ -12,7 +12,7 @@ Przed pracą przeczytaj `AGENTS.md`, `MARKETPLACE_BRIEF_I_PROMPTY.md`, bieżące
 
 ## Marka i kierunek wizualny
 
-- Nazwa: **BoostLink**, dokładnie z taką pisownią. Źródło nazwy: `src/config/site.ts`; nagłówki i metadane korzystają ze wspólnej konfiguracji.
+- Nazwa: **boostlink**, zawsze małymi literami (także na początku zdania i w metadanych; zmiana 27.10.2026). Źródło nazwy: `src/config/site.ts`; nagłówki i metadane korzystają ze wspólnej konfiguracji.
 - Interfejs pozostaje po angielsku. Dokumentacja współpracy może być po polsku. Nie wdrażaj teraz nowego systemu tłumaczeń.
 - Zachowaj kierunek T-54: jasne neutralne tło, czytelne karty, Instrument Sans, jeden spójny akcent, komponenty shadcn/ui. Dopracuj hierarchię i rytm odstępów, zamiast tworzyć osobny styl dla każdego panelu.
 - Możesz dopracować znak marki i favicon w osobnym, małym PR. Obecny znak `%` jest prowizoryczny. Nie wymaga to przebudowy całego interfejsu ani zewnętrznych płatnych zasobów.
@@ -116,4 +116,4 @@ Każdy pakiet może mieć kilka małych PR. Twórz gałęzie od aktualnego `main
 
 ## Prompt startowy do przekazania koledze
 
-> Pracujesz nad frontendem i UI/UX platformy BoostLink. Przeczytaj AGENTS.md, brief, status, decyzje oraz docs/FRONTEND_SCOPE_STAGES_1_4.md. Dopracuj istniejące etapy 1–4, zaczynając od pakietu 1. Backend rozwija równolegle Karol z Codexem. Zachowaj kontrakty Server Actions, zapytań i uprawnień. Przed zmianą plików wspólnych uzgodnij ich zakres. Przygotuj mały PR z weryfikacją desktop/mobile i listą rzeczywistych testów. Nie implementuj kolejnych etapów ani fikcyjnych danych.
+> Pracujesz nad frontendem i UI/UX platformy boostlink. Przeczytaj AGENTS.md, brief, status, decyzje oraz docs/FRONTEND_SCOPE_STAGES_1_4.md. Dopracuj istniejące etapy 1–4, zaczynając od pakietu 1. Backend rozwija równolegle Karol z Codexem. Zachowaj kontrakty Server Actions, zapytań i uprawnień. Przed zmianą plików wspólnych uzgodnij ich zakres. Przygotuj mały PR z weryfikacją desktop/mobile i listą rzeczywistych testów. Nie implementuj kolejnych etapów ani fikcyjnych danych.
