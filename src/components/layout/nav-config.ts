@@ -44,7 +44,7 @@ export const PANEL_NAV: Record<PanelArea, NavItem[]> = {
     { href: "/company/plans", label: "Plans & commissions", icon: Receipt },
     { href: "/company/creators", label: "Creators", icon: Users },
     { href: "/company/referrals", label: "Referrals", icon: ChartNoAxesColumn },
-    { href: "/company/integrations", label: "Integrations", icon: Plug, soon: true },
+    { href: "/company/integrations", label: "Integrations", icon: Plug },
     { href: "/company/funding", label: "Funding & statements", icon: Wallet, soon: true },
     { href: "/company/settings", label: "Settings", icon: Settings },
   ],
