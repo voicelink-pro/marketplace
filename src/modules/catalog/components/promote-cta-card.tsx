@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCommissionRange } from "@/lib/money";
+import { cn } from "@/lib/utils";
 import { getViewer } from "@/modules/accounts/viewer";
 import { CopyableField } from "@/modules/programs/components/copy-value-button";
 import { JoinProgramForm } from "@/modules/programs/components/join-program-form";
@@ -21,6 +22,7 @@ async function PromoteCtaActions({ app }: { app: PublishedAppDetail }) {
   if (!viewer) {
     return (
       <div className="flex flex-col gap-2">
+        <JoinSteps current={0} />
         <Button asChild size="lg" className="w-full">
           <Link href={`/login?next=${encodedNext}`}>
             <Megaphone data-icon="inline-start" />
@@ -41,6 +43,7 @@ async function PromoteCtaActions({ app }: { app: PublishedAppDetail }) {
   if (!hasSocialProfile) {
     return (
       <div className="flex flex-col gap-2">
+        <JoinSteps current={1} />
         <Button asChild size="lg" className="w-full">
           <Link href={`/onboarding/creator?next=${encodedNext}`}>
             <Megaphone data-icon="inline-start" />
@@ -58,6 +61,7 @@ async function PromoteCtaActions({ app }: { app: PublishedAppDetail }) {
   if (existingMembership) {
     return (
       <div className="flex flex-col gap-4 border-t pt-4">
+        <JoinSteps current={4} />
         <div className="flex items-center justify-between gap-2">
           <span className="text-xs font-medium text-muted-foreground">Your program status</span>
           <Badge variant="secondary">Joined</Badge>
@@ -90,13 +94,46 @@ async function PromoteCtaActions({ app }: { app: PublishedAppDetail }) {
   }
 
   return (
-    <JoinProgramForm
-      appId={app.appId}
-      appSlug={app.slug}
-      appName={app.name}
-      termsVersionId={app.termsVersionId}
-      termsVersionNumber={app.termsVersionNumber}
-    />
+    <div className="flex flex-col gap-2">
+      <JoinSteps current={2} />
+      <JoinProgramForm
+        appId={app.appId}
+        appSlug={app.slug}
+        appName={app.name}
+        termsVersionId={app.termsVersionId}
+        termsVersionNumber={app.termsVersionNumber}
+      />
+    </div>
+  );
+}
+
+const JOIN_STEPS = ["Creator account", "Social profile", "Accept terms", "Your link & code"] as const;
+
+/** Where the creator is on the way to a referral link. `current` = index of the next step (4 = done). */
+function JoinSteps({ current }: { current: number }) {
+  return (
+    <ol aria-label="Steps to join" className="mb-2 grid grid-cols-4 gap-1.5">
+      {JOIN_STEPS.map((label, index) => {
+        const done = index < current;
+        const active = index === current;
+        return (
+          <li
+            key={label}
+            aria-current={active ? "step" : undefined}
+            className="flex flex-col gap-1.5 text-[11px] leading-tight"
+          >
+            <span
+              aria-hidden
+              className={cn("h-1.5 rounded-full", done ? "bg-primary" : active ? "bg-foreground" : "bg-muted")}
+            />
+            <span className={cn(active ? "font-semibold text-foreground" : "text-muted-foreground")}>
+              {label}
+              <span className="sr-only">{done ? " (done)" : active ? " (next)" : ""}</span>
+            </span>
+          </li>
+        );
+      })}
+    </ol>
   );
 }
 
@@ -105,7 +142,7 @@ export function PromoteCtaCard({ app }: { app: PublishedAppDetail }) {
   const variesByPlan = app.minCommissionBps !== app.maxCommissionBps;
 
   return (
-    <Card className="border-primary/25">
+    <Card>
       <CardHeader className="gap-2">
         <div className="text-xs font-medium text-muted-foreground">Creator commission</div>
         <CardTitle className="tabular text-2xl font-semibold text-foreground sm:text-3xl">
