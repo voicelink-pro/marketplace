@@ -1,14 +1,15 @@
 "use client";
 
-import { Search, X } from "lucide-react";
+import { Search, SlidersHorizontal, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { type FormEvent, useTransition } from "react";
+import { type FormEvent, useState, useTransition } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
+import { cn } from "@/lib/utils";
 import {
   APP_CATEGORIES,
   APP_CATEGORY_LABELS,
@@ -30,7 +31,7 @@ import {
 } from "../filters";
 
 const selectClassName =
-  "h-9 w-full rounded-lg border border-input bg-background px-2.5 text-sm text-foreground transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
+  "h-10 w-full rounded-lg border border-input bg-card px-3 text-sm text-foreground transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
 export function CatalogFilterBar({
   filters,
@@ -42,6 +43,10 @@ export function CatalogFilterBar({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const active = hasActiveCatalogFilters(filters);
+  // Phones show the four selects behind a toggle so results start on the first screen.
+  // State lives outside the keyed form, so it survives each filter navigation.
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const selectCount = [filters.category, filters.commission, filters.platform, filters.language].filter(Boolean).length;
 
   function applyOverride(overrides: CatalogFilterOverrides) {
     const nextHref = buildCatalogHref(filters, overrides);
@@ -94,17 +99,34 @@ export function CatalogFilterBar({
               name="q"
               type="search"
               defaultValue={filters.q}
-              placeholder="Search apps by name, topic, or company…"
-              className="h-9 pl-9"
+              placeholder="Search apps or companies…"
+              className="pl-9"
             />
           </div>
-          <Button type="submit" size="lg" className="sm:w-auto">
-            {isPending ? <Spinner data-icon="inline-start" /> : null}
-            Search
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="lg"
+              className="flex-1 sm:hidden"
+              aria-expanded={filtersOpen}
+              aria-controls="catalog-filters"
+              onClick={() => setFiltersOpen((open) => !open)}
+            >
+              <SlidersHorizontal data-icon="inline-start" />
+              {selectCount > 0 ? `Filters (${selectCount})` : "Filters"}
+            </Button>
+            <Button type="submit" size="lg" className="flex-1 sm:flex-none">
+              {isPending ? <Spinner data-icon="inline-start" /> : null}
+              Search
+            </Button>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div
+          id="catalog-filters"
+          className={cn("grid-cols-1 gap-3 sm:grid sm:grid-cols-2 lg:grid-cols-4", filtersOpen ? "grid" : "hidden")}
+        >
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="filter-category" className="text-xs text-muted-foreground">
               Category
