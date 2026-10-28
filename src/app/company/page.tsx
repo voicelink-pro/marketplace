@@ -1,8 +1,8 @@
 import { CircleAlert } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import { type Metric, MetricsRow, MetricValue, MetricValueSkeleton } from "@/components/layout/metrics-row";
 import { PageHeader } from "@/components/layout/page-header";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -12,8 +12,12 @@ import {
   type Viewer,
   type ViewerOrganization,
 } from "@/modules/accounts/viewer";
-import { AttributionPanel } from "@/modules/attribution/components/attribution-panel";
-import { CommissionPanel } from "@/modules/commissions/components/commission-panel";
+import {
+  ClicksValue,
+  CommissionThisMonthValue,
+  PayingCustomersValue,
+  settled,
+} from "@/modules/attribution/components/result-metrics";
 import { appReadiness } from "@/modules/company-app/components/app-readiness";
 import {
   AddAppCard,
@@ -40,40 +44,42 @@ async function OrganizationName({ organization }: { organization: OrganizationPr
   return (await organization).name;
 }
 
-/** Its own query after the app's: streams into the results heading without holding the rest back. */
+/** Its own query after the app's. Creators live in the app tables, so this tile works in the local sandbox too. */
 async function CreatorsJoined({ appId }: { appId: string }) {
-  const count = (await listCompanyCreators(appId)).length;
-  return (
-    <Link href="/company/creators" className="text-sm font-medium underline-offset-4 hover:underline">
-      <span className="tabular">{count}</span> {count === 1 ? "creator joined" : "creators joined"}
-    </Link>
+  const creators = await settled(() => listCompanyCreators(appId));
+  return creators ? (
+    <MetricValue value={creators.length} caption="In your program" />
+  ) : (
+    <MetricValue caption="Unavailable" />
   );
 }
 
-/** Clicks, registrations, payments and commission from the tracking backend; the panels load their own data. */
-function Results({ appId }: { appId: string | null }) {
-  return (
-    <section aria-labelledby="results-heading" className="flex flex-col gap-3">
-      <div className="flex min-h-5 flex-wrap items-center justify-between gap-2">
-        <h2 id="results-heading" className="text-lg font-bold tracking-[-0.02em]">
-          Referral & subscription results
-        </h2>
-        {appId ? (
-          <Suspense fallback={<Skeleton className="h-4 w-28" />}>
-            <CreatorsJoined appId={appId} />
-          </Suspense>
-        ) : null}
-      </div>
-      {appId ? (
-        <Suspense fallback={<Skeleton aria-busy className="h-72 w-full rounded-[20px]" />}>
-          <AttributionPanel company appId={appId} />
-          <CommissionPanel company appId={appId} summary />
-        </Suspense>
-      ) : (
-        <p className="text-sm text-muted-foreground">Create an app to see referral results.</p>
-      )}
-    </section>
-  );
+/**
+ * Results row for the company's app; each tile loads its own figure. Without
+ * an app id (the overview is still loading) every tile is a skeleton.
+ */
+function Results({ appId }: { appId?: string }) {
+  const tile = (figure: (appId: string) => React.ReactNode) =>
+    appId ? <Suspense fallback={<MetricValueSkeleton />}>{figure(appId)}</Suspense> : <MetricValueSkeleton />;
+  const metrics: Metric[] = [
+    { label: "Creators joined", href: "/company/creators", value: tile((id) => <CreatorsJoined appId={id} />) },
+    {
+      label: "Clicks",
+      href: "/company/referrals",
+      value: tile((id) => <ClicksValue company appId={id} caption="All creators’ links" />),
+    },
+    {
+      label: "Paying customers",
+      href: "/company/referrals",
+      value: tile((id) => <PayingCustomersValue company appId={id} caption="Referred customers" />),
+    },
+    {
+      label: "Commission this month",
+      href: "/company/funding",
+      value: tile((id) => <CommissionThisMonthValue company appId={id} caption="Sandbox amounts" />),
+    },
+  ];
+  return <MetricsRow metrics={metrics} />;
 }
 
 /** Desktop: checklist in two thirds, the creator's view of the offer beside it. Phones: one column in this order. */
@@ -87,19 +93,13 @@ function OverviewGrid({ checklist, preview }: { checklist: React.ReactNode; prev
   );
 }
 
-/** Everything that depends on the app: status, checklist, preview and the creators count. */
+/** Everything that depends on the app: status, checklist, preview and results. */
 async function Overview({ organization }: { organization: OrganizationPromise }) {
   const { id, name } = await organization;
   const app = await getCompanyWorkspaceApp(id, name);
 
-  if (!app) {
-    return (
-      <>
-        <AddAppCard />
-        <Results appId={null} />
-      </>
-    );
-  }
+  // No app, no results: the card is the one next step.
+  if (!app) return <AddAppCard />;
 
   return (
     <>
@@ -122,12 +122,7 @@ function OverviewSkeleton() {
     <>
       <StatusTimelineSkeleton />
       <OverviewGrid checklist={<SetupChecklistSkeleton />} preview={<OfferPreviewSkeleton />} />
-      <section aria-labelledby="results-heading-loading" aria-busy className="flex flex-col gap-3">
-        <h2 id="results-heading-loading" className="text-lg font-bold tracking-[-0.02em]">
-          Referral & subscription results
-        </h2>
-        <Skeleton className="h-72 w-full rounded-[20px]" />
-      </section>
+      <Results />
     </>
   );
 }

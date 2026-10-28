@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { MetricsRow, MetricValueSkeleton } from "@/components/layout/metrics-row";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireViewer, type Viewer } from "@/modules/accounts/viewer";
-import { AttributionPanel } from "@/modules/attribution/components/attribution-panel";
-import { CommissionPanel } from "@/modules/commissions/components/commission-panel";
+import {
+  ClicksValue,
+  CommissionThisMonthValue,
+  PayingCustomersValue,
+} from "@/modules/attribution/components/result-metrics";
 import {
   GetStartedChecklist,
   type GetStartedStep,
@@ -70,18 +74,40 @@ async function SimilarApps({ viewer, programs }: { viewer: ViewerPromise; progra
   return <SimilarAppsList apps={apps} hasPrograms />;
 }
 
-/** Clicks, registrations, payments and commission from the tracking backend; it loads its own data. */
-function EarningsAndResults() {
+/** Clicks, paying customers and this month's commission across all programs; each tile loads its own figure. */
+function Results() {
   return (
-    <section aria-labelledby="earnings-heading" className="flex flex-col gap-3">
-      <h2 id="earnings-heading" className="text-lg font-bold tracking-[-0.02em]">
-        Earnings and results
-      </h2>
-      <Suspense fallback={<Skeleton aria-busy className="h-72 w-full rounded-[20px]" />}>
-        <AttributionPanel />
-        <CommissionPanel summary />
-      </Suspense>
-    </section>
+    <MetricsRow
+      metrics={[
+        {
+          label: "Clicks",
+          href: "/creator/links",
+          value: (
+            <Suspense fallback={<MetricValueSkeleton />}>
+              <ClicksValue caption="All your links" />
+            </Suspense>
+          ),
+        },
+        {
+          label: "Paying customers",
+          href: "/creator/referrals",
+          value: (
+            <Suspense fallback={<MetricValueSkeleton />}>
+              <PayingCustomersValue caption="Referred by you" />
+            </Suspense>
+          ),
+        },
+        {
+          label: "Earned this month",
+          href: "/creator/earnings",
+          value: (
+            <Suspense fallback={<MetricValueSkeleton />}>
+              <CommissionThisMonthValue caption="Sandbox amounts" />
+            </Suspense>
+          ),
+        },
+      ]}
+    />
   );
 }
 
@@ -118,7 +144,7 @@ export default function CreatorOverviewPage() {
         <Suspense fallback={null}>
           <Checklist viewer={viewer} programs={programs} />
         </Suspense>
-        <EarningsAndResults />
+        <Results />
         {/* Desktop: programs in two thirds, payment info and suggestions beside them. Phones: one column in this order. */}
         {/* grid-cols-1: an implicit track would grow to its content's min width and overflow on phones. */}
         <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-3">

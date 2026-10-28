@@ -556,3 +556,18 @@ Dokumenty: [PILOT_CHECKLIST.md](PILOT_CHECKLIST.md), [OPERATIONS_AND_RECOVERY.md
 - Powiadomienia E9 działają w aplikacji. Nie deklarujemy mailowego dostarczania tych powiadomień. Audyt zachowuje pseudonimowe referencje po usunięciu nadrzędnych danych; docelową retencję trzeba ustalić.
 
 **Wynik: część techniczna E9 dla lokalnego sandboxa pass. Pełnego odbioru produktu/pilota i gotowości produkcyjnej nie oznaczamy jako ukończonych przed spełnieniem powyższych zależności.**
+
+## Frontend — poprawki audytu F02 i F09 (28.10.2026)
+
+### Wdrożono
+
+- **F02:** `/creator` i `/company` zamiast pełnych `AttributionPanel`/`CommissionPanel` pokazują kompaktowy `MetricsRow` (`src/components/layout/metrics-row.tsx`, przywrócony z `680246a`). Każdy kafelek to osobny async komponent we własnym `<Suspense>` (`src/modules/attribution/components/result-metrics.tsx`) i link do strony szczegółów. Dane wyłącznie z istniejących zapytań: `getAttributionSummary().clicks`, `getPaymentMetrics().paying_customers`, `getCommissionWorkspace().totals[].accrued_this_month` (jedna linia na walutę, bez sumowania), na `/company` także liczba z `listCompanyCreators`. Błąd zapytania → „—” + „Unavailable”; brak prowizji → „No commission yet”; PGlite → „Needs local Supabase” (poza „Creators joined”, które działa na danych sandboxa). Panele bez zmian na stronach szczegółów. Bez aplikacji `/company` nie pokazuje wiersza.
+- **F09:** stopka bez martwych linków: Resources = „How it works” + „Support” (`/support`); kolumna Legal i ikony social usunięte (komentarz w kodzie: wrócą, gdy powstaną strony/profile); siatka 2 kolumny; brak `href="#"`.
+
+### Weryfikacja
+
+- **pass — `pnpm lint`** (0 błędów; 3 wcześniejsze ostrzeżenia w `src/components/ui`), **`pnpm typecheck`**, **`pnpm test`: 24 pliki / 220 testów**, **`pnpm build`**, `git diff --check`.
+- **pass — headless Chrome na lokalnym Supabase** (`creator.test@boostlink.local`, `company.test@boostlink.local`), 1280 i 375 px, dark i light: brak poziomego scrolla; wysokość wiersza identyczna dla szkieletu i danych (1280: 112 px/kafelek, 375: 54 px) i zerowy layout shift w wierszu. Pierwszy pomiar wykazał 2 px różnicy na 375 px — szkielet poprawiono na ten sam markup co wartość.
+- **pass — zgodność liczb ze stronami szczegółów** (`/creator/referrals`, `/creator/earnings`, `/company/referrals`, `/company/funding`, `/company/creators`). Lokalna baza nie ma kliknięć ani prowizji, więc porównano wartości 0 i stan „No commission yet”; widok wielu walut nie był sprawdzony na prawdziwych danych.
+- **pass — klawiatura:** Tab dochodzi do kafelka, widoczny focus ring (inset 3 px), cały kafelek klikalny.
+- **uwaga (backend) — `/support` bez sesji** zwraca 200, renderuje nagłówek i „Loading your support requests…”, a dopiero w strumieniu przekierowuje (meta refresh 1 s) na `/login?next=%2Fnotifications` — zły parametr `next`. Strony nie zmieniano.
