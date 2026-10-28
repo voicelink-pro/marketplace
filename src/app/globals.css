@@ -57,6 +57,8 @@
   --color-primary-foreground: var(--primary-foreground);
   --color-primary-ink: var(--primary-ink);
   --color-primary: var(--primary);
+  --color-side-creators: var(--side-creators);
+  --color-side-apps: var(--side-apps);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
@@ -111,6 +113,9 @@
   --sidebar-accent-foreground: oklch(0.178 0 0);
   --sidebar-border: oklch(0.920 0.004 286.3);
   --sidebar-ring: oklch(0.178 0 0);
+  /* Side colors, illustrations only: creators coral, apps violet. */
+  --side-creators: oklch(0.621 0.199 32.9);
+  --side-apps: oklch(0.541 0.247 293.0);
 }
 
 /* Dark theme (default): #0B0B0B canvas, #161616 surfaces, #2A2A2A lines,
@@ -151,6 +156,8 @@
   --sidebar-accent-foreground: oklch(0.970 0 0);
   --sidebar-border: oklch(0.285 0 0);
   --sidebar-ring: oklch(0.885 0.182 94.9);
+  --side-creators: oklch(0.707 0.187 34.1);
+  --side-apps: oklch(0.606 0.219 292.7);
 }
 
 @layer base {

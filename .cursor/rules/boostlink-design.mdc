@@ -20,11 +20,12 @@ New and redesigned pages must look and behave like it. File ownership rules are 
 - Never use yellow as text on light backgrounds. To emphasize a word, use the marker style:
   yellow highlight behind the word, black text.
 - Side colors exist only in illustrations, never in buttons or body text:
-  Creators coral (#FF6B4A dark / #E5482A light), Apps violet (#8B5CF6 dark / #7C3AED light).
+  Creators coral (#FF6B4A dark / #E5482A light), Apps violet (#8B5CF6 dark / #7C3AED light),
+  as tokens `--side-creators` / `--side-apps` (`bg-side-creators/20`, `bg-side-apps/20`).
 - Flat fills. No decorative gradients, glows, blur blobs or "AI-looking" gradient lines.
 
 ## Typography
-- Font: Instrument Sans (bundled). Headings bold with tight letter-spacing; body regular/medium.
+- Font: Plus Jakarta Sans (bundled, `src/app/fonts/plus-jakarta-sans.ttf`). Headings bold with tight letter-spacing; body regular/medium.
 - Headlines short (2 lines max). Subtitles max 3 lines on desktop, last line shorter, never a single word.
 - Section copy: one or two lines per item. No internal/dev wording in UI text.
 

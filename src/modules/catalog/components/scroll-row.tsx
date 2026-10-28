@@ -3,11 +3,8 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Children, useCallback, useEffect, useId, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import { scrollerClassName } from "./scroller";
 import { usePrefersReducedMotion } from "./use-media-query";
-
-// `relative`: absolutely positioned descendants (sr-only text) must be clipped by the scroller, not widen the page.
-const scrollerClassName =
-  "relative flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
 
 export const roundIconButtonClassName =
   "inline-flex size-9 items-center justify-center rounded-full border bg-background text-foreground outline-none transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-40";
