@@ -36,8 +36,8 @@ export const PANEL_NAV: Record<PanelArea, NavItem[]> = {
     { href: "/creator/programs", label: "My programs", icon: Layers },
     { href: "/creator/links", label: "Links", icon: Link2 },
     { href: "/creator/referrals", label: "Referrals", icon: Users },
-    { href: "/creator/earnings", label: "Earnings", icon: HandCoins, soon: true },
-    { href: "/creator/payouts", label: "Payouts", icon: Banknote, soon: true },
+    { href: "/creator/earnings", label: "Earnings", icon: HandCoins },
+    { href: "/creator/payouts", label: "Payouts", icon: Banknote },
     { href: "/creator/settings", label: "Settings", icon: Settings },
   ],
   company: [
@@ -47,7 +47,7 @@ export const PANEL_NAV: Record<PanelArea, NavItem[]> = {
     { href: "/company/creators", label: "Creators", icon: Users },
     { href: "/company/referrals", label: "Referrals", icon: ChartNoAxesColumn },
     { href: "/company/integrations", label: "Integrations", icon: Plug },
-    { href: "/company/funding", label: "Funding & statements", icon: Wallet, soon: true },
+    { href: "/company/funding", label: "Funding & statements", icon: Wallet },
     { href: "/company/settings", label: "Settings", icon: Settings },
   ],
   admin: [

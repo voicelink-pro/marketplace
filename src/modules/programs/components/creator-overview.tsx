@@ -1,7 +1,6 @@
 import { ArrowRight, Check, Layers, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { EmptyModule } from "@/components/states/empty-module";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCommissionRange } from "@/lib/money";
@@ -212,16 +211,17 @@ export function ProgramsSkeleton() {
   );
 }
 
-/** How earnings work, as the brief defines them; payouts are still marked "Soon" like in the nav. */
+/** How earnings work, as the brief defines them. */
 export function HowYouGetPaid() {
   const lines: React.ReactNode[] = [
     "Commission on every renewal, for as long as your customers stay subscribed.",
     "Earnings unlock after the month closes.",
     <>
-      You request payouts from the Payouts page.{" "}
-      <Badge variant="secondary" className="align-middle text-[11px]">
-        Soon
-      </Badge>
+      You request payouts from the{" "}
+      <Link href="/creator/payouts" className="font-medium text-foreground underline underline-offset-4 hover:text-primary-ink">
+        Payouts page
+      </Link>
+      .
     </>,
   ];
   return (
