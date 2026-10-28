@@ -48,7 +48,7 @@ async function Checklist({ viewer, programs }: { viewer: ViewerPromise; programs
     {
       title: "Join your first program",
       description: "Pick an app and get your link and code.",
-      href: "/",
+      href: "/creator/discover",
       done: list.length > 0,
     },
     {
@@ -135,7 +135,7 @@ export default function CreatorOverviewPage() {
         description="Your programs, links and results in one place."
         actions={
           <Button asChild size="lg">
-            <Link href="/">Discover apps</Link>
+            <Link href="/creator/discover">Discover apps</Link>
           </Button>
         }
       />

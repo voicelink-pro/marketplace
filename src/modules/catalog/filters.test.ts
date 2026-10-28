@@ -51,6 +51,12 @@ describe("catalog URL filter parsing and navigation helpers", () => {
     expect(buildCatalogHref(current, { category: null })).toBe("/");
   });
 
+  it("keeps catalog links on the page given as base path", () => {
+    const current = parseCatalogFilters({ q: "coach" });
+    expect(buildCatalogHref(current, { page: 2 }, "/creator/discover")).toBe("/creator/discover?q=coach&page=2");
+    expect(buildCatalogHref(current, { q: "" }, "/creator/discover")).toBe("/creator/discover");
+  });
+
   it("preserves active filters in the app detail link and safely reconstructs the return link", () => {
     const filters = parseCatalogFilters({
       q: "coach",

@@ -126,12 +126,14 @@ export function buildCatalogQueryString(
   return params.toString();
 }
 
+/** `basePath` is the page the catalog lives on: the home page, or Discover in the creator panel. */
 export function buildCatalogHref(
   current: CatalogFilters,
   overrides: CatalogFilterOverrides = {},
+  basePath = "/",
 ): string {
   const qs = buildCatalogQueryString(current, overrides);
-  return qs ? `/?${qs}` : "/";
+  return qs ? `${basePath}?${qs}` : basePath;
 }
 
 /**

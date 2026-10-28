@@ -8,11 +8,13 @@ export function CatalogPagination({
   totalCount,
   pageSize,
   totalPages,
+  basePath = "/",
 }: {
   filters: CatalogFilters;
   totalCount: number;
   pageSize: number;
   totalPages: number;
+  basePath?: string;
 }) {
   if (totalCount === 0 || totalPages <= 1) return null;
 
@@ -33,7 +35,7 @@ export function CatalogPagination({
       <div className="flex flex-wrap items-center gap-1.5">
         {currentPage > 1 ? (
           <Button variant="outline" size="sm" asChild>
-            <Link href={buildCatalogHref(filters, { page: currentPage - 1 })}>
+            <Link href={buildCatalogHref(filters, { page: currentPage - 1 }, basePath)}>
               <ChevronLeft data-icon="inline-start" />
               Previous
             </Link>
@@ -59,7 +61,7 @@ export function CatalogPagination({
               {isCurrent ? (
                 <span>{pageNumber}</span>
               ) : (
-                <Link href={buildCatalogHref(filters, { page: pageNumber })}>{pageNumber}</Link>
+                <Link href={buildCatalogHref(filters, { page: pageNumber }, basePath)}>{pageNumber}</Link>
               )}
             </Button>
           );
@@ -67,7 +69,7 @@ export function CatalogPagination({
 
         {currentPage < totalPages ? (
           <Button variant="outline" size="sm" asChild>
-            <Link href={buildCatalogHref(filters, { page: currentPage + 1 })}>
+            <Link href={buildCatalogHref(filters, { page: currentPage + 1 }, basePath)}>
               Next
               <ChevronRight data-icon="inline-end" />
             </Link>

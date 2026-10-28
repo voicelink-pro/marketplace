@@ -1,42 +1,45 @@
-import Link from "next/link";
 import { Suspense } from "react";
 import { Logo } from "@/components/brand/logo";
+import { Separator } from "@/components/ui/separator";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { getViewer } from "@/modules/accounts/viewer";
+import { getViewer, primaryOrganization } from "@/modules/accounts/viewer";
 import { AccountMenu } from "./account-menu";
-import { MobileNav } from "./mobile-nav";
-import { PANEL_LABELS, type PanelArea } from "./nav-config";
-import { PanelNav } from "./panel-nav";
+import { ActiveMobileTabBar, MobileTabBar } from "./mobile-tab-bar";
+import { PANEL_NAV, type PanelArea } from "./nav-config";
+import { ActivePanelBreadcrumb, PanelBreadcrumb } from "./panel-breadcrumb";
+import {
+  ActivePanelNavGroups,
+  ActivePanelNavSecondary,
+  PanelNavGroups,
+  PanelNavSecondary,
+} from "./panel-nav";
+import { ActivePanelSearch, PanelSearch } from "./panel-search";
 import { ThemeToggle } from "./theme-toggle";
+import { type Workspace, WorkspaceMenu, WorkspaceMenuSkeleton } from "./workspace-menu";
 
-async function ContextSwitch({ area }: { area: PanelArea }) {
+/** The workspaces the viewer can switch between; one entry (no switcher) for single-role accounts and admin. */
+async function WorkspaceSwitcher({ area }: { area: PanelArea }) {
   const viewer = await getViewer();
-  if (!viewer || area === "admin") return null;
-  const hasCompany = viewer.organizations.length > 0;
-  if (!viewer.creator || !hasCompany) return null;
-
-  const options: { area: "creator" | "company"; href: string }[] = [
-    { area: "creator", href: "/creator" },
-    { area: "company", href: "/company" },
-  ];
-  return (
-    <nav aria-label="Switch workspace" className="flex rounded-lg bg-muted p-0.5 text-sm">
-      {options.map((option) => (
-        <Link
-          key={option.area}
-          href={option.href}
-          aria-current={option.area === area ? "page" : undefined}
-          className={cn(
-            "rounded-md px-3 py-1.5 font-medium text-muted-foreground outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
-            option.area === area && "bg-card text-foreground shadow-xs",
-          )}
-        >
-          {PANEL_LABELS[option.area]}
-        </Link>
-      ))}
-    </nav>
-  );
+  if (!viewer) return <WorkspaceMenuSkeleton area={area} />;
+  const organization = primaryOrganization(viewer);
+  const workspaces: Workspace[] = [];
+  if (area === "admin") {
+    workspaces.push({ area, name: viewer.displayName });
+  } else {
+    if (viewer.creator || area === "creator") workspaces.push({ area: "creator", name: viewer.displayName });
+    if (organization) workspaces.push({ area: "company", name: organization.name });
+  }
+  return <WorkspaceMenu area={area} workspaces={workspaces} />;
 }
 
 async function PanelAccount() {
@@ -55,59 +58,82 @@ async function PanelAccount() {
   );
 }
 
+function SiteHeader({ area, hasTabs }: { area: PanelArea; hasTabs: boolean }) {
+  return (
+    <header className="sticky top-0 z-40 flex h-(--header-height) w-full shrink-0 items-center gap-2 border-b bg-background/85 px-3 backdrop-blur sm:px-4">
+      {/* With a tab bar, phones open the menu from "More". */}
+      <SidebarTrigger size="icon-lg" aria-label="Toggle sidebar" className={cn(hasTabs && "hidden md:inline-flex")} />
+      <Logo href={PANEL_NAV[area].home} />
+      <Separator orientation="vertical" className="mx-1 hidden h-5 self-center! sm:block" />
+      <Suspense fallback={<PanelBreadcrumb area={area} pathname={null} />}>
+        <ActivePanelBreadcrumb area={area} />
+      </Suspense>
+      <div className="ml-auto flex items-center gap-1 sm:gap-2">
+        {area === "creator" ? (
+          <Suspense fallback={<PanelSearch pathname={null} />}>
+            <ActivePanelSearch />
+          </Suspense>
+        ) : null}
+        <ThemeToggle />
+        <Suspense fallback={<Skeleton className="size-8 rounded-full" />}>
+          <PanelAccount />
+        </Suspense>
+      </div>
+    </header>
+  );
+}
+
+function AppSidebar({ area }: { area: PanelArea }) {
+  return (
+    <Sidebar collapsible="icon" className="top-(--header-height) h-[calc(100svh-var(--header-height))]!">
+      <SidebarHeader>
+        <Suspense fallback={<WorkspaceMenuSkeleton area={area} />}>
+          <WorkspaceSwitcher area={area} />
+        </Suspense>
+      </SidebarHeader>
+      <SidebarContent>
+        <Suspense fallback={<PanelNavGroups area={area} pathname={null} />}>
+          <ActivePanelNavGroups area={area} />
+        </Suspense>
+      </SidebarContent>
+      <SidebarFooter className="border-t">
+        <Suspense fallback={<PanelNavSecondary area={area} pathname={null} />}>
+          <ActivePanelNavSecondary area={area} />
+        </Suspense>
+      </SidebarFooter>
+    </Sidebar>
+  );
+}
+
 /**
- * Desktop: sticky sidebar + topbar. Mobile: topbar with a sheet menu.
- * Everything that reads the session streams in behind Suspense.
+ * Full-width sticky header with the sidebar below it (shadcn sidebar-16).
+ * From md the sidebar collapses to icons; on phones it is a sheet opened from
+ * the header or the tab bar. Everything that reads the session or the
+ * pathname streams in behind Suspense, so the shell itself stays static.
  */
 export function PanelShell({ area, children }: { area: PanelArea; children: React.ReactNode }) {
-  const home = area === "admin" ? "/admin" : `/${area}`;
+  const hasTabs = PANEL_NAV[area].mobileTabs.length > 0;
   return (
-    <div className="min-h-dvh w-full bg-background text-foreground lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)]">
-      <aside className="sticky top-0 hidden h-dvh flex-col gap-6 border-r bg-sidebar px-3 py-4 lg:flex">
-        <div className="flex flex-col gap-1 px-2">
-          <Logo href={home} />
-          <span className="pl-[2.125rem] text-xs text-muted-foreground">{PANEL_LABELS[area]} workspace</span>
-        </div>
-        <Suspense fallback={null}>
-          <PanelNav area={area} />
-        </Suspense>
-        {/* Creators get "Browse apps" in the main navigation instead. */}
-        {area !== "creator" ? (
-          <div className="mt-auto px-2 text-xs text-muted-foreground">
-            <Link href="/" className="hover:text-foreground">
-              Browse the marketplace
-            </Link>
-          </div>
-        ) : null}
-      </aside>
-      <div className="flex min-w-0 flex-col">
-        <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b bg-background/85 px-3 backdrop-blur sm:px-4 lg:px-8">
-          <MobileNav
-            area={area}
-            contextSwitch={
-              <Suspense fallback={null}>
-                <ContextSwitch area={area} />
-              </Suspense>
-            }
-          />
-          <Logo href={home} className="lg:hidden" />
-          <div className="ml-auto flex items-center gap-2 sm:gap-3">
-            <ThemeToggle />
-            <Suspense fallback={null}>
-              <div className="hidden sm:block">
-                <ContextSwitch area={area} />
-              </div>
-            </Suspense>
-            <Suspense fallback={<Skeleton className="size-8 rounded-full" />}>
-              <PanelAccount />
-            </Suspense>
-          </div>
-        </header>
-        <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+    <SidebarProvider className="flex-col [--header-height:calc(--spacing(14))]">
+      <SiteHeader area={area} hasTabs={hasTabs} />
+      <div className="flex flex-1">
+        <AppSidebar area={area} />
+        <SidebarInset
+          className={cn(
+            "min-w-0 px-4 py-6 sm:px-6 lg:px-8 lg:py-8",
+            // Room for the fixed tab bar on phones.
+            hasTabs && "pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-6 lg:pb-8",
+          )}
+        >
           <div className="mx-auto w-full max-w-6xl">{children}</div>
-        </main>
+        </SidebarInset>
       </div>
-    </div>
+      {hasTabs ? (
+        <Suspense fallback={<MobileTabBar area={area} pathname={null} />}>
+          <ActiveMobileTabBar area={area} />
+        </Suspense>
+      ) : null}
+    </SidebarProvider>
   );
 }
 

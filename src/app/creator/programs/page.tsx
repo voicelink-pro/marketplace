@@ -34,7 +34,7 @@ export default async function CreatorProgramsPage() {
         description="Apps you promote, with your referral codes, links and accepted commission terms."
         actions={
           <Button asChild>
-            <Link href="/">
+            <Link href="/creator/discover">
               <Plus data-icon="inline-start" />
               Find another app
             </Link>

@@ -152,8 +152,20 @@ function FilterFields({
  * Discover top bar: title with the app count, a "Filters" button (popover
  * from md, bottom sheet on phones) and the search box. Enter searches; each
  * select applies on change. Active filters show as removable badges below.
+ * `basePath` keeps every link on the page the catalog is on; `showTitle={false}`
+ * leaves only the count, for pages whose own heading already says "Discover apps".
  */
-export function CatalogFilterBar({ filters, totalCount }: { filters: CatalogFilters; totalCount: number }) {
+export function CatalogFilterBar({
+  filters,
+  totalCount,
+  basePath = "/",
+  showTitle = true,
+}: {
+  filters: CatalogFilters;
+  totalCount: number;
+  basePath?: string;
+  showTitle?: boolean;
+}) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const active = hasActiveCatalogFilters(filters);
@@ -161,7 +173,7 @@ export function CatalogFilterBar({ filters, totalCount }: { filters: CatalogFilt
   const filtersLabel = selectCount > 0 ? `Filters (${selectCount})` : "Filters";
 
   function applyOverride(overrides: CatalogFilterOverrides) {
-    const nextHref = buildCatalogHref(filters, overrides);
+    const nextHref = buildCatalogHref(filters, overrides, basePath);
     startTransition(() => {
       router.push(nextHref, { scroll: false });
     });
@@ -177,7 +189,9 @@ export function CatalogFilterBar({ filters, totalCount }: { filters: CatalogFilt
     <div className="flex flex-col gap-3">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="flex items-baseline gap-2.5">
-          <h2 className="text-2xl leading-tight font-extrabold tracking-[-0.04em] sm:text-3xl">Discover apps</h2>
+          {showTitle ? (
+            <h2 className="text-2xl leading-tight font-extrabold tracking-[-0.04em] sm:text-3xl">Discover apps</h2>
+          ) : null}
           <span className="text-sm text-muted-foreground tabular-nums">
             {totalCount} {totalCount === 1 ? "app" : "apps"}
           </span>
@@ -197,7 +211,7 @@ export function CatalogFilterBar({ filters, totalCount }: { filters: CatalogFilt
           </Popover>
 
           <search className="relative flex-1 md:w-72 md:flex-none">
-            <form method="get" action="/" onSubmit={handleSubmit} key={filters.q}>
+            <form method="get" action={basePath} onSubmit={handleSubmit} key={filters.q}>
               <Label htmlFor="catalog-search" className="sr-only">
                 Search apps
               </Label>
@@ -249,7 +263,7 @@ export function CatalogFilterBar({ filters, totalCount }: { filters: CatalogFilt
             {filters.q ? (
               <Badge variant="secondary" asChild>
                 <Link
-                  href={buildCatalogHref(filters, { q: "" })}
+                  href={buildCatalogHref(filters, { q: "" }, basePath)}
                   aria-label={`Remove search query ${filters.q}`}
                 >
                   “{filters.q}”
@@ -260,7 +274,7 @@ export function CatalogFilterBar({ filters, totalCount }: { filters: CatalogFilt
             {filters.category ? (
               <Badge variant="secondary" asChild>
                 <Link
-                  href={buildCatalogHref(filters, { category: null })}
+                  href={buildCatalogHref(filters, { category: null }, basePath)}
                   aria-label={`Remove category filter ${APP_CATEGORY_LABELS[filters.category]}`}
                 >
                   {APP_CATEGORY_LABELS[filters.category]}
@@ -271,7 +285,7 @@ export function CatalogFilterBar({ filters, totalCount }: { filters: CatalogFilt
             {filters.commission ? (
               <Badge variant="secondary" asChild>
                 <Link
-                  href={buildCatalogHref(filters, { commission: null })}
+                  href={buildCatalogHref(filters, { commission: null }, basePath)}
                   aria-label={`Remove commission filter ${filters.commission}%+`}
                 >
                   {filters.commission}%+ recurring
@@ -282,7 +296,7 @@ export function CatalogFilterBar({ filters, totalCount }: { filters: CatalogFilt
             {filters.platform ? (
               <Badge variant="secondary" asChild>
                 <Link
-                  href={buildCatalogHref(filters, { platform: null })}
+                  href={buildCatalogHref(filters, { platform: null }, basePath)}
                   aria-label={`Remove platform filter ${APP_PLATFORM_LABELS[filters.platform]}`}
                 >
                   {APP_PLATFORM_LABELS[filters.platform]}
@@ -293,7 +307,7 @@ export function CatalogFilterBar({ filters, totalCount }: { filters: CatalogFilt
             {filters.language ? (
               <Badge variant="secondary" asChild>
                 <Link
-                  href={buildCatalogHref(filters, { language: null })}
+                  href={buildCatalogHref(filters, { language: null }, basePath)}
                   aria-label={`Remove language filter ${APP_LANGUAGE_LABELS[filters.language]}`}
                 >
                   {APP_LANGUAGE_LABELS[filters.language]}
@@ -304,7 +318,7 @@ export function CatalogFilterBar({ filters, totalCount }: { filters: CatalogFilt
           </div>
 
           <Button variant="ghost" size="sm" asChild>
-            <Link href="/">Clear filters</Link>
+            <Link href={basePath}>Clear filters</Link>
           </Button>
         </div>
       ) : null}

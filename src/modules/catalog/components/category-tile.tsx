@@ -25,11 +25,19 @@ const CATEGORY_ICONS: Record<AppCategory, LucideIcon> = {
 };
 
 /** Applies the category filter and lands back on the catalog. */
-export function CategoryTile({ category, count }: { category: AppCategory; count: number }) {
+export function CategoryTile({
+  category,
+  count,
+  basePath = "/",
+}: {
+  category: AppCategory;
+  count: number;
+  basePath?: string;
+}) {
   const Icon = CATEGORY_ICONS[category];
   return (
     <Link
-      href={`${buildCatalogHref(DEFAULT_CATALOG_FILTERS, { category })}#offers`}
+      href={`${buildCatalogHref(DEFAULT_CATALOG_FILTERS, { category }, basePath)}#offers`}
       scroll={false}
       className="flex w-full flex-col gap-6 rounded-[20px] border bg-card p-4 transition-colors outline-none hover:border-foreground/25 focus-visible:ring-3 focus-visible:ring-ring/50"
     >
