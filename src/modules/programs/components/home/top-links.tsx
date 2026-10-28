@@ -1,9 +1,8 @@
-import { Link2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ChannelIcon } from "../channel-icon";
 import { CardHeading, CardLink, HomeCard, Unavailable } from "./card";
-import { isBrandPlatform, PlatformTile } from "./illustrations";
 
 const TITLE_ID = "top-links-heading";
 
@@ -15,15 +14,6 @@ function Frame({ busy, children }: { busy?: boolean; children: React.ReactNode }
       <CardHeading id={TITLE_ID} title="Top links" note="Clicks per link · all time" />
       {children}
     </HomeCard>
-  );
-}
-
-function ChannelIcon({ channel }: { channel: string | null }) {
-  if (channel && isBrandPlatform(channel)) return <PlatformTile platform={channel} className="size-5.5 rounded-md" />;
-  return (
-    <span aria-hidden className="grid size-5.5 shrink-0 place-items-center rounded-md bg-muted text-muted-foreground">
-      <Link2 className="size-3.5" />
-    </span>
   );
 }
 

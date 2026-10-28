@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   byLargest,
+  earnedInMonth,
   type EarningRow,
   lastMonths,
   mainCurrency,
@@ -84,5 +85,18 @@ describe("creator Home data helpers", () => {
       "70",
       "5",
     ]);
+  });
+
+  it("takes one month's commission, per app when asked, and nothing at or below zero", () => {
+    const rows = [
+      earning("2026-10", "380"),
+      { ...earning("2026-10", "120"), id: "other", app_id: "other" },
+      earning("2026-09", "900"),
+      earning("2026-10", "50", "USD"),
+    ];
+    expect(earnedInMonth(rows, "2026-10")).toEqual({ currency: "EUR", minor: "500" });
+    expect(earnedInMonth(rows, "2026-10", "other")).toEqual({ currency: "EUR", minor: "120" });
+    expect(earnedInMonth([earning("2026-10", "-80")], "2026-10")).toBeNull();
+    expect(earnedInMonth(rows, "2026-11")).toBeNull();
   });
 });

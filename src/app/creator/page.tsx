@@ -1,6 +1,7 @@
 import { MousePointerClick, Percent, UserPlus, Users } from "lucide-react";
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { StatValue, StatValueSkeleton } from "@/components/layout/stat-strip";
 import { getPublicEnv } from "@/lib/env";
 import { formatMinorCurrency } from "@/lib/money";
 import { requireViewer, type Viewer } from "@/modules/accounts/viewer";
@@ -31,6 +32,7 @@ import {
 } from "@/modules/programs/components/home/greeting";
 import {
   byLargest,
+  earnedInMonth,
   lastMonths,
   mainCurrency,
   mergeActivity,
@@ -42,7 +44,6 @@ import {
   percentOf,
   relativeTime,
   type SetupDone,
-  sumByCurrency,
 } from "@/modules/programs/components/home/home-data";
 import {
   type ProgramCardData,
@@ -56,11 +57,7 @@ import {
   RecentActivitySkeleton,
   RecentActivityUnavailable,
 } from "@/modules/programs/components/home/recent-activity";
-import {
-  ResultsStrip,
-  ResultValue,
-  ResultValueSkeleton,
-} from "@/modules/programs/components/home/results-strip";
+import { ResultsStrip } from "@/modules/programs/components/home/results-strip";
 import {
   SimilarApps,
   SimilarAppsSkeleton,
@@ -219,14 +216,14 @@ async function Balance({ data }: { data: HomeData }) {
   );
 }
 
-const unavailableResult = <ResultValue value="—" caption="Unavailable" muted />;
+const unavailableResult = <StatValue value="—" caption="Unavailable" muted />;
 const count = new Intl.NumberFormat("en");
 const signupsOf = (summary: Attribution) => summary.registrations + summary.code_registrations;
 
 async function ClicksResult({ data }: { data: HomeData }) {
   const summary = await data.attribution;
   if (!summary) return unavailableResult;
-  return <ResultValue value={count.format(summary.clicks)} caption="On all your links" />;
+  return <StatValue value={count.format(summary.clicks)} caption="On all your links" />;
 }
 
 async function SignupsResult({ data }: { data: HomeData }) {
@@ -234,7 +231,7 @@ async function SignupsResult({ data }: { data: HomeData }) {
   if (!summary) return unavailableResult;
   const share = percentOf(signupsOf(summary), summary.clicks);
   return (
-    <ResultValue
+    <StatValue
       value={count.format(signupsOf(summary))}
       caption={share ? `${share} of clicks` : "Via links and codes"}
     />
@@ -246,7 +243,7 @@ async function PayingResult({ data }: { data: HomeData }) {
   if (!payments) return unavailableResult;
   const share = summary ? percentOf(payments.paying_customers, signupsOf(summary)) : null;
   return (
-    <ResultValue
+    <StatValue
       value={count.format(payments.paying_customers)}
       caption={share ? `${share} of sign-ups` : "Customers who paid"}
     />
@@ -259,15 +256,15 @@ async function ClickToPaidResult({ data }: { data: HomeData }) {
   if (!summary || !payments) return unavailableResult;
   const share = payments.paying_customers > 0 ? percentOf(payments.paying_customers, summary.clicks) : null;
   return share ? (
-    <ResultValue value={share} caption="Clicks that became paying customers" />
+    <StatValue value={share} caption="Clicks that became paying customers" />
   ) : (
-    <ResultValue value="—" caption="After the first payment" muted />
+    <StatValue value="—" caption="After the first payment" muted />
   );
 }
 
 function Results({ data }: { data: HomeData }) {
   const cell = (Value: (props: { data: HomeData }) => Promise<React.ReactNode>) => (
-    <Suspense fallback={<ResultValueSkeleton />}>
+    <Suspense fallback={<StatValueSkeleton />}>
       <Value data={data} />
     </Suspense>
   );
@@ -291,17 +288,11 @@ async function Programs({ data }: { data: HomeData }) {
   const cards: ProgramCardData[] = await Promise.all(
     programs.slice(0, 2).map(async (program) => {
       const payments = await settled(() => getPaymentMetrics(program.appId));
-      const [earned] = byLargest(
-        sumByCurrency(
-          (commissions?.earnings ?? []).filter(
-            (row) => row.app_id === program.appId && row.effective_month.startsWith(thisMonth),
-          ),
-        ),
-      );
+      const earned = earnedInMonth(commissions?.earnings ?? [], thisMonth, program.appId);
       return {
         program,
         paying: payments?.paying_customers ?? null,
-        thisMonth: earned && BigInt(earned.minor) > 0n ? format(earned.minor, earned.currency) : null,
+        thisMonth: earned ? format(earned.minor, earned.currency) : null,
       };
     }),
   );

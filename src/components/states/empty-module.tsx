@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 import {
   Empty,
   EmptyContent,
@@ -13,15 +14,17 @@ export function EmptyModule({
   icon: Icon,
   title,
   description,
+  className,
   children,
 }: {
   icon: LucideIcon;
   title: string;
   description: string;
+  className?: string;
   children?: React.ReactNode;
 }) {
   return (
-    <Empty className="rounded-xl border border-dashed bg-card">
+    <Empty className={cn("rounded-xl border border-dashed bg-card", className)}>
       <EmptyHeader>
         <EmptyMedia variant="icon">
           <Icon />

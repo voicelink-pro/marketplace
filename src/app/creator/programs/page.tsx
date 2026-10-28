@@ -1,169 +1,213 @@
-import { ArrowRight, ExternalLink, Layers, Plus } from "lucide-react";
+import { ArrowRight, CreditCard, Layers, Link2, Wallet } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { PageHeader } from "@/components/layout/page-header";
+import { StatStrip, StatValue, StatValueSkeleton } from "@/components/layout/stat-strip";
 import { EmptyModule } from "@/components/states/empty-module";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { formatCommissionRange } from "@/lib/money";
+import { formatMinorCurrency } from "@/lib/money";
 import { requireViewer } from "@/modules/accounts/viewer";
-import { APP_CATEGORY_LABELS, APP_PLATFORM_LABELS } from "@/modules/catalog/constants";
-import { CopyableField } from "@/modules/programs/components/copy-value-button";
-import { listCreatorProgramMemberships } from "@/modules/programs/queries";
+import { settled } from "@/modules/attribution/components/result-metrics";
+import { getAttributionSummary } from "@/modules/attribution/queries";
+import { getCommissionWorkspace } from "@/modules/commissions/queries";
+import { getPaymentMetrics } from "@/modules/payments/queries";
+import { HOME_CARD, Unavailable } from "@/modules/programs/components/home/card";
+import { earnedInMonth, monthKey, monthLabel } from "@/modules/programs/components/home/home-data";
+import { AddAppCard } from "@/modules/programs/components/home/program-cards";
+import {
+  MiniStatSkeleton,
+  MiniStatValue,
+  ProgramListCard,
+  ProgramListCardSkeleton,
+} from "@/modules/programs/components/program-list-card";
+import { type CreatorProgramSummary, listCreatorProgramMemberships } from "@/modules/programs/queries";
 
-export const metadata: Metadata = { title: "My programs" };
+export const metadata: Metadata = { title: "Programs" };
 
-const dateFormat = new Intl.DateTimeFormat("en", { dateStyle: "medium", timeZone: "UTC" });
+type Settled<T> = Promise<T | undefined>;
+type Attribution = Awaited<ReturnType<typeof getAttributionSummary>>;
+type Commissions = Awaited<ReturnType<typeof getCommissionWorkspace>>;
+type Payments = Awaited<ReturnType<typeof getPaymentMetrics>>;
 
-export default async function CreatorProgramsPage() {
-  const viewer = await requireViewer("/creator/programs");
-  const programs = await listCreatorProgramMemberships(viewer.userId);
+/** Everything the page reads, started once and awaited only inside each part's <Suspense>. */
+type ProgramsData = {
+  programs: Settled<CreatorProgramSummary[]>;
+  commissions: Settled<Commissions>;
+  payments: Settled<Payments>;
+};
+
+const count = new Intl.NumberFormat("en");
+const unavailableStat = <StatValue value="—" caption="Unavailable" muted />;
+const dash = <MiniStatValue value="—" muted />;
+
+async function ProgramsStat({ data }: { data: ProgramsData }) {
+  const programs = await data.programs;
+  if (!programs) return unavailableStat;
+  return (
+    <StatValue
+      value={count.format(programs.length)}
+      caption={programs.length > 0 ? programs.map((program) => program.appName).join(", ") : "None yet"}
+      muted={programs.length === 0}
+    />
+  );
+}
+
+async function PayingStat({ data }: { data: ProgramsData }) {
+  const payments = await data.payments;
+  if (!payments) return unavailableStat;
+  return <StatValue value={count.format(payments.paying_customers)} caption="All time" />;
+}
+
+/** Net commission this month in the currency with the most; a dash until there is some. */
+async function EarnedStat({ data }: { data: ProgramsData }) {
+  const commissions = await data.commissions;
+  if (!commissions) return unavailableStat;
+  const month = monthKey(new Date());
+  const earned = earnedInMonth(commissions.earnings, month);
+  const caption = monthLabel(month, "long");
+  return earned ? (
+    <StatValue value={formatMinorCurrency(earned.minor, earned.currency)} caption={caption} />
+  ) : (
+    <StatValue value="—" caption={caption} muted />
+  );
+}
+
+async function LinksStat({ data }: { data: ProgramsData }) {
+  const programs = await data.programs;
+  if (!programs) return unavailableStat;
+  const links = programs.reduce((total, program) => total + program.links.length, 0);
+  return <StatValue value={count.format(links)} caption="Plus one code per program" muted={links === 0} />;
+}
+
+function Overview({ data }: { data: ProgramsData }) {
+  const cell = (Value: (props: { data: ProgramsData }) => Promise<React.ReactNode>) => (
+    <Suspense fallback={<StatValueSkeleton />}>
+      <Value data={data} />
+    </Suspense>
+  );
+  return (
+    <StatStrip
+      ariaLabel="Programs overview"
+      cells={[
+        { icon: Layers, label: "Programs", value: cell(ProgramsStat) },
+        { icon: CreditCard, label: "Paying customers", value: cell(PayingStat) },
+        { icon: Wallet, label: "Earned this month", value: cell(EarnedStat) },
+        { icon: Link2, label: "Links", value: cell(LinksStat) },
+      ]}
+    />
+  );
+}
+
+async function CustomersValue({ payments }: { payments: Settled<Payments> }) {
+  const metrics = await payments;
+  if (!metrics) return dash;
+  return <MiniStatValue value={count.format(metrics.paying_customers)} muted={metrics.paying_customers === 0} />;
+}
+
+async function ThisMonthValue({ commissions, appId }: { commissions: Settled<Commissions>; appId: string }) {
+  const workspace = await commissions;
+  const earned = workspace ? earnedInMonth(workspace.earnings, monthKey(new Date()), appId) : null;
+  return earned ? <MiniStatValue value={formatMinorCurrency(earned.minor, earned.currency)} /> : dash;
+}
+
+async function ClicksValue({ attribution }: { attribution: Settled<Attribution> }) {
+  const summary = await attribution;
+  if (!summary) return dash;
+  return <MiniStatValue value={count.format(summary.clicks)} muted={summary.clicks === 0} />;
+}
+
+const GRID = "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3";
+
+/** One card per membership, each with its own results streaming in; the dashed card to add one closes the grid. */
+async function ProgramGrid({ data }: { data: ProgramsData }) {
+  const programs = await data.programs;
+  if (!programs) {
+    return (
+      <div className={`${HOME_CARD} p-5 sm:p-6`}>
+        <Unavailable />
+      </div>
+    );
+  }
+  if (programs.length === 0) {
+    return (
+      <EmptyModule
+        icon={Layers}
+        title="You haven’t joined a program yet"
+        description="Programs you join appear here immediately with your referral link, referral code, and commission terms."
+        className="rounded-[20px]"
+      >
+        <Button asChild variant="outline">
+          <Link href="/">Browse apps</Link>
+        </Button>
+      </EmptyModule>
+    );
+  }
+  const now = new Date();
+  return (
+    <section aria-label="Your programs" className={GRID}>
+      {programs.map((program) => {
+        const mini = (node: React.ReactNode) => <Suspense fallback={<MiniStatSkeleton />}>{node}</Suspense>;
+        return (
+          <ProgramListCard
+            key={program.membershipId}
+            program={program}
+            now={now}
+            stats={{
+              customers: mini(<CustomersValue payments={settled(() => getPaymentMetrics(program.appId))} />),
+              thisMonth: mini(<ThisMonthValue commissions={data.commissions} appId={program.appId} />),
+              clicks: mini(<ClicksValue attribution={settled(() => getAttributionSummary(program.appId))} />),
+            }}
+          />
+        );
+      })}
+      <AddAppCard />
+    </section>
+  );
+}
+
+function ProgramGridSkeleton() {
+  return (
+    <div aria-busy className={GRID}>
+      <ProgramListCardSkeleton />
+      <ProgramListCardSkeleton />
+    </div>
+  );
+}
+
+/**
+ * The page itself awaits nothing: every query starts here and is awaited
+ * only inside the <Suspense> that needs it, as on Home. A failed query
+ * (`settled` → undefined) shows "—" or "Unavailable" in its place only.
+ */
+export default function CreatorProgramsPage() {
+  const viewer = requireViewer("/creator/programs");
+  const data: ProgramsData = {
+    programs: viewer.then((current) => settled(() => listCreatorProgramMemberships(current.userId))),
+    commissions: settled(() => getCommissionWorkspace()),
+    payments: settled(() => getPaymentMetrics()),
+  };
 
   return (
     <>
       <PageHeader
-        title="My programs"
-        description="Apps you promote, with your referral codes, links and accepted commission terms."
+        title="Programs"
+        description="Apps you promote, your codes and your terms."
         actions={
           <Button asChild>
             <Link href="/creator/discover">
-              <Plus data-icon="inline-start" />
               Find another app
+              <ArrowRight data-icon="inline-end" />
             </Link>
           </Button>
         }
       />
-
-      {programs.length === 0 ? (
-        <EmptyModule
-          icon={Layers}
-          title="You haven’t joined a program yet"
-          description="Programs you join appear here immediately with your referral link, referral code, and commission terms."
-        >
-          <Button asChild variant="outline">
-            <Link href="/">Browse apps</Link>
-          </Button>
-        </EmptyModule>
-      ) : (
-        <div className="flex flex-col gap-5">
-          {programs.map((program) => (
-            <Card key={program.membershipId}>
-              <CardHeader className="gap-3">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                  <div className="flex min-w-0 items-center gap-3.5">
-                    {program.logoUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={program.logoUrl}
-                        alt=""
-                        className="size-12 shrink-0 rounded-xl border bg-background object-contain"
-                      />
-                    ) : (
-                      <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-primary text-base font-semibold text-primary-foreground">
-                        {program.appName.slice(0, 1).toUpperCase()}
-                      </span>
-                    )}
-                    <div className="min-w-0">
-                      <CardTitle className="text-lg">
-                        <Link
-                          href={`/creator/programs/${program.slug}`}
-                          className="hover:text-primary-ink hover:underline underline-offset-4"
-                        >
-                          {program.appName}
-                        </Link>
-                      </CardTitle>
-                      <CardDescription>
-                        {program.organizationName} · Joined{" "}
-                        {dateFormat.format(new Date(program.joinedAt))}
-                      </CardDescription>
-                    </div>
-                  </div>
-
-                  <CardAction className="flex flex-wrap items-center gap-2">
-                    <span className="tabular rounded-md bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground">
-                      {formatCommissionRange(
-                        program.minCommissionBps,
-                        program.maxCommissionBps,
-                      )}
-                    </span>
-                    <Badge variant="secondary" className="tabular">
-                      Terms v{program.acceptedTermsVersionNumber}
-                    </Badge>
-                  </CardAction>
-                </div>
-
-                <p className="text-sm text-muted-foreground">{program.tagline}</p>
-
-                <div className="flex flex-wrap items-center gap-1.5">
-                  {program.categories.map((category) => (
-                    <Badge key={category} variant="secondary" className="text-xs">
-                      {APP_CATEGORY_LABELS[category]}
-                    </Badge>
-                  ))}
-                  {program.platforms.map((platform) => (
-                    <Badge key={platform} variant="outline" className="text-xs">
-                      {APP_PLATFORM_LABELS[platform]}
-                    </Badge>
-                  ))}
-                  <span className="tabular pl-1 text-xs text-muted-foreground">
-                    · {program.attributionWindowDays}-day attribution window
-                  </span>
-                </div>
-              </CardHeader>
-
-              <CardContent className="flex flex-col gap-4 border-t pt-4">
-                <div className="grid gap-4 md:grid-cols-2">
-                  <CopyableField
-                    label="Your referral code"
-                    value={program.referralCode}
-                    copyLabel="Copy code"
-                    toastMessage="Referral code copied."
-                  />
-
-                  {program.defaultLink ? (
-                    <CopyableField
-                      label={`Primary link (${program.defaultLink.label})`}
-                      value={program.defaultLink.shareUrl}
-                      copyLabel="Copy link"
-                      toastMessage="Referral link copied."
-                    />
-                  ) : null}
-                </div>
-
-                <div className="flex flex-wrap items-center justify-between gap-2 border-t pt-3">
-                  <span className="tabular text-xs text-muted-foreground">
-                    {program.links.length}{" "}
-                    {program.links.length === 1 ? "named link" : "named links"} created
-                  </span>
-
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Button variant="ghost" size="sm" asChild>
-                      <Link href={`/apps/${program.slug}`}>
-                        Public listing
-                        <ExternalLink data-icon="inline-end" />
-                      </Link>
-                    </Button>
-                    <Button size="sm" asChild>
-                      <Link href={`/creator/programs/${program.slug}`}>
-                        Program details & links
-                        <ArrowRight data-icon="inline-end" />
-                      </Link>
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+      <div className="flex flex-col gap-8">
+        <Overview data={data} />
+        <Suspense fallback={<ProgramGridSkeleton />}>
+          <ProgramGrid data={data} />
+        </Suspense>
+      </div>
     </>
   );
 }

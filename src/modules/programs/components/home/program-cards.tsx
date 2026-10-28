@@ -2,9 +2,9 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCommissionRange } from "@/lib/money";
-import { AppLogo } from "@/modules/catalog/components/app-card";
 import type { CreatorProgramSummary } from "../../queries";
 import { CopyValueButton } from "../copy-value-button";
+import { ProgramCover } from "../program-cover";
 import { CardLink, Unavailable } from "./card";
 
 const TITLE_ID = "programs-heading";
@@ -38,25 +38,11 @@ function customersLine(paying: number | null): string {
   return `${paying} paying ${paying === 1 ? "customer" : "customers"}`;
 }
 
-/** The listing's own cover and logo; without a cover, a neutral one with the initial. */
 function ProgramCard({ program, paying, thisMonth }: ProgramCardData) {
   const link = program.defaultLink?.shareUrl;
   return (
     <article className={CARD}>
-      <div className="relative h-[110px] shrink-0 bg-muted">
-        {program.coverImageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={program.coverImageUrl} alt="" loading="lazy" className="size-full object-cover" />
-        ) : (
-          <span aria-hidden className="grid size-full place-items-center text-5xl font-extrabold text-foreground/10">
-            {program.appName.slice(0, 1).toUpperCase()}
-          </span>
-        )}
-        <AppLogo
-          app={{ name: program.appName, logoUrl: program.logoUrl }}
-          className="absolute -bottom-5 left-4 size-12 rounded-[14px] border-[3px] border-card text-xl"
-        />
-      </div>
+      <ProgramCover program={program} />
       <div className="flex flex-1 flex-col gap-2.5 px-4 pt-7 pb-4">
         <div className="flex items-start justify-between gap-2">
           <div className="flex min-w-0 flex-col">
@@ -90,7 +76,7 @@ function ProgramCard({ program, paying, thisMonth }: ProgramCardData) {
   );
 }
 
-function AddAppCard({ first }: { first: boolean }) {
+export function AddAppCard({ first = false }: { first?: boolean }) {
   return (
     <Link
       href="/creator/discover"

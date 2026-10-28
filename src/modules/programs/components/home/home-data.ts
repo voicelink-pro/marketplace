@@ -147,6 +147,22 @@ export function byLargest<T extends { minor: string }>(amounts: T[]): T[] {
   });
 }
 
+/**
+ * Net commission in one month (optionally from one app), in the currency
+ * with the largest total; null unless it is above zero.
+ */
+export function earnedInMonth(
+  earnings: Pick<EarningRow, "app_id" | "currency" | "effective_month" | "net_creator">[],
+  month: string,
+  appId?: string,
+): { currency: string; minor: string } | null {
+  const rows = earnings.filter(
+    (row) => row.effective_month.startsWith(month) && (appId === undefined || row.app_id === appId),
+  );
+  const [largest] = byLargest(sumByCurrency(rows));
+  return largest && BigInt(largest.minor) > 0n ? largest : null;
+}
+
 /** Which Get started steps are complete, each ticked from the creator's own data. */
 export type SetupDone = { social: boolean; join: boolean; link: boolean; click: boolean };
 
