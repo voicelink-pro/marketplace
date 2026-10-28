@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { getPublicEnv } from "@/lib/env";
 import { toMinorBigInt } from "@/lib/money";
 import { createClient } from "@/lib/supabase/server";
@@ -281,7 +282,7 @@ type RawTermsVersionRow = {
 };
 
 /** Lists all programs the signed-in creator has joined, with their links and terms snapshot. */
-export async function listCreatorProgramMemberships(
+async function loadCreatorProgramMemberships(
   userId: string,
 ): Promise<CreatorProgramSummary[]> {
   const siteUrl = getPublicEnv().NEXT_PUBLIC_SITE_URL;
@@ -579,3 +580,6 @@ export async function listSimilarAppsForCreator(
     sharedCategories: parseCategories(row.shared_categories),
   }));
 }
+
+/** Once per request: the panel shell and the page both read it. */
+export const listCreatorProgramMemberships = cache(loadCreatorProgramMemberships);

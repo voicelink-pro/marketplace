@@ -1,11 +1,12 @@
 import 'server-only';
+import { cache } from 'react';
 import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { requireViewer } from '@/modules/accounts/viewer';
 import { logUnexpected } from '@/lib/log';
 import { financeWorkspaceSchema } from './schemas';
 
-export async function getFinanceWorkspace(appId?: string, admin = false) {
+async function loadFinanceWorkspace(appId?: string, admin = false) {
   const viewer = await requireViewer();
   if (admin && !viewer.isAdmin) notFound();
   const client = await createClient();
@@ -16,3 +17,6 @@ export async function getFinanceWorkspace(appId?: string, admin = false) {
   }
   return financeWorkspaceSchema.parse(result.data);
 }
+
+/** Once per request: the panel shell and the page both read it. */
+export const getFinanceWorkspace = cache(loadFinanceWorkspace);

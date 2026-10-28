@@ -30,7 +30,7 @@ import {
 } from "@/modules/company-app/components/company-overview";
 import { getCompanyWorkspaceApp, listCompanyCreators } from "@/modules/company-app/queries";
 
-export const metadata: Metadata = { title: "Company overview" };
+export const metadata: Metadata = { title: "Home" };
 
 type OrganizationPromise = Promise<ViewerOrganization>;
 
@@ -129,10 +129,10 @@ function OverviewSkeleton() {
 
 /**
  * The page itself awaits nothing: the viewer is started here and awaited only
- * inside <Suspense>, so navigating to the overview shows its frame at once and
+ * inside <Suspense>, so navigating to Home shows its frame at once and
  * the company name and app sections stream in.
  */
-export default function CompanyOverviewPage() {
+export default function CompanyHomePage() {
   const organization = requireViewer("/company").then(organizationOf);
 
   return (

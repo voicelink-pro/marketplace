@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { z } from "zod";
 import { toMinorBigInt } from "@/lib/money";
 import type { Database } from "@/lib/supabase/database.types";
@@ -217,7 +218,7 @@ type RawReviewEventRow = {
   created_at: unknown;
 };
 
-export async function getCompanyWorkspaceApp(
+async function loadCompanyWorkspaceApp(
   organizationId: string,
   organizationName: string,
 ): Promise<CompanyWorkspaceApp | null> {
@@ -579,3 +580,6 @@ export async function listAppsForAdminReview(): Promise<CompanyWorkspaceApp[]> {
   };
   return apps.sort((a, b) => priority[a.status] - priority[b.status]);
 }
+
+/** Once per request: the panel shell and the page both read it. */
+export const getCompanyWorkspaceApp = cache(loadCompanyWorkspaceApp);

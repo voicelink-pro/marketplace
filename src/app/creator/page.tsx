@@ -26,7 +26,7 @@ import {
   listSimilarAppsForCreator,
 } from "@/modules/programs/queries";
 
-export const metadata: Metadata = { title: "Overview" };
+export const metadata: Metadata = { title: "Home" };
 
 type ViewerPromise = Promise<Viewer>;
 type ProgramsPromise = Promise<CreatorProgramSummary[]>;
@@ -113,11 +113,11 @@ function Results() {
 
 /**
  * The page itself awaits nothing: the viewer and memberships are started
- * here and awaited only inside <Suspense>, so navigating to the overview
+ * here and awaited only inside <Suspense>, so navigating to Home
  * shows its frame at once (heading, results, "How you get paid") and each
  * data section streams in on its own.
  */
-export default function CreatorOverviewPage() {
+export default function CreatorHomePage() {
   const viewer = requireViewer("/creator");
   const programs = viewer.then((current) => listCreatorProgramMemberships(current.userId));
 

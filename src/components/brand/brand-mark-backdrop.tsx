@@ -41,3 +41,22 @@ export function BrandMarkBackdrop({
     </svg>
   );
 }
+
+/**
+ * The outlined "b" behind panel and public pages, cropped by the right edge
+ * and hidden on phones. The parent must be `relative isolate overflow-clip`:
+ * `isolate` keeps the -z-10 mark above the parent's background and below its
+ * content (cards are opaque); `overflow-clip` crops it without a scrollbar
+ * and without breaking sticky children. `className` moves it for one page.
+ */
+export function PageBrandMark({ className }: { className?: string }) {
+  return (
+    <BrandMarkBackdrop
+      variant="outline"
+      className={cn(
+        "absolute top-60 -right-56 -z-10 hidden size-195 rotate-[-8deg] opacity-20 md:block dark:opacity-30",
+        className,
+      )}
+    />
+  );
+}

@@ -10,11 +10,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { EARNINGS_TABS } from "./earnings-tabs";
-import { findActiveItem, PANEL_LABELS, PANEL_NAV, type PanelArea } from "./nav-config";
-
-/** Labels of pages reached through a nav item's `match`, taken from the tabs that link them. */
-const SUB_PAGE_LABELS = new Map<string, string>(EARNINGS_TABS.map((tab) => [tab.href, tab.label]));
+import { findActiveItem, findSubPage, PANEL_LABELS, PANEL_NAV, type PanelArea } from "./nav-config";
 
 /**
  * Area › section, plus the page itself when it is a tab under the section
@@ -22,9 +18,9 @@ const SUB_PAGE_LABELS = new Map<string, string>(EARNINGS_TABS.map((tab) => [tab.
  */
 export function PanelBreadcrumb({ area, pathname }: { area: PanelArea; pathname: string | null }) {
   const item = pathname === null ? undefined : findActiveItem(area, pathname);
-  const subPage = pathname !== null && pathname !== item?.href ? SUB_PAGE_LABELS.get(pathname) : undefined;
+  const subPage = pathname !== null && pathname !== item?.href ? findSubPage(area, pathname)?.label : undefined;
   return (
-    <Breadcrumb className="hidden min-w-0 sm:block">
+    <Breadcrumb className="hidden min-w-0 lg:block">
       <BreadcrumbList className="flex-nowrap">
         <BreadcrumbItem>
           <BreadcrumbLink asChild>

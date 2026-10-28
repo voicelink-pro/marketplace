@@ -5,7 +5,7 @@ import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { getViewer } from "@/modules/accounts/viewer";
+import { getViewer, primaryOrganization } from "@/modules/accounts/viewer";
 import { getDefaultHomeAudience } from "@/modules/catalog/audience-server";
 import { HeaderAudienceToggle } from "@/modules/catalog/components/home-audience";
 import { AccountMenu } from "./account-menu";
@@ -51,7 +51,7 @@ async function HeaderAccount({ showDashboard }: { showDashboard: boolean }) {
           email: viewer.email,
           isAdmin: viewer.isAdmin,
           isCreator: viewer.creator !== null,
-          hasCompany: viewer.organizations.length > 0,
+          companyName: primaryOrganization(viewer)?.name ?? null,
         }}
       />
     </div>

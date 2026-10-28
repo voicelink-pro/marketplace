@@ -14,9 +14,9 @@ import {
 } from "@/components/ui/sidebar";
 import { isActive, type NavItem, PANEL_NAV, type PanelArea } from "./nav-config";
 
-/** Active item: yellow accent on the left edge, foreground text; idle items stay muted. */
+/** Active item: background and a yellow icon, foreground text; idle items stay muted. */
 const itemClassName =
-  "relative h-10 font-medium text-muted-foreground md:h-9 data-active:text-foreground data-active:[&>svg]:text-primary-ink data-active:before:absolute data-active:before:inset-y-1.5 data-active:before:left-0 data-active:before:w-0.75 data-active:before:rounded-full data-active:before:bg-primary";
+  "h-10 font-medium text-muted-foreground md:h-9 data-active:font-semibold data-active:text-foreground data-active:[&>svg]:text-primary-ink";
 
 /** `pathname` is null while the route is still resolving: the menu renders with nothing highlighted. */
 type PathnameProps = { area: PanelArea; pathname: string | null };
@@ -55,10 +55,15 @@ function NavMenu({ items, area, pathname }: PathnameProps & { items: NavItem[] }
   );
 }
 
+/** Even rhythm: a label is one short row above its items, with no extra gap between groups. */
 export function PanelNavGroups({ area, pathname }: PathnameProps) {
   return PANEL_NAV[area].groups.map((group, index) => (
-    <SidebarGroup key={group.label ?? index}>
-      {group.label ? <SidebarGroupLabel>{group.label}</SidebarGroupLabel> : null}
+    <SidebarGroup key={group.label ?? index} className="py-0">
+      {group.label ? (
+        <SidebarGroupLabel className="h-7 items-end pb-1 group-data-[collapsible=icon]:-mt-7">
+          {group.label}
+        </SidebarGroupLabel>
+      ) : null}
       <SidebarGroupContent>
         <NavMenu items={group.items} area={area} pathname={pathname} />
       </SidebarGroupContent>
