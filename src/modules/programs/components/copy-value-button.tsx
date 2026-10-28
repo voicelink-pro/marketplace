@@ -21,7 +21,8 @@ export function CopyValueButton({
   toastMessage?: string;
   ariaLabel?: string;
   variant?: "default" | "outline" | "secondary" | "ghost";
-  size?: "sm" | "default" | "lg";
+  /** The icon sizes show only the icon; give them an `ariaLabel`. */
+  size?: "sm" | "default" | "lg" | "icon" | "icon-sm";
   className?: string;
 }) {
   const [copied, setCopied] = useState(false);
@@ -37,6 +38,7 @@ export function CopyValueButton({
     }
   }
 
+  const Icon = copied ? Check : Copy;
   return (
     <Button
       type="button"
@@ -46,15 +48,12 @@ export function CopyValueButton({
       aria-label={ariaLabel ?? `${label}: ${value}`}
       className={className}
     >
-      {copied ? (
-        <>
-          <Check data-icon="inline-start" />
-          <span>{copiedLabel}</span>
-        </>
+      {size.startsWith("icon") ? (
+        <Icon />
       ) : (
         <>
-          <Copy data-icon="inline-start" />
-          <span>{label}</span>
+          <Icon data-icon="inline-start" />
+          <span>{copied ? copiedLabel : label}</span>
         </>
       )}
     </Button>

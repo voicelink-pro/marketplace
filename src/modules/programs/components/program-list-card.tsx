@@ -6,6 +6,7 @@ import { formatCommissionRange } from "@/lib/money";
 import { cn } from "@/lib/utils";
 import type { CreatorProgramSummary } from "../queries";
 import { CopyValueButton } from "./copy-value-button";
+import { plural } from "./links/link-data";
 import { ProgramCover } from "./program-cover";
 
 const CARD = "flex min-w-0 flex-col overflow-hidden rounded-[20px] border bg-card";
@@ -19,8 +20,6 @@ function joinedLabel(iso: string, now: Date): string {
   const date = new Date(iso);
   return (date.getUTCFullYear() === now.getUTCFullYear() ? dayFormat : fullDateFormat).format(date);
 }
-
-const plural = (count: number, word: string) => `${count} ${count === 1 ? word : `${word}s`}`;
 
 export type ProgramListStats = {
   /** Paying customers through this program. */

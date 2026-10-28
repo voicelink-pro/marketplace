@@ -5,6 +5,7 @@ import { isBrandPlatform, PlatformTile } from "./home/illustrations";
 const SIZES = {
   sm: { tile: "size-5.5 rounded-md", icon: "size-3.5" },
   md: { tile: "size-6 rounded-[7px]", icon: "size-3.5" },
+  lg: { tile: "size-9 rounded-[10px]", icon: "size-4" },
 } as const;
 
 /** The platform's brand tile for TikTok, Instagram, YouTube and X; a neutral link tile otherwise. */

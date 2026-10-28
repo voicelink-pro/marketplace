@@ -25,6 +25,7 @@ import { AppLogo } from "@/modules/catalog/components/app-card";
 import { createReferralLink } from "../actions";
 import type { AllowedAppDestination } from "../queries";
 import { ChannelIcon } from "./channel-icon";
+import { hostOf } from "./links/link-data";
 
 const CONTROL =
   "h-11 w-full appearance-none rounded-xl border border-input bg-background pr-9 pl-3 text-sm text-foreground transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20";
@@ -45,14 +46,6 @@ export type LinkProgramOption = {
 
 function invalid(state: FormState, field: string): boolean {
   return Boolean(state.status === "error" && state.fieldErrors?.[field]);
-}
-
-function hostOf(url: string): string | null {
-  try {
-    return new URL(url).host;
-  } catch {
-    return null;
-  }
 }
 
 function SelectChevron() {
@@ -110,16 +103,20 @@ function ChannelTiles({ channel, onChange }: { channel: string; onChange: (chann
 function CreateLinkForm({
   programs,
   fixedMembershipId,
+  defaultMembershipId,
   defaultChannel,
   onCreated,
 }: {
   programs: LinkProgramOption[];
   fixedMembershipId?: string;
+  defaultMembershipId?: string;
   defaultChannel: SocialPlatform;
   onCreated: () => void;
 }) {
   const [state, action] = useActionState(createReferralLink, idleFormState);
-  const [membershipId, setMembershipId] = useState(fixedMembershipId ?? programs[0]?.membershipId ?? "");
+  const [membershipId, setMembershipId] = useState(
+    fixedMembershipId ?? defaultMembershipId ?? programs[0]?.membershipId ?? "",
+  );
   const [channel, setChannel] = useState<SocialPlatform>(defaultChannel);
 
   // The action refreshes the page itself; here the dialog only closes and confirms.
@@ -265,11 +262,15 @@ function CreateLinkForm({
 export function CreateLinkDialog({
   programs,
   fixedMembershipId,
+  defaultMembershipId,
   defaultChannel = "tiktok",
   children,
 }: {
   programs: LinkProgramOption[];
+  /** Hides the program select. */
   fixedMembershipId?: string;
+  /** Preselects a program in the visible select. */
+  defaultMembershipId?: string;
   defaultChannel?: SocialPlatform;
   /** The trigger, e.g. a button. */
   children: React.ReactNode;
@@ -288,6 +289,7 @@ export function CreateLinkDialog({
         <CreateLinkForm
           programs={programs}
           fixedMembershipId={fixedMembershipId}
+          defaultMembershipId={defaultMembershipId}
           defaultChannel={defaultChannel}
           onCreated={close}
         />
