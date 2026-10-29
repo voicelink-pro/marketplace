@@ -5,7 +5,8 @@ export type HeroScreen = "earnings" | "link" | "subscribers" | "plans";
 
 /**
  * Hero copy per audience. In its own module so server components (the FAQ's
- * final CTA) can reuse the primary button without importing the client hero.
+ * final CTA) can reuse the primary button and trust line without importing
+ * the client hero.
  * "\n" + pre-line keeps each headline on exactly two lines; `phrase` is the
  * animated key phrase.
  */
@@ -18,6 +19,8 @@ export const HERO_CONTENT: Record<
     /** `signedOutHref` replaces `href` for visitors without a session. */
     primary: { href: string; signedOutHref?: string; label: string };
     secondaryLabel: string;
+    /** The trust line under the hero's buttons and the FAQ's final CTA. */
+    trust: [string, string, string];
     phones: { front: HeroScreen; back: HeroScreen };
     /** Notification bodies; every chip is from the boostlink app. */
     chips: [string, string];
@@ -32,6 +35,7 @@ export const HERO_CONTENT: Record<
     ],
     primary: { href: "/signup", label: "Start as a creator" },
     secondaryLabel: "Discover apps",
+    trust: ["Free to join", "No subscription", "Get paid monthly"],
     phones: { front: "earnings", back: "link" },
     chips: [
       "New subscriber via your TikTok link. +$7.80 commission.",
@@ -51,6 +55,7 @@ export const HERO_CONTENT: Record<
       label: "List your app",
     },
     secondaryLabel: "Discover apps",
+    trust: ["Free to list", "No subscription", "Pay only when a customer pays"],
     phones: { front: "subscribers", back: "plans" },
     chips: ["A creator joined your offer", "New paying subscriber"],
   },

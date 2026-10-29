@@ -15,6 +15,7 @@ import { CTA_SIZE, PRIMARY_CTA, PRIMARY_CTA_ARROW } from "./cta-styles";
 import { HERO_CONTENT as CONTENT, type HeroScreen as Screen } from "./home-hero-content";
 import { HeroDotGrid } from "./hero-dot-grid";
 import { HomeSectionLink } from "./home-section-link";
+import { TrustLine } from "./trust-line";
 import { usePrefersReducedMotion } from "./use-media-query";
 
 /** Lighter and darker yellows at 40%: a texture over the solid #FFD600 letters. Stable reference for CanvasText. */
@@ -350,6 +351,11 @@ export function HomeHero({ audience, signedIn = false }: { audience: HomeAudienc
             </HoverBorderGradient>
           )}
         </div>
+        {/* 16px under the buttons: the column's gap minus 4px / 12px. Centered under the full-width buttons on phones. */}
+        <TrustLine
+          items={content.trust}
+          className="-mt-1 w-full justify-center gap-x-3.5 text-[13px] sm:-mt-3 sm:w-auto sm:justify-start sm:gap-x-[18px] sm:text-sm"
+        />
       </div>
 
       {/* Brand stage: the current audience's screen in front, the other one tilted behind (click it to swap), two notifications on top. */}

@@ -7,6 +7,7 @@ import type { HomeAudience } from "../audience";
 import { FAQ } from "../faq-data";
 import { PRIMARY_CTA, PRIMARY_CTA_ARROW } from "./cta-styles";
 import { HERO_CONTENT } from "./home-hero-content";
+import { TrustLine } from "./trust-line";
 
 const SUBTITLE: Record<HomeAudience, string> = {
   creators: "Still unsure? Start for free and see the programs yourself.",
@@ -14,11 +15,11 @@ const SUBTITLE: Record<HomeAudience, string> = {
 };
 
 /**
- * Last section of the home page: heading and the hero's primary CTA on the
- * left (sticky from lg), the audience's questions in an accordion on the right.
+ * Last section of the home page: heading, the hero's primary CTA and trust
+ * line on the left (sticky from lg), the audience's questions in an accordion on the right.
  */
 export function HomeFaq({ audience, signedIn = false }: { audience: HomeAudience; signedIn?: boolean }) {
-  const cta = HERO_CONTENT[audience].primary;
+  const { primary: cta, trust } = HERO_CONTENT[audience];
   const ctaHref = (!signedIn && cta.signedOutHref) || cta.href;
 
   return (
@@ -38,6 +39,7 @@ export function HomeFaq({ audience, signedIn = false }: { audience: HomeAudience
             <ArrowRight aria-hidden className={PRIMARY_CTA_ARROW} />
           </Link>
         </Button>
+        <TrustLine items={trust} />
       </div>
 
       <Accordion type="single" collapsible className="rounded-[20px] border bg-card px-5 sm:px-6 lg:col-span-7">
