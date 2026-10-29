@@ -1,0 +1,129 @@
+/*
+ * "New era of marketing" orbit, on a 720×720 stage (new-era-orbit.tsx):
+ *   spin     the spoke layer turns once every 90s; each avatar turns back at the same rate, so it stays upright
+ *   beam     a yellow beam runs from each creator to the app, 3.2s, staggered 0.4s per spoke
+ *   view     grey view dots flow in from the outer ring to each creator, 2.8s
+ *   pulse    two yellow outlines grow out of the app card, 3.2s, 1.6s apart
+ *   chip     example chips fade in and out, 6s, staggered
+ * Everything is paused until the stage has `data-running` (on screen). Reduced
+ * motion: nothing moves, the chips stay visible, beams, view dots and pulses are hidden.
+ * Only transform and opacity animate.
+ */
+
+.beam,
+.view,
+.pulse {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .beam,
+  .view,
+  .pulse {
+    display: block;
+    opacity: 0;
+  }
+
+  .spin {
+    animation: spin 90s linear infinite;
+  }
+
+  .upright {
+    animation: spin 90s linear infinite reverse;
+  }
+
+  .beam {
+    animation: beam 3.2s ease-in infinite;
+  }
+
+  .view {
+    animation: view 2.8s ease-out infinite;
+  }
+
+  .pulse {
+    animation: pulse 3.2s ease-out infinite;
+  }
+
+  .chip {
+    opacity: 0;
+    animation: chip 6s ease-in-out infinite;
+  }
+
+  .spin,
+  .upright,
+  .beam,
+  .view,
+  .pulse,
+  .chip {
+    animation-play-state: paused;
+  }
+
+  .stage[data-running] :is(.spin, .upright, .beam, .view, .pulse, .chip) {
+    animation-play-state: running;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Along the spoke, from the avatar (r=176) to the app card (r=70). */
+@keyframes beam {
+  0% {
+    transform: translateX(176px);
+    opacity: 0;
+  }
+  12%,
+  88% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(70px);
+    opacity: 0;
+  }
+}
+
+/* From the dashed ring (r=348) towards the avatar (r=256). */
+@keyframes view {
+  0% {
+    transform: translateX(348px) scale(0.5);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateX(256px) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
+}
+
+@keyframes chip {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  12%,
+  62% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  74% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}

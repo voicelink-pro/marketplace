@@ -14,6 +14,7 @@ import { HomeHero } from "@/modules/catalog/components/home-hero";
 import { HowItWorks } from "@/modules/catalog/components/how-it-works";
 import { JoinStrip } from "@/modules/catalog/components/join-strip";
 import { LogoCloud } from "@/modules/catalog/components/logo-cloud";
+import { NewEraSection } from "@/modules/catalog/components/new-era/new-era-section";
 import { parseCatalogFilters, type RawSearchParams } from "@/modules/catalog/filters";
 import { listCatalogApps } from "@/modules/catalog/queries";
 
@@ -76,13 +77,15 @@ function LogoCloudSkeleton() {
 export default function CatalogPage({ searchParams }: PageProps<"/">) {
   const audience = resolveAudience(searchParams);
 
-  // Intro (hero, how it works, benefits), then the join strip with the logo cloud and the catalog. The static
+  // Intro (hero, new era, how it works, benefits), then the join strip with the logo cloud and the catalog. The static
   // shell shows the creator version; the resolved audience streams in.
   return (
     <div className="flex flex-col gap-10 sm:gap-14">
       <Suspense fallback={<HomeHero audience="creators" />}>
         <HeroByAudience audience={audience} />
       </Suspense>
+
+      <NewEraSection />
 
       <Suspense fallback={<HowItWorks audience="creators" />}>
         <ByAudience

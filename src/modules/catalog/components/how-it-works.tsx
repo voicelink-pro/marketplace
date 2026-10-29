@@ -235,8 +235,7 @@ function Connector({ index }: { index: number }) {
 }
 
 /**
- * "How it works": the "New era of marketing" intro (the same for both sides),
- * then three step cards for the selected side, each with a static
+ * "How it works": three step cards for the selected side, each with a static
  * mini screen. On desktop the cards glow one at a time, with a short yellow
  * beam along the connector between them (CSS cycle started on scroll; none
  * on phones or with reduced motion).
@@ -246,25 +245,12 @@ export function HowItWorks({ audience }: { audience: HomeAudience }) {
 
   return (
     <HowItWorksSection>
-      <div className="flex max-w-2xl flex-col gap-3">
-        <p className="text-sm font-semibold text-muted-foreground">How it works</p>
-        <h2
-          id="how-it-works-heading"
-          className="text-3xl leading-tight font-extrabold tracking-[-0.04em] sm:text-4xl"
-        >
-          New era of marketing.
-        </h2>
-        <p className="text-base text-pretty text-muted-foreground sm:text-lg">
-          People skip ads, but they listen to creators they trust.{" "}
-          {/* Marker stroke: black on yellow reads in both themes. */}
-          <span className="rounded-[4px] bg-[#FFD600] px-1 font-semibold text-[#111111] [box-decoration-break:clone]">
-            boostlink
-          </span>{" "}
-          lets apps grow through those creators, and money moves only when it works.
-          <br />
-          Creators and apps win together.
-        </p>
-      </div>
+      <h2
+        id="how-it-works-heading"
+        className="text-2xl leading-tight font-extrabold tracking-[-0.04em] sm:text-3xl"
+      >
+        How it works
+      </h2>
       {/* Desktop: card, arrow, card, arrow, card; equal card widths. Each card spans the
           same two rows (screen, text), so screens and titles line up across cards. */}
       <ol className="flex flex-col lg:grid lg:grid-cols-[1fr_2rem_1fr_2rem_1fr] xl:grid-cols-[1fr_2.5rem_1fr_2.5rem_1fr]">
