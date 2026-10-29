@@ -14,7 +14,7 @@ import { HomeHero } from "@/modules/catalog/components/home-hero";
 import { HowItWorks } from "@/modules/catalog/components/how-it-works";
 import { JoinStrip } from "@/modules/catalog/components/join-strip";
 import { LogoCloud } from "@/modules/catalog/components/logo-cloud";
-import { NewEraSection } from "@/modules/catalog/components/new-era/new-era-section";
+import { NewEraSection, NewEraSubtitle } from "@/modules/catalog/components/new-era/new-era-section";
 import { parseCatalogFilters, type RawSearchParams } from "@/modules/catalog/filters";
 import { listCatalogApps } from "@/modules/catalog/queries";
 
@@ -97,7 +97,17 @@ export default function CatalogPage({ searchParams }: PageProps<"/">) {
         <HeroByAudience audience={audience} />
       </Suspense>
 
-      <NewEraSection />
+      <NewEraSection
+        subtitle={
+          <Suspense fallback={<NewEraSubtitle audience="creators" />}>
+            <ByAudience
+              audience={audience}
+              creators={<NewEraSubtitle audience="creators" />}
+              apps={<NewEraSubtitle audience="apps" />}
+            />
+          </Suspense>
+        }
+      />
 
       <Suspense fallback={<HowItWorks audience="creators" />}>
         <HowItWorksByAudience audience={audience} />

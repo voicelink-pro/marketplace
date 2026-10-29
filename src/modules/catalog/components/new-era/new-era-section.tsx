@@ -1,5 +1,6 @@
 import { ArrowDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { HomeAudience } from "../../audience";
 import { HomeSectionLink } from "../home-section-link";
 import { NewEraMarquee } from "./new-era-marquee";
 
@@ -12,13 +13,30 @@ const PROMISES = [
   { lead: "Everyone", rest: "earns every month the customer stays." },
 ];
 
+const SUBTITLE: Record<HomeAudience, { lead: string; end: string }> = {
+  creators: { lead: "Your audience trusts you more than", end: "any ad ever will." },
+  apps: { lead: "Your next customers trust creators more than", end: "any ad ever will." },
+};
+
+/** The line under the heading: muted start, then the end in full color. The only part that differs per side. */
+export function NewEraSubtitle({ audience }: { audience: HomeAudience }) {
+  const { lead, end } = SUBTITLE[audience];
+  return (
+    <p className="max-w-md text-xl leading-tight font-bold tracking-[-0.025em] text-balance text-muted-foreground sm:text-2xl xl:text-[1.75rem]">
+      {lead} <span className="text-foreground">{end}</span>
+    </p>
+  );
+}
+
 /**
- * "New era of marketing", right under the hero and the same for both sides:
- * the pitch with three numbered promises, a link down to How it works, and
- * the 3D marquee of product pieces. From lg the marquee sits on the left and the text on the right;
- * below that the text comes first and the marquee runs edge to edge under it.
+ * "New era of marketing", right under the hero: the heading, the side's
+ * subtitle (`subtitle`, so the page can stream it per audience while the
+ * rest renders once), three numbered promises, a link down to How it works,
+ * and the 3D marquee of product pieces. From lg the marquee sits on the left
+ * and the text on the right; below that the text comes first and the marquee
+ * runs edge to edge under it.
  */
-export function NewEraSection() {
+export function NewEraSection({ subtitle }: { subtitle: React.ReactNode }) {
   return (
     <section
       aria-labelledby="new-era-heading"
@@ -35,11 +53,10 @@ export function NewEraSection() {
           <span className={KEY_PHRASE}>marketing</span>
           .
         </h2>
-        <p className="text-base text-pretty text-muted-foreground sm:text-lg">
-          People skip ads. They don’t skip the creators they follow.
-        </p>
-        {/* Left-aligned block even when the column is centered, so the numbers line up. */}
-        <ol className="mx-auto flex w-full max-w-md list-none flex-col gap-3.5 p-0 text-left lg:mx-0">
+        {subtitle}
+        {/* Left-aligned block even when the column is centered, so the numbers line up.
+            A little more room above it than between the heading and the subtitle. */}
+        <ol className="mx-auto mt-1 flex w-full max-w-md list-none flex-col gap-3.5 p-0 text-left sm:mt-2 lg:mx-0">
           {PROMISES.map((promise, index) => (
             <li
               key={promise.lead}
