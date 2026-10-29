@@ -131,7 +131,7 @@ function Overview({ data }: { data: CustomersData }) {
 }
 
 /** One card from sm; on phones the rows are cards of their own, so the frame drops away. */
-function ListCard({ toolbar, children }: { toolbar: React.ReactNode; children: React.ReactNode }) {
+function ListCard({ children }: { children: React.ReactNode }) {
   return (
     <HomeCard
       titleId="customers-heading"
@@ -140,15 +140,16 @@ function ListCard({ toolbar, children }: { toolbar: React.ReactNode; children: R
       <h2 id="customers-heading" className="sr-only">
         Your customers
       </h2>
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-3.5">{toolbar}</div>
       {children}
     </HomeCard>
   );
 }
 
+const TOOLBAR = "flex flex-wrap items-center justify-between gap-3 pb-3.5";
+
 function Toolbar({ programs, selected }: Pick<CustomersData, "programs" | "selected">) {
   return (
-    <>
+    <div className={TOOLBAR}>
       {programs.length > 1 ? (
         <ProgramFilter
           programs={programs.map(({ slug, appName }) => ({ slug, appName }))}
@@ -159,14 +160,32 @@ function Toolbar({ programs, selected }: Pick<CustomersData, "programs" | "selec
         <span />
       )}
       <span className="text-[13px] text-muted-foreground">Newest first</span>
+    </div>
+  );
+}
+
+function ListSkeleton() {
+  return (
+    <>
+      <div className={TOOLBAR}>
+        <Skeleton className="h-9 w-56 rounded-full" />
+      </div>
+      <CustomerRowsSkeleton />
     </>
   );
 }
 
+/** The toolbar comes with the rows: before the first customer the card holds only the empty state. */
 async function CustomerList({ data, page }: { data: CustomersData; page: number }) {
   const [customers, commissions] = await Promise.all([data.customers, data.commissions]);
+  const toolbar = <Toolbar programs={data.programs} selected={data.selected} />;
   if (!customers) {
-    return <p className="py-6 text-sm text-muted-foreground">Customers are unavailable right now.</p>;
+    return (
+      <>
+        {toolbar}
+        <p className="py-6 text-sm text-muted-foreground">Customers are unavailable right now.</p>
+      </>
+    );
   }
   const program = data.selected?.slug ?? null;
   const pagination = (
@@ -179,6 +198,7 @@ async function CustomerList({ data, page }: { data: CustomersData; page: number 
   if (customers.rows.length === 0) {
     return page > 1 ? (
       <>
+        {toolbar}
         <p className="py-6 text-sm text-muted-foreground">No more customers.</p>
         {pagination}
       </>
@@ -206,6 +226,7 @@ async function CustomerList({ data, page }: { data: CustomersData; page: number 
 
   return (
     <>
+      {toolbar}
       <CustomerRows rows={rows} withProgram={!data.selected} />
       {earnings ? null : (
         <p className="pt-3 text-[13px] text-muted-foreground">Payments and earnings are unavailable right now.</p>
@@ -256,8 +277,8 @@ async function CustomersContent({ searchParams }: Pick<PageProps<"/creator/refer
     <div className="flex flex-col gap-7">
       <Overview data={data} />
       <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3">
-        <ListCard toolbar={<Toolbar programs={programs} selected={selected} />}>
-          <Suspense fallback={<CustomerRowsSkeleton />}>
+        <ListCard>
+          <Suspense fallback={<ListSkeleton />}>
             <CustomerList data={data} page={page} />
           </Suspense>
         </ListCard>
@@ -281,8 +302,8 @@ function CustomersSkeleton() {
         cells={STAT_CELLS.map(({ icon, label }) => ({ icon, label, value: <StatValueSkeleton /> }))}
       />
       <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3">
-        <ListCard toolbar={<Skeleton className="h-9 w-56 rounded-full" />}>
-          <CustomerRowsSkeleton />
+        <ListCard>
+          <ListSkeleton />
         </ListCard>
         <div className="flex min-w-0 flex-col gap-4">
           <Skeleton className="h-64 rounded-[20px]" />

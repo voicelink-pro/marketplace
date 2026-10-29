@@ -252,10 +252,10 @@ export function CustomerRowsSkeleton({ rows = 5 }: { rows?: number }) {
   );
 }
 
-/** Before the first sign-up: where customers come from, and the two places to start. Sits in the list card. */
+/** Before the first sign-up: where customers come from, and the two places to start. The list card's only content. */
 export function NoCustomers({ appName }: { appName?: string }) {
   return (
-    <div className="flex flex-col items-start gap-4 rounded-[20px] border bg-card p-5 sm:rounded-none sm:border-x-0 sm:border-b-0 sm:bg-transparent sm:px-0 sm:pt-5 sm:pb-1">
+    <div className="flex flex-col items-start gap-4 rounded-[20px] border bg-card p-5 sm:rounded-none sm:border-0 sm:bg-transparent sm:p-0 sm:pb-1">
       <span className="grid size-11 place-items-center rounded-[12px] bg-muted text-muted-foreground">
         <Users aria-hidden className="size-5" />
       </span>

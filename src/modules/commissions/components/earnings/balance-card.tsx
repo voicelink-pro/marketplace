@@ -45,20 +45,17 @@ function Available({ amount, others, canWithdraw }: { amount: string; others: st
         </span>
       ))}
       <span className="text-[13px] text-muted-foreground">From closed, funded months.</span>
-      <div className="mt-1.5">
-        {canWithdraw ? (
+      {/* Nothing to withdraw: no button; the breakdown or the How payouts work box explains why. */}
+      {canWithdraw ? (
+        <div className="mt-1.5">
           <Button asChild className="h-11 w-full px-5 font-bold sm:w-auto">
             <Link href="/creator/payouts">
               Withdraw
               <ArrowRight data-icon="inline-end" />
             </Link>
           </Button>
-        ) : (
-          <Button asChild variant="outline" className="h-11 w-full px-5 font-bold sm:w-auto">
-            <Link href="/creator/payouts">How payouts work</Link>
-          </Button>
-        )}
-      </div>
+        </div>
+      ) : null}
     </div>
   );
 }

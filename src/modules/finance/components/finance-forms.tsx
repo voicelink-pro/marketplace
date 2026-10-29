@@ -74,7 +74,7 @@ export function AutoFundingForm({ appId, enabled, threshold, amount }: { appId: 
     </FieldGroup>
   </form>;
 }
-/** `helper` replaces the default rule line, e.g. with the reason the form is disabled. */
+/** `helper` replaces the default rule line, e.g. with the reason the form is disabled. Not eligible: a neutral button, never faded yellow. */
 export function WithdrawForm({ amount, fee, requestKey, enabled, helper }: { amount: string; fee: string; requestKey: string; enabled: boolean; helper?: React.ReactNode }) {
   const [state, action] = useActionState(requestPayout, idleFormState);
   const id = useId();
@@ -85,12 +85,12 @@ export function WithdrawForm({ amount, fee, requestKey, enabled, helper }: { amo
     <input name="expected_fee" type="hidden" value={fee} />
     <FieldGroup className="gap-4">
       <Field data-disabled={!enabled || undefined}>
-        <FieldLabel htmlFor={id} className="items-start text-sm font-normal leading-normal text-muted-foreground has-[:enabled]:text-foreground/90">
-          <input id={id} name="confirm" type="checkbox" required disabled={!enabled} className="mt-0.5 size-[18px] shrink-0 rounded-[5px] accent-primary" />I want to withdraw {formatMinorCurrency(amount, 'EUR')}. {bank} goes to my bank after the {formatMinorCurrency(fee, 'EUR')} provider fee.</FieldLabel>
+        <FieldLabel htmlFor={id} className="items-start text-sm font-normal leading-normal text-muted-foreground group-data-[disabled=true]/field:opacity-100 has-[:enabled]:text-foreground/90">
+          <input id={id} name="confirm" type="checkbox" required disabled={!enabled} className="mt-0.5 size-[18px] shrink-0 rounded-[5px] accent-primary disabled:opacity-50" />I want to withdraw {formatMinorCurrency(amount, 'EUR')}. {bank} goes to my bank after the {formatMinorCurrency(fee, 'EUR')} provider fee.</FieldLabel>
       </Field>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <FieldDescription className="text-[13px]">{helper ?? 'Only funded, reconciled earnings from closed months qualify. An unknown provider outcome keeps them reserved.'}</FieldDescription>
-        <SubmitButton disabled={!enabled || state.status === 'success'} pendingLabel="Withdrawing…" className="h-11 shrink-0 px-5 font-bold">Withdraw {bank}</SubmitButton>
+        <SubmitButton disabled={!enabled || state.status === 'success'} pendingLabel="Withdrawing…" className={'h-11 shrink-0 px-5 font-bold' + (enabled ? '' : ' bg-muted text-muted-foreground disabled:opacity-100')}>Withdraw {bank}</SubmitButton>
       </div>
       <FormMessage state={state} />
     </FieldGroup>
