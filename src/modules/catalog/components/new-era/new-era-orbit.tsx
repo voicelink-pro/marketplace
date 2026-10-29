@@ -73,7 +73,7 @@ function AppIcon() {
 /**
  * Eight creators around an app. The spokes turn slowly; views flow into each
  * creator and a yellow beam carries them on to the app. Laid out on a fixed
- * 720×720 stage, scaled to 0.5 on phones, 0.75 from sm and 1 from lg.
+ * 720×720 stage, scaled to 0.45 on phones, 0.55 from sm and 0.65 from lg.
  * Animations run only while the graphic is on screen (new-era.module.css).
  */
 export function NewEraOrbit() {
@@ -89,12 +89,12 @@ export function NewEraOrbit() {
   }, []);
 
   return (
-    <div ref={box} className="relative size-[360px] shrink-0 sm:size-[540px] lg:size-[720px]">
+    <div ref={box} className="relative size-[324px] shrink-0 sm:size-[396px] lg:size-[468px]">
       <div
         role="img"
         aria-label="Eight creators around an app. Views flow into each creator and turn into customers for the app in the middle."
         data-running={running || undefined}
-        className={cn(styles.stage, "absolute top-0 left-0 size-[720px] origin-top-left scale-50 sm:scale-75 lg:scale-100")}
+        className={cn(styles.stage, "absolute top-0 left-0 size-[720px] origin-top-left scale-[0.45] sm:scale-[0.55] lg:scale-[0.65]")}
       >
         <div aria-hidden className="absolute inset-0">
           {/* Same dot grid as the hero, faded out from the middle. */}
