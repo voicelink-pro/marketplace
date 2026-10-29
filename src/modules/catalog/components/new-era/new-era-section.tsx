@@ -8,9 +8,9 @@ import { NewEraMarquee } from "./new-era-marquee";
 const KEY_PHRASE = "rounded-[0.1em] bg-[#FFD600] px-[0.08em] text-[#111111] dark:bg-transparent dark:px-0 dark:text-primary";
 
 const PROMISES = [
-  { lead: "Creators", rest: "share apps they actually use." },
-  { lead: "Apps", rest: "pay only for customers who pay." },
-  { lead: "Everyone", rest: "earns every month the customer stays." },
+  { lead: "Creators", rest: "earn a cut of every renewal." },
+  { lead: "Apps", rest: "pay only when customers pay." },
+  { lead: "Followers", rest: "get picks they actually trust." },
 ];
 
 const SUBTITLE: Record<HomeAudience, { lead: string; end: string }> = {
