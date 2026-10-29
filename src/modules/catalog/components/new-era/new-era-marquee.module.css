@@ -1,0 +1,39 @@
+/*
+ * New era 3D marquee (new-era-marquee.tsx). Each column holds its tiles five
+ * times, each copy with the gap below it, and moves up by exactly one copy
+ * (from -20% to -40% of the column), which lands on the same picture: a
+ * seamless loop. The copies above and below keep the box filled, since it
+ * shows more than one copy's length. Columns 2 and 4 run in reverse.
+ * Paused until the wall has `data-running` (on screen); no animation at all
+ * with reduced motion. Only transform animates.
+ */
+
+/* The loop's first frame, also the still wall with reduced motion. */
+.column {
+  transform: translateY(-20%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .column {
+    animation: marquee 38s linear infinite;
+    animation-play-state: paused;
+    will-change: transform;
+  }
+
+  .reverse {
+    animation-direction: reverse;
+  }
+
+  .wall[data-running] .column {
+    animation-play-state: running;
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateY(-20%);
+  }
+  to {
+    transform: translateY(-40%);
+  }
+}

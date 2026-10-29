@@ -1,16 +1,15 @@
 import { ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { HomeAudience } from "../../audience";
 import { HomeSectionLink } from "../home-section-link";
-import { NewEraFeed } from "./new-era-feed";
+import { NewEraMarquee } from "./new-era-marquee";
 
 /**
- * "New era of marketing", right under the hero: the pitch (the same for both
- * sides), a link down to How it works, and the side's activity feed. From lg
- * the feed sits on the left and the text on the right; below that the text
- * comes first and the feed runs edge to edge under it.
+ * "New era of marketing", right under the hero and the same for both sides:
+ * the pitch, a link down to How it works, and the 3D marquee of product
+ * pieces. From lg the marquee sits on the left and the text on the right;
+ * below that the text comes first and the marquee runs edge to edge under it.
  */
-export function NewEraSection({ audience }: { audience: HomeAudience }) {
+export function NewEraSection() {
   return (
     <section
       aria-labelledby="new-era-heading"
@@ -43,7 +42,7 @@ export function NewEraSection({ audience }: { audience: HomeAudience }) {
         </Button>
       </div>
 
-      <NewEraFeed audience={audience} />
+      <NewEraMarquee />
     </section>
   );
 }

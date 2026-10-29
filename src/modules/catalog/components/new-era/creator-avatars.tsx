@@ -139,16 +139,24 @@ const CREATORS: { Face: () => React.ReactNode; background: string; platform: Pla
   { Face: HeadphonesFace, background: "bg-primary/20", platform: "tiktok" },
 ];
 
-/** 80px creator face with its platform badge. Decorative: the orbit's label describes it. */
+/** A creator's face in its tinted circle, no badge. Size and border come from `className`. */
+export function CreatorFace({ index, className }: { index: number; className?: string }) {
+  const { Face, background } = CREATORS[index % CREATORS.length];
+  return (
+    <span className={cn("block shrink-0 overflow-hidden rounded-full", background, className)}>
+      <svg viewBox="7 8 50 50" className="block size-full">
+        <Face />
+      </svg>
+    </span>
+  );
+}
+
+/** 80px creator face with its platform badge. Decorative: the surrounding illustration is labelled. */
 export function CreatorAvatar({ index }: { index: number }) {
-  const { Face, background, platform } = CREATORS[index % CREATORS.length];
+  const { platform } = CREATORS[index % CREATORS.length];
   return (
     <span className="relative block size-20">
-      <span className={cn("block size-full overflow-hidden rounded-full border-[3px] border-background", background)}>
-        <svg viewBox="7 8 50 50" className="block size-full">
-          <Face />
-        </svg>
-      </span>
+      <CreatorFace index={index} className="size-full border-[3px] border-background" />
       {/* 25px plus a 2.5px ring in the page background: a 30px badge. */}
       <PlatformLogoTile
         platform={platform}

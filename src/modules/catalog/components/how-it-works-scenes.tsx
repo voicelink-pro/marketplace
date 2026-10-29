@@ -1,7 +1,7 @@
 import { MousePointer2 } from "lucide-react";
 import { LogoMark } from "@/components/brand/logo";
 import { cn } from "@/lib/utils";
-import { GenericAppIcon } from "./generic-app-icon";
+import { ChatAppIcon, GenericAppIcon, NotesAppIcon, TimerAppIcon } from "./app-icons";
 import { CreatorAvatar } from "./new-era/creator-avatars";
 import { PlatformLogoTile } from "./platform-logos";
 
@@ -14,47 +14,13 @@ const BAR = "block h-1.5 rounded-full bg-muted";
 /** The hero's key phrase color: black on a yellow marker in light, yellow letters in dark. */
 const KEY_PHRASE = "rounded-[0.1em] bg-[#FFD600] px-[0.08em] text-[#111111] dark:bg-transparent dark:px-0 dark:text-primary";
 
-function TimerAppIcon() {
-  return (
-    <svg viewBox="0 0 64 64" className="block size-[38px] shrink-0">
-      <rect width="64" height="64" rx="16" fill="#FF6B4A" />
-      <circle cx="32" cy="34" r="15" fill="#FFFFFF" />
-      <path d="M32 26v9l6 4" stroke="#FF6B4A" strokeWidth="3.5" strokeLinecap="round" fill="none" />
-      <rect x="28" y="12" width="8" height="5" rx="2" fill="#FFFFFF" />
-    </svg>
-  );
-}
-
-function ChatAppIcon() {
-  return (
-    <svg viewBox="0 0 64 64" className="block size-[38px] shrink-0">
-      <rect width="64" height="64" rx="16" fill="#FFD600" />
-      <path d="M16 20a6 6 0 0 1 6-6h20a6 6 0 0 1 6 6v14a6 6 0 0 1-6 6H30l-8 7v-7a6 6 0 0 1-6-6z" fill="#111111" />
-      <circle cx="25" cy="27" r="2.6" fill="#FFD600" />
-      <circle cx="32" cy="27" r="2.6" fill="#FFD600" />
-      <circle cx="39" cy="27" r="2.6" fill="#FFD600" />
-    </svg>
-  );
-}
-
-function NotesAppIcon() {
-  return (
-    <svg viewBox="0 0 64 64" className="block size-[38px] shrink-0">
-      <rect width="64" height="64" rx="16" fill="#8B5CF6" />
-      <path d="M21 13h17l9 9v27a3 3 0 0 1-3 3H21a3 3 0 0 1-3-3V16a3 3 0 0 1 3-3z" fill="#FFFFFF" />
-      <rect x="24" y="30" width="17" height="3" rx="1.5" fill="#C4B5FD" />
-      <rect x="24" y="37" width="12" height="3" rx="1.5" fill="#C4B5FD" />
-    </svg>
-  );
-}
-
 const APP_CARD = cn(CARD, "absolute flex h-[148px] w-28 flex-col gap-2.5 p-3.5 text-left");
 
 /** A catalog app behind the chosen one: icon and placeholder lines, no commission. */
-function SideAppCard({ Icon, className }: { Icon: () => React.ReactNode; className: string }) {
+function SideAppCard({ Icon, className }: { Icon: typeof NotesAppIcon; className: string }) {
   return (
     <div className={cn(APP_CARD, className)}>
-      <Icon />
+      <Icon className="size-[38px]" />
       <span className={cn(BAR, "w-[62px] bg-border")} />
       <span className={cn(BAR, "w-[70px]")} />
       <span className={cn(BAR, "w-12")} />
@@ -71,7 +37,7 @@ export function PickAppScene() {
       <SideAppCard Icon={TimerAppIcon} className="top-3 left-0 -rotate-10" />
       <SideAppCard Icon={ChatAppIcon} className="top-3 left-28 rotate-10" />
       <div className={cn(APP_CARD, "top-0 left-14 border-foreground/15")}>
-        <NotesAppIcon />
+        <NotesAppIcon className="size-[38px]" />
         <span className="text-[13px] leading-tight font-bold">Lexi Notes</span>
         <span className={cn(BAR, "w-[70px]")} />
         <span className={cn(BAR, "w-12")} />
