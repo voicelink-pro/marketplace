@@ -12,59 +12,10 @@ import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { cn } from "@/lib/utils";
 import type { HomeAudience } from "../audience";
 import { CTA_SIZE, PRIMARY_CTA, PRIMARY_CTA_ARROW } from "./cta-styles";
+import { HERO_CONTENT as CONTENT, type HeroScreen as Screen } from "./home-hero-content";
 import { HeroDotGrid } from "./hero-dot-grid";
 import { HomeSectionLink } from "./home-section-link";
 import { usePrefersReducedMotion } from "./use-media-query";
-
-type Screen = "earnings" | "link" | "subscribers" | "plans";
-
-// "\n" + pre-line keeps each headline on exactly two lines; `phrase` is the animated key phrase.
-const CONTENT: Record<
-  HomeAudience,
-  {
-    headline: { before: string; phrase: string; after: string };
-    /** Desktop lines (>=1024px); joined and wrapped with text-wrap: pretty below that. */
-    subtitle: [string, string, string];
-    /** `signedOutHref` replaces `href` for visitors without a session. */
-    primary: { href: string; signedOutHref?: string; label: string };
-    secondaryLabel: string;
-    phones: { front: Screen; back: Screen };
-    /** Notification bodies; every chip is from the boostlink app. */
-    chips: [string, string];
-  }
-> = {
-  creators: {
-    headline: { before: "Turn your audience\ninto ", phrase: "recurring income", after: "." },
-    subtitle: [
-      "Pick the apps you like, join in one click, and earn",
-      "a share of every subscription your followers pay,",
-      "for as long as they stay.",
-    ],
-    primary: { href: "/signup", label: "Start as a creator" },
-    secondaryLabel: "Discover apps",
-    phones: { front: "earnings", back: "link" },
-    chips: [
-      "New subscriber via your TikTok link. +$7.80 commission.",
-      "New subscriber via your Instagram link. +$7.80 commission.",
-    ],
-  },
-  apps: {
-    headline: { before: "Creators sell your app.\nYou pay only for ", phrase: "results", after: "." },
-    subtitle: [
-      "Set a commission per plan. Creators join on their own,",
-      "post organic content, and you pay only when",
-      "their audience subscribes.",
-    ],
-    primary: {
-      href: "/onboarding/company",
-      signedOutHref: "/signup?for=apps&next=/onboarding/company",
-      label: "List your app",
-    },
-    secondaryLabel: "Discover apps",
-    phones: { front: "subscribers", back: "plans" },
-    chips: ["A creator joined your offer", "New paying subscriber"],
-  },
-};
 
 /** Lighter and darker yellows at 40%: a texture over the solid #FFD600 letters. Stable reference for CanvasText. */
 const PHRASE_TEXTURE = ["rgb(255 243 176 / 0.4)", "rgb(255 229 92 / 0.4)", "rgb(230 192 0 / 0.4)"];

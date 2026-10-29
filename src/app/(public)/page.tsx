@@ -9,13 +9,18 @@ import {
 import { getDefaultHomeAudience } from "@/modules/catalog/audience-server";
 import { BenefitGrid } from "@/modules/catalog/components/benefit-grid";
 import { EarningsCalculator } from "@/modules/catalog/components/calculator/earnings-calculator";
-import { CatalogSection } from "@/modules/catalog/components/catalog-section";
 import { AudienceSwitch } from "@/modules/catalog/components/home-audience";
+import {
+  HomeCatalogPreview,
+  HomeCatalogPreviewSkeleton,
+} from "@/modules/catalog/components/home-catalog-preview";
+import { HomeFaq } from "@/modules/catalog/components/home-faq";
 import { HomeHero } from "@/modules/catalog/components/home-hero";
 import { HowItWorks } from "@/modules/catalog/components/how-it-works";
 import { JoinStrip } from "@/modules/catalog/components/join-strip";
 import { LogoCloud } from "@/modules/catalog/components/logo-cloud";
 import { NewEraSection, NewEraSubtitle } from "@/modules/catalog/components/new-era/new-era-section";
+import { Testimonials } from "@/modules/catalog/components/testimonials";
 import { parseCatalogFilters, type RawSearchParams } from "@/modules/catalog/filters";
 import { listCatalogApps } from "@/modules/catalog/queries";
 
@@ -80,6 +85,24 @@ async function CalculatorByAudience({ audience }: { audience: Promise<HomeAudien
   );
 }
 
+/** The catalog preview; "See all apps" goes to sign-up first for visitors without a session. */
+async function CatalogPreviewByAudience({ audience }: { audience: Promise<HomeAudience> }) {
+  const [currentAudience, viewer] = await Promise.all([audience, getViewer()]);
+  return <HomeCatalogPreview audience={currentAudience} signedIn={viewer !== null} />;
+}
+
+/** The FAQ for the resolved audience; its final CTA follows the hero's sign-up rule. Keyed so an open answer doesn't carry over. */
+async function FaqByAudience({ audience }: { audience: Promise<HomeAudience> }) {
+  const [currentAudience, viewer] = await Promise.all([audience, getViewer()]);
+  return (
+    <AudienceSwitch
+      audience={currentAudience}
+      creators={<HomeFaq key="creators" audience="creators" />}
+      apps={<HomeFaq key="apps" audience="apps" signedIn={viewer !== null} />}
+    />
+  );
+}
+
 /** First catalog page, unfiltered: the strip sits above the search, so it never echoes the results. */
 async function HomeLogoCloud() {
   const result = await listCatalogApps(parseCatalogFilters({}));
@@ -102,8 +125,9 @@ function LogoCloudSkeleton() {
 export default function CatalogPage({ searchParams }: PageProps<"/">) {
   const audience = resolveAudience(searchParams);
 
-  // Intro (hero, new era, how it works, calculator, benefits), then the join strip with the logo cloud and the catalog. The static
-  // shell shows the creator version; the resolved audience streams in.
+  // Hero, new era, how it works and the calculator; the join strip with the logo cloud right above the catalog preview;
+  // then benefits, testimonials and the FAQ with the final CTA. The static shell shows the creator version; the resolved
+  // audience streams in.
   return (
     <div className="flex flex-col gap-10 sm:gap-14">
       <Suspense fallback={<HomeHero audience="creators" />}>
@@ -130,6 +154,16 @@ export default function CatalogPage({ searchParams }: PageProps<"/">) {
         <CalculatorByAudience audience={audience} />
       </Suspense>
 
+      <JoinStrip>
+        <Suspense fallback={<LogoCloudSkeleton />}>
+          <HomeLogoCloud />
+        </Suspense>
+      </JoinStrip>
+
+      <Suspense fallback={<HomeCatalogPreviewSkeleton />}>
+        <CatalogPreviewByAudience audience={audience} />
+      </Suspense>
+
       {/* Keyed so switching sides replays the illustrations. */}
       <Suspense fallback={<BenefitGrid audience="creators" />}>
         <ByAudience
@@ -139,13 +173,17 @@ export default function CatalogPage({ searchParams }: PageProps<"/">) {
         />
       </Suspense>
 
-      <JoinStrip>
-        <Suspense fallback={<LogoCloudSkeleton />}>
-          <HomeLogoCloud />
-        </Suspense>
-      </JoinStrip>
+      <Suspense fallback={<Testimonials audience="creators" />}>
+        <ByAudience
+          audience={audience}
+          creators={<Testimonials audience="creators" />}
+          apps={<Testimonials audience="apps" />}
+        />
+      </Suspense>
 
-      <CatalogSection searchParams={searchParams} audience={audience} />
+      <Suspense fallback={<HomeFaq audience="creators" />}>
+        <FaqByAudience audience={audience} />
+      </Suspense>
     </div>
   );
 }

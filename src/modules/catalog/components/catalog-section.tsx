@@ -4,11 +4,8 @@ import { Suspense } from "react";
 import { EmptyModule } from "@/components/states/empty-module";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { logUnexpected } from "@/lib/log";
 import type { HomeAudience } from "../audience";
 import {
-  type CardPlanInfo,
-  cardPlanInfo,
   countCategories,
   FEATURED_MAX,
   FEATURED_MIN,
@@ -19,14 +16,14 @@ import {
   shouldMarkNew,
   sortByCommission,
 } from "../discover";
+import { loadPlanInfo, loadPublishedCatalog } from "../discover-data";
 import {
   buildAppDetailHref,
-  DEFAULT_CATALOG_FILTERS,
   hasActiveCatalogFilters,
   parseCatalogFilters,
   type RawSearchParams,
 } from "../filters";
-import { type CatalogAppCard, getPublishedAppBySlug, listCatalogApps } from "../queries";
+import { type CatalogAppCard, listCatalogApps } from "../queries";
 import { AppCard } from "./app-card";
 import { CatalogFilterBar } from "./catalog-filter-bar";
 import { CatalogPagination } from "./catalog-pagination";
@@ -48,50 +45,6 @@ function CatalogSkeleton() {
       </div>
     </div>
   );
-}
-
-// list_catalog_apps caps a page at 48 apps and only sorts newest first.
-const PUBLISHED_PAGE_SIZE = 48;
-const PUBLISHED_MAX_PAGES = 5;
-
-/**
- * The unfiltered catalog, newest first, while it fits in a few pages: the
- * commission ranking and category counts need every app. `complete` is false
- * past that, and those sections are skipped rather than shown wrong.
- */
-async function loadPublishedCatalog(): Promise<{
-  apps: CatalogAppCard[];
-  total: number;
-  complete: boolean;
-  loadedAt: number;
-}> {
-  const first = await listCatalogApps(DEFAULT_CATALOG_FILTERS, PUBLISHED_PAGE_SIZE);
-  const pageCount = Math.min(first.totalPages, PUBLISHED_MAX_PAGES);
-  const rest = await Promise.all(
-    Array.from({ length: pageCount - 1 }, (_, index) =>
-      listCatalogApps({ ...DEFAULT_CATALOG_FILTERS, page: index + 2 }, PUBLISHED_PAGE_SIZE),
-    ),
-  );
-  const apps = [first, ...rest].flatMap((page) => page.items);
-  // Reference time for the "New" badges.
-  return { apps, total: first.totalCount, complete: apps.length >= first.totalCount, loadedAt: Date.now() };
-}
-
-/** Billing chips and per-customer amounts for the apps on screen; an app is left out if its plans fail to load. */
-async function loadPlanInfo(apps: CatalogAppCard[]): Promise<Map<string, CardPlanInfo>> {
-  const slugs = [...new Set(apps.map((app) => app.slug))];
-  const entries = await Promise.all(
-    slugs.map(async (slug) => {
-      try {
-        const detail = await getPublishedAppBySlug(slug);
-        return detail ? ([slug, cardPlanInfo(detail.plans)] as const) : null;
-      } catch (error) {
-        logUnexpected("catalog.discover.plans", error);
-        return null;
-      }
-    }),
-  );
-  return new Map(entries.filter((entry) => entry !== null));
 }
 
 type CatalogSectionProps = {
