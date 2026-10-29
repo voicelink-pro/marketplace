@@ -166,9 +166,12 @@ export default function CatalogPage({ searchParams }: PageProps<"/">) {
         <HowItWorksByAudience audience={audience} />
       </Suspense>
 
-      <Suspense fallback={<EarningsCalculator audience="creators" />}>
-        <CalculatorByAudience audience={audience} />
-      </Suspense>
+      {/* Extra room under How it works, so its CTA and the calculator box don't crowd each other. */}
+      <div className="mt-6 sm:mt-10">
+        <Suspense fallback={<EarningsCalculator audience="creators" />}>
+          <CalculatorByAudience audience={audience} />
+        </Suspense>
+      </div>
 
       <JoinStrip>
         <Suspense fallback={<LogoCloudSkeleton />}>
