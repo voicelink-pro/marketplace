@@ -20,6 +20,7 @@ import { HowItWorks } from "@/modules/catalog/components/how-it-works";
 import { JoinStrip } from "@/modules/catalog/components/join-strip";
 import { LogoCloud } from "@/modules/catalog/components/logo-cloud";
 import { NewEraSection, NewEraSubtitle } from "@/modules/catalog/components/new-era/new-era-section";
+import { PlatformStrip } from "@/modules/catalog/components/platform-strip";
 import { Testimonials } from "@/modules/catalog/components/testimonials";
 import { parseCatalogFilters, type RawSearchParams } from "@/modules/catalog/filters";
 import { listCatalogApps } from "@/modules/catalog/queries";
@@ -133,6 +134,9 @@ export default function CatalogPage({ searchParams }: PageProps<"/">) {
       <Suspense fallback={<HomeHero audience="creators" />}>
         <HeroByAudience audience={audience} />
       </Suspense>
+
+      {/* Its own py is the space on both sides: cancels the page gap around it, and from lg New era's top padding too. */}
+      <PlatformStrip className="-my-10 sm:-my-14 lg:-mb-28" />
 
       <NewEraSection
         subtitle={

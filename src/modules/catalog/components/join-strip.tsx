@@ -2,7 +2,6 @@
 
 import { motion } from "motion/react";
 import { LayoutTextFlip } from "@/components/ui/layout-text-flip";
-import { PlatformLogos } from "./platform-logos";
 import { usePrefersReducedMotion } from "./use-media-query";
 
 const WORDS = ["apps", "creators"];
@@ -48,19 +47,14 @@ function JoinHeadline() {
 
 /**
  * Strip above the catalog: the flipping "Join thousands of apps / creators on
- * boostlink" line, the app logo cloud (`children`), and the platforms creators
- * post on as one centered group. With reduced motion the line is static.
+ * boostlink" line and the app logo cloud (`children`). With reduced motion the
+ * line is static.
  */
 export function JoinStrip({ children }: { children: React.ReactNode }) {
   return (
     <section aria-labelledby="join-strip-heading" className="flex flex-col gap-6 sm:gap-8">
       <JoinHeadline />
       {children}
-      {/* One compact group under the headline; if it wraps on phones, each line stays centered. */}
-      <div className="mx-auto inline-flex w-fit flex-wrap items-center justify-center gap-3 text-center text-sm text-muted-foreground">
-        <span>Creators share on</span>
-        <PlatformLogos className="gap-4" />
-      </div>
     </section>
   );
 }
