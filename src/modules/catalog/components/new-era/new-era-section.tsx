@@ -1,22 +1,22 @@
 import { ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import type { HomeAudience } from "../../audience";
 import { HomeSectionLink } from "../home-section-link";
-import { NewEraOrbit } from "./new-era-orbit";
+import { NewEraFeed } from "./new-era-feed";
 
 /**
- * "New era of marketing", right under the hero and the same for both sides:
- * the pitch, a link down to How it works, and the animated creator orbit.
- * Phones and tablets stack them; from lg the text sits on the left,
- * vertically centered next to the orbit.
+ * "New era of marketing", right under the hero: the pitch (the same for both
+ * sides), a link down to How it works, and the side's activity feed. From lg
+ * the feed sits on the left and the text on the right; below that the text
+ * comes first and the feed runs edge to edge under it.
  */
-export function NewEraSection() {
+export function NewEraSection({ audience }: { audience: HomeAudience }) {
   return (
     <section
       aria-labelledby="new-era-heading"
-      // xl: inset like the hero's content, so both columns line up with it.
-      className="grid justify-items-center gap-4 text-center lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:justify-items-start lg:gap-x-16 lg:text-left xl:px-16"
+      className="mx-auto grid w-full max-w-6xl justify-items-center gap-6 text-center lg:grid-cols-[520px_minmax(0,1fr)] lg:items-center lg:justify-items-start lg:gap-16 lg:py-14 lg:text-left xl:grid-cols-[620px_minmax(0,1fr)]"
     >
-      <div className="flex max-w-2xl flex-col items-center gap-3 sm:gap-4 lg:max-w-xl lg:items-start">
+      <div className="flex max-w-2xl flex-col items-center gap-3 sm:gap-4 lg:col-start-2 lg:row-start-1 lg:max-w-xl lg:items-start">
         {/* Always a step below the hero headline, which scales with its column. */}
         <h2
           id="new-era-heading"
@@ -43,7 +43,7 @@ export function NewEraSection() {
         </Button>
       </div>
 
-      <NewEraOrbit />
+      <NewEraFeed audience={audience} />
     </section>
   );
 }

@@ -139,8 +139,6 @@ const CREATORS: { Face: () => React.ReactNode; background: string; platform: Pla
   { Face: HeadphonesFace, background: "bg-primary/20", platform: "tiktok" },
 ];
 
-export const CREATOR_COUNT = CREATORS.length;
-
 /** 80px creator face with its platform badge. Decorative: the orbit's label describes it. */
 export function CreatorAvatar({ index }: { index: number }) {
   const { Face, background, platform } = CREATORS[index % CREATORS.length];

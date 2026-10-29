@@ -97,7 +97,13 @@ export default function CatalogPage({ searchParams }: PageProps<"/">) {
         <HeroByAudience audience={audience} />
       </Suspense>
 
-      <NewEraSection />
+      <Suspense fallback={<NewEraSection audience="creators" />}>
+        <ByAudience
+          audience={audience}
+          creators={<NewEraSection audience="creators" />}
+          apps={<NewEraSection audience="apps" />}
+        />
+      </Suspense>
 
       <Suspense fallback={<HowItWorks audience="creators" />}>
         <HowItWorksByAudience audience={audience} />

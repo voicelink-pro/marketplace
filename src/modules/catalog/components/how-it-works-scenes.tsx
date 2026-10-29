@@ -1,6 +1,7 @@
 import { MousePointer2 } from "lucide-react";
 import { LogoMark } from "@/components/brand/logo";
 import { cn } from "@/lib/utils";
+import { GenericAppIcon } from "./generic-app-icon";
 import { CreatorAvatar } from "./new-era/creator-avatars";
 import { PlatformLogoTile } from "./platform-logos";
 
@@ -43,19 +44,6 @@ function NotesAppIcon() {
       <path d="M21 13h17l9 9v27a3 3 0 0 1-3 3H21a3 3 0 0 1-3-3V16a3 3 0 0 1 3-3z" fill="#FFFFFF" />
       <rect x="24" y="30" width="17" height="3" rx="1.5" fill="#C4B5FD" />
       <rect x="24" y="37" width="12" height="3" rx="1.5" fill="#C4B5FD" />
-    </svg>
-  );
-}
-
-/** Generic app icon, the same as the New era orbit's: violet squircle with four tiles. */
-function AppIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 64 64" className={cn("block shrink-0", className)}>
-      <rect width="64" height="64" rx="16" className="fill-side-apps" />
-      <rect x="15" y="15" width="15" height="15" rx="4.5" fill="#FFFFFF" />
-      <rect x="34" y="15" width="15" height="15" rx="4.5" fill="#FFFFFF" fillOpacity="0.55" />
-      <rect x="15" y="34" width="15" height="15" rx="4.5" fill="#FFFFFF" fillOpacity="0.55" />
-      <rect x="34" y="34" width="15" height="15" rx="4.5" className="fill-primary" />
     </svg>
   );
 }
@@ -166,7 +154,7 @@ export function CommissionScene() {
   return (
     <div className={cn(CARD, "flex w-60 flex-col gap-2 px-4 py-3.5 text-left")}>
       <div className="flex items-center gap-2.5">
-        <AppIcon className="size-[34px]" />
+        <GenericAppIcon className="size-[34px]" />
         <span className="flex flex-col">
           <span className="text-sm font-bold">Your app</span>
           <span className="text-[11px] text-muted-foreground">Commission per plan</span>
