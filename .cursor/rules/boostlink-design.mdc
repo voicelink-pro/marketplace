@@ -44,8 +44,7 @@ New and redesigned pages must look and behave like it. File ownership rules are 
 ## Components
 - Base: shadcn/ui in `src/components/ui`. Forms: `FieldGroup`/`Field` + `useActionState`.
 - Already installed effects (reuse before adding new ones): bento-grid, canvas-text (dark mode only),
-  layout-text-flip, glowing-effect, hover-border-gradient, infinite-moving-cards, animated-list,
-  number-ticker, orbiting-circles.
+  layout-text-flip, glowing-effect, hover-border-gradient, infinite-moving-cards.
 - New effects come from Aceternity UI or Magic UI via the shadcn CLI (`pnpm dlx shadcn@latest add ...`).
 
 ## Content honesty (hard rules)

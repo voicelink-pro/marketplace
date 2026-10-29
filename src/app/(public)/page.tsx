@@ -7,7 +7,6 @@ import {
   parseHomeAudience,
 } from "@/modules/catalog/audience";
 import { getDefaultHomeAudience } from "@/modules/catalog/audience-server";
-import { BenefitGrid } from "@/modules/catalog/components/benefit-grid";
 import { EarningsCalculator } from "@/modules/catalog/components/calculator/earnings-calculator";
 import { AudienceSwitch } from "@/modules/catalog/components/home-audience";
 import {
@@ -22,6 +21,7 @@ import { LogoCloud } from "@/modules/catalog/components/logo-cloud";
 import { NewEraSection, NewEraSubtitle } from "@/modules/catalog/components/new-era/new-era-section";
 import { PlatformStrip } from "@/modules/catalog/components/platform-strip";
 import { Testimonials } from "@/modules/catalog/components/testimonials";
+import { WhyJoin } from "@/modules/catalog/components/why-join";
 import { parseCatalogFilters, type RawSearchParams } from "@/modules/catalog/filters";
 import { listCatalogApps } from "@/modules/catalog/queries";
 
@@ -63,6 +63,18 @@ async function HeroByAudience({ audience }: { audience: Promise<HomeAudience> })
 }
 
 /** How it works for the resolved audience; its apps CTA follows the hero's sign-up rule. */
+/** Why join for the resolved audience; its CTA follows the hero's sign-up rule. */
+async function WhyJoinByAudience({ audience }: { audience: Promise<HomeAudience> }) {
+  const [currentAudience, viewer] = await Promise.all([audience, getViewer()]);
+  return (
+    <AudienceSwitch
+      audience={currentAudience}
+      creators={<WhyJoin audience="creators" />}
+      apps={<WhyJoin audience="apps" signedIn={viewer !== null} />}
+    />
+  );
+}
+
 async function HowItWorksByAudience({ audience }: { audience: Promise<HomeAudience> }) {
   const [currentAudience, viewer] = await Promise.all([audience, getViewer()]);
   return (
@@ -180,13 +192,8 @@ export default function CatalogPage({ searchParams }: PageProps<"/">) {
         <CatalogPreviewByAudience audience={audience} />
       </Suspense>
 
-      {/* Keyed so switching sides replays the illustrations. */}
-      <Suspense fallback={<BenefitGrid audience="creators" />}>
-        <ByAudience
-          audience={audience}
-          creators={<BenefitGrid key="creators" audience="creators" />}
-          apps={<BenefitGrid key="apps" audience="apps" />}
-        />
+      <Suspense fallback={<WhyJoin audience="creators" />}>
+        <WhyJoinByAudience audience={audience} />
       </Suspense>
 
       <Suspense fallback={<Testimonials audience="creators" />}>
