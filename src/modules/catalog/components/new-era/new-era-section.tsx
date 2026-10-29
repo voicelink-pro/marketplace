@@ -1,5 +1,4 @@
 import { ArrowDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { HomeSectionLink } from "../home-section-link";
 import { NewEraMarquee } from "./new-era-marquee";
@@ -26,11 +25,11 @@ export function NewEraSection() {
       className="mx-auto grid w-full max-w-6xl justify-items-center gap-6 text-center lg:grid-cols-[520px_minmax(0,1fr)] lg:items-center lg:justify-items-start lg:gap-16 lg:py-14 lg:text-left xl:grid-cols-[620px_minmax(0,1fr)]"
     >
       <div className="flex max-w-2xl flex-col items-center gap-3 sm:gap-4 lg:col-start-2 lg:row-start-1 lg:max-w-xl lg:items-start">
-        {/* Always a step below the hero headline, which scales with its column. Two lines
-            beside the marquee (lg+), one line when stacked. */}
+        {/* 30px when stacked (may wrap on phones); from lg a step below the hero headline,
+            on two lines beside the marquee. */}
         <h2
           id="new-era-heading"
-          className="text-xl leading-[1.05] font-extrabold tracking-[-0.04em] sm:text-3xl lg:text-4xl xl:text-[2.75rem]"
+          className="text-3xl leading-[1.05] font-extrabold tracking-[-0.04em] lg:text-4xl xl:text-[2.75rem]"
         >
           New era of <br className="max-lg:hidden" />
           <span className={KEY_PHRASE}>marketing</span>
@@ -56,13 +55,15 @@ export function NewEraSection() {
             </li>
           ))}
         </ol>
-        <Button asChild variant="outline" className="h-11 gap-2 px-5 text-xs font-bold tracking-wide uppercase sm:text-sm">
-          {/* Only rendered on `/`, so this is always the in-page scroll. */}
-          <HomeSectionLink section="how-it-works" defaultAudience={null}>
-            See how it works
-            <ArrowDown aria-hidden className="size-4" />
-          </HomeSectionLink>
-        </Button>
+        {/* Only rendered on `/`, so this is always the in-page smooth scroll. */}
+        <HomeSectionLink
+          section="how-it-works"
+          defaultAudience={null}
+          className="inline-flex items-center gap-1.5 rounded-sm text-base font-semibold text-foreground underline decoration-foreground/40 underline-offset-4 transition-colors hover:decoration-foreground focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+        >
+          See how it works
+          <ArrowDown aria-hidden className="size-4" />
+        </HomeSectionLink>
       </div>
 
       <NewEraMarquee />

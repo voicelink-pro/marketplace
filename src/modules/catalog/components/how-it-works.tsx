@@ -85,7 +85,7 @@ const CONTENT: Record<
 /** Between steps: down on phones and tablets; right on desktop, level with the illustrations' middle. */
 function Connector() {
   return (
-    <li aria-hidden className="flex justify-center py-6 text-muted-foreground lg:py-0 lg:pt-[148px]">
+    <li aria-hidden className="flex justify-center py-6 text-muted-foreground lg:py-0 lg:pt-[136px]">
       <ChevronDown className="size-5 lg:hidden" />
       <ChevronRight className="hidden size-[22px] lg:block" />
     </li>
@@ -105,23 +105,25 @@ export function HowItWorks({ audience, signedIn = false }: { audience: HomeAudie
     <section
       id="how-it-works"
       aria-labelledby="how-it-works-heading"
-      className="flex scroll-mt-36 flex-col items-center text-center sm:py-6 lg:scroll-mt-24"
+      className="flex scroll-mt-36 flex-col items-center text-center lg:scroll-mt-20"
     >
-      <div className="flex max-w-3xl flex-col items-center gap-4">
+      <div className="flex max-w-3xl flex-col items-center gap-3">
         {/* The hero's key phrase color: black on a yellow marker in light, yellow letters in dark. */}
         <span className="rounded-[0.1em] bg-[#FFD600] px-[0.08em] text-sm font-bold text-[#111111] dark:bg-transparent dark:px-0 dark:text-primary">
           How it works
         </span>
+        {/* At least 24px on phones, where it may wrap (balanced); one line from sm, scaling
+            with the viewport up to 36px, a step below the hero headline. */}
         <h2
           id="how-it-works-heading"
-          className="text-4xl leading-[1.05] font-extrabold tracking-[-0.045em] text-balance sm:text-5xl"
+          className="text-[clamp(1.5rem,6.4vw,2.25rem)] leading-[1.1] font-extrabold tracking-[-0.045em] text-balance sm:text-[clamp(1rem,5vw,2.25rem)] sm:whitespace-nowrap"
         >
           {content.heading}
         </h2>
         <p className="max-w-2xl text-base text-pretty text-muted-foreground sm:text-lg">{content.subtitle}</p>
       </div>
 
-      <ol className="mt-10 flex flex-col items-center sm:mt-14 lg:grid lg:w-full lg:grid-cols-[1fr_3rem_1fr_3rem_1fr] lg:items-start">
+      <ol className="mt-8 flex flex-col items-center sm:mt-10 lg:grid lg:w-full lg:grid-cols-[1fr_3rem_1fr_3rem_1fr] lg:items-start lg:gap-x-3 xl:gap-x-0">
         {content.steps.map((step, index) => (
           <Fragment key={step.title}>
             {index > 0 ? <Connector /> : null}
@@ -132,7 +134,7 @@ export function HowItWorks({ audience, signedIn = false }: { audience: HomeAudie
               >
                 {index + 1}
               </span>
-              <div aria-hidden className="mt-7 mb-[26px] flex h-[190px] w-[280px] items-center justify-center">
+              <div aria-hidden className="my-4 flex h-[190px] w-[280px] items-center justify-center">
                 <step.Scene />
               </div>
               {/* One line from lg; the centered flex item overflows evenly if a title is wider than its column. */}
@@ -146,8 +148,8 @@ export function HowItWorks({ audience, signedIn = false }: { audience: HomeAudie
         ))}
       </ol>
 
-      <p className="mt-10 text-sm text-balance text-muted-foreground">{content.example}</p>
-      <Button asChild variant="outline" className="mt-4 h-11.5 gap-2 px-[22px] text-[15px] font-bold">
+      <p className="mt-6 text-sm text-balance text-muted-foreground">{content.example}</p>
+      <Button asChild variant="outline" className="mt-3 h-11.5 gap-2 px-[22px] text-[15px] font-bold">
         <Link href={ctaHref}>
           {content.cta.label}
           <ArrowRight aria-hidden className="size-4" />
