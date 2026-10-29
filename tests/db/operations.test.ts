@@ -10,7 +10,7 @@ describe('E9 support, notifications, operational access and audit', () => {
   async function inbox(id: string) { return (await user(id, 'select public.ops_inbox() v')).rows[0]!.v as { notifications: { id: string; code: string; read_at: string | null }[]; unread: number; tickets: { id: string; status: string; revision: number }[]; messages: { body: string }[] }; }
   beforeAll(async () => {
     db = await createTestDb(); await db.exec(readFileSync(new URL('../../supabase/seed.sql', import.meta.url), 'utf8'));
-    app = (await db.query<{ id: string }>("select id from public.apps where slug='pulse-coach'")).rows[0]!.id;
+    app = (await db.query<{ id: string }>("select id from public.apps where slug='monetra'")).rows[0]!.id;
     owner = await createAuthUser(db, { email: 'e9owner@example.test' });creator = await createAuthUser(db, { email: 'e9creator@example.test' });other = await createAuthUser(db, { email: 'e9other@example.test' });admin = await createAuthUser(db, { email: 'e9admin@example.test' });
     await db.query("insert into public.organization_members(organization_id,user_id,role) select organization_id,$1,'owner' from public.apps where id=$2", [owner, app]);
     await db.query("insert into public.platform_admins(user_id,granted_by) values($1,'E9 fixture')", [admin]);

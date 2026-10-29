@@ -31,7 +31,7 @@ export function ProgramCover({
     <div className={cn("relative shrink-0 bg-muted", sizes.cover)}>
       {program.coverImageUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={program.coverImageUrl} alt="" loading="lazy" className="size-full object-cover" />
+        <img src={program.coverImageUrl} alt="" loading="lazy" className="size-full object-cover object-top" />
       ) : (
         <span aria-hidden className={cn("grid size-full place-items-center font-extrabold text-foreground/10", sizes.initial)}>
           {program.appName.slice(0, 1).toUpperCase()}

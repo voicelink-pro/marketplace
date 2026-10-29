@@ -18,7 +18,7 @@ export function FeaturedSlide({ app, href, planInfo }: { app: CatalogAppCard; hr
       <div className="relative aspect-[16/9] w-full overflow-hidden bg-muted md:aspect-auto md:min-h-80">
         {app.coverImageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={app.coverImageUrl} alt="" className="absolute inset-0 size-full object-cover" />
+          <img src={app.coverImageUrl} alt="" className="absolute inset-0 size-full object-cover object-top" />
         ) : (
           <div className="absolute inset-0 grid place-items-center">
             <AppLogo app={app} className="size-20 rounded-[20px] text-3xl" />

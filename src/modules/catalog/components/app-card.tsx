@@ -94,7 +94,7 @@ export function AppCard({
                 src={app.coverImageUrl}
                 alt=""
                 loading="lazy"
-                className="size-full object-cover transition-transform duration-200 group-hover:scale-[1.015]"
+                className="size-full object-cover object-top transition-transform duration-200 group-hover:scale-[1.015]"
               />
             ) : (
               <div className="grid size-full place-items-center">

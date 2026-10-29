@@ -50,7 +50,7 @@ describe('E5 real PostgREST attribution, concurrency and HTTP contract',()=>{
       value(await client.rpc('save_app_draft',{p_app_id:id,p_name:'Attribution Demo '+i,p_slug:slug+'-'+i,
         p_tagline:'A real sandbox integration fixture.',p_description:'An application for testing attribution across distinct organizations.',
         p_categories:['productivity'],p_platforms:['web'],p_languages:['en'],p_website_url:'https://demo.localhost:3443/',
-        p_logo_url:'/demo/logo-pulse.svg',p_cover_image_url:'/demo/cover-pulse.svg',
+        p_logo_url:'/demo/presets/logo-orbitly.png',p_cover_image_url:'/demo/presets/orbitly.png',
         p_terms_text:'Sandbox: last valid click within 30 days; explicit code wins. Immutable customer attribution.'}));
       value(await client.rpc('upsert_app_plan',{p_app_id:id,p_name:'Monthly',p_external_plan_key:'monthly',p_billing_interval:'month',p_price_minor:1000,p_currency:'EUR',p_commission_bps:1500}));
       await publish(client,id);

@@ -39,7 +39,7 @@ describe('E8 sandbox financing, auto top-ups, payouts and reconciliation', () =>
   beforeAll(async () => {
     db = await createTestDb();
     await db.exec(readFileSync(new URL('../../supabase/seed.sql', import.meta.url), 'utf8'));
-    app = (await db.query<{ id: string }>("select id from public.apps where slug='pulse-coach'")).rows[0]!.id;
+    app = (await db.query<{ id: string }>("select id from public.apps where slug='monetra'")).rows[0]!.id;
     appB = (await db.query<{ id: string }>('select id from public.apps where id<>$1 limit 1', [app])).rows[0]!.id;
     owner = await createAuthUser(db, { email: 'e8owner@example.test' }); creator = await createAuthUser(db, { email: 'e8creator@example.test' }); other = await createAuthUser(db, { email: 'e8other@example.test' }); admin = await createAuthUser(db, { email: 'e8admin@example.test' });
     await db.query("insert into public.platform_admins(user_id,granted_by) values($1,'E8 fixture')", [admin]);

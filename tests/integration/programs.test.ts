@@ -61,7 +61,7 @@ describe.skipIf(!configured)("creator program memberships and links through the 
     const listing = await creatorA.client
       .from("catalog_listings")
       .select("app_id, terms_version_id")
-      .eq("slug", "pulse-coach")
+      .eq("slug", "monetra")
       .single();
     if (listing.error) throw listing.error;
 

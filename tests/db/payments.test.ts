@@ -15,8 +15,8 @@ describe('E6 durable payments, RLS, ordering and economic deduplication',()=>{
  async function mapping(){await asUser(db,owner,tx=>tx.query(`select public.map_payment_customer($1,'cus_1','customer_1')`,[integration]),{commit:true});await asUser(db,owner,tx=>tx.query(`select public.map_payment_plan($1,'price_1',$2)`,[integration,plan]),{commit:true});}
  beforeAll(async()=>{
   db=await createTestDb();await db.exec(readFileSync(new URL('../../supabase/seed.sql',import.meta.url),'utf8'));
-  const apps=(await db.query<{id:string;organization_id:string;slug:string}>(`select id,organization_id,slug from public.apps where slug in('pulse-coach','lexi-notes')`)).rows;
-  app=apps.find(a=>a.slug==='pulse-coach')!.id;otherApp=apps.find(a=>a.slug==='lexi-notes')!.id;
+  const apps=(await db.query<{id:string;organization_id:string;slug:string}>(`select id,organization_id,slug from public.apps where slug in('monetra','draftly')`)).rows;
+  app=apps.find(a=>a.slug==='monetra')!.id;otherApp=apps.find(a=>a.slug==='draftly')!.id;
   owner=await createAuthUser(db,{email:'e6owner@example.test'});otherOwner=await createAuthUser(db,{email:'e6other@example.test'});creator=await createAuthUser(db,{email:'e6creator@example.test'});
   for(const [who,id] of [[owner,app],[otherOwner,otherApp]])await db.query(`insert into public.organization_members(organization_id,user_id,role) select organization_id,$1,'owner' from public.apps where id=$2`,[who,id]);
   await db.query(`insert into public.creator_profiles(user_id) values($1)`,[creator]);await db.query(`insert into public.creator_social_links(creator_id,platform,url) values($1,'instagram','https://instagram.com/fixturecreator')`,[creator]);

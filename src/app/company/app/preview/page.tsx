@@ -164,7 +164,7 @@ export default async function CompanyAppPreviewPage() {
               <img
                 src={app.coverImageUrl}
                 alt={`${app.name} overview`}
-                className="aspect-[16/10] w-full object-cover"
+                className="aspect-[16/10] w-full object-cover object-top"
               />
             </div>
           ) : null}
@@ -265,7 +265,7 @@ export default async function CompanyAppPreviewPage() {
                       <img
                         src={shot.url}
                         alt={shot.alt}
-                        className="aspect-[16/10] size-full object-cover"
+                        className="aspect-[16/10] size-full object-cover object-top"
                       />
                     </div>
                     <figcaption className="px-4 py-2.5 text-xs text-muted-foreground">

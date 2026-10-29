@@ -10,12 +10,12 @@ describe("creator program memberships, referral codes, named links, and similar 
   let creatorA: string;
   let creatorB: string;
   let unreadyCreator: string;
-  let pulseAppId: string;
-  let pulseTermsVersionId: string;
-  let lexiAppId: string;
-  let lexiTermsVersionId: string;
+  let monetraAppId: string;
+  let monetraTermsVersionId: string;
+  let draftlyAppId: string;
+  let draftlyTermsVersionId: string;
   let draftAppId: string;
-  let creatorAPulseMembershipId: string;
+  let creatorAMonetraMembershipId: string;
 
   beforeAll(async () => {
     db = await createTestDb();
@@ -58,17 +58,17 @@ describe("creator program memberships, referral codes, named links, and similar 
     );
 
     await as(db, "anon", null, async (tx) => {
-      const pulse = await tx.query<{ app_id: string; terms_version_id: string }>(
-        `select app_id, terms_version_id from public.catalog_listings where slug = 'pulse-coach'`,
+      const monetra = await tx.query<{ app_id: string; terms_version_id: string }>(
+        `select app_id, terms_version_id from public.catalog_listings where slug = 'monetra'`,
       );
-      pulseAppId = pulse.rows[0]!.app_id;
-      pulseTermsVersionId = pulse.rows[0]!.terms_version_id;
+      monetraAppId = monetra.rows[0]!.app_id;
+      monetraTermsVersionId = monetra.rows[0]!.terms_version_id;
 
-      const lexi = await tx.query<{ app_id: string; terms_version_id: string }>(
-        `select app_id, terms_version_id from public.catalog_listings where slug = 'lexi-notes'`,
+      const draftly = await tx.query<{ app_id: string; terms_version_id: string }>(
+        `select app_id, terms_version_id from public.catalog_listings where slug = 'draftly'`,
       );
-      lexiAppId = lexi.rows[0]!.app_id;
-      lexiTermsVersionId = lexi.rows[0]!.terms_version_id;
+      draftlyAppId = draftly.rows[0]!.app_id;
+      draftlyTermsVersionId = draftly.rows[0]!.terms_version_id;
     });
 
     await as(db, "service_role", null, async (tx) => {
@@ -90,7 +90,7 @@ describe("creator program memberships, referral codes, named links, and similar 
 
     await expect(
       as(db, "anon", null, (tx) =>
-        tx.query(`select public.join_program($1, $2, true)`, [pulseAppId, pulseTermsVersionId]),
+        tx.query(`select public.join_program($1, $2, true)`, [monetraAppId, monetraTermsVersionId]),
       ),
     ).rejects.toThrow();
   });
@@ -99,21 +99,21 @@ describe("creator program memberships, referral codes, named links, and similar 
     // User without a social profile cannot join
     await expect(
       asUser(db, unreadyCreator, (tx) =>
-        tx.query(`select public.join_program($1, $2, true)`, [pulseAppId, pulseTermsVersionId]),
+        tx.query(`select public.join_program($1, $2, true)`, [monetraAppId, monetraTermsVersionId]),
       ),
     ).rejects.toThrow(/social_profile_required/);
 
     // Ready creator who did not check "accept terms" cannot join
     await expect(
       asUser(db, creatorA, (tx) =>
-        tx.query(`select public.join_program($1, $2, false)`, [pulseAppId, pulseTermsVersionId]),
+        tx.query(`select public.join_program($1, $2, false)`, [monetraAppId, monetraTermsVersionId]),
       ),
     ).rejects.toThrow(/terms_acceptance_required/);
 
     // Ready creator passing mismatched terms version ID cannot join
     await expect(
       asUser(db, creatorA, (tx) =>
-        tx.query(`select public.join_program($1, $2, true)`, [pulseAppId, lexiTermsVersionId]),
+        tx.query(`select public.join_program($1, $2, true)`, [monetraAppId, draftlyTermsVersionId]),
       ),
     ).rejects.toThrow(/stale_or_invalid_terms_version/);
   });
@@ -121,19 +121,19 @@ describe("creator program memberships, referral codes, named links, and similar 
   it("refuses joining a draft or unpublished app", async () => {
     await expect(
       asUser(db, creatorA, (tx) =>
-        tx.query(`select public.join_program($1, $2, true)`, [draftAppId, pulseTermsVersionId]),
+        tx.query(`select public.join_program($1, $2, true)`, [draftAppId, monetraTermsVersionId]),
       ),
     ).rejects.toThrow(/app_not_published/);
   });
 
   it("instantly joins a published program, generates a referral code and default link, and is idempotent on repeat clicks", async () => {
-    creatorAPulseMembershipId = await asUser(
+    creatorAMonetraMembershipId = await asUser(
       db,
       creatorA,
       async (tx) => {
         const res = await tx.query<{ id: string }>(
           `select public.join_program($1, $2, true) as id`,
-          [pulseAppId, pulseTermsVersionId],
+          [monetraAppId, monetraTermsVersionId],
         );
         return res.rows[0]!.id;
       },
@@ -147,13 +147,13 @@ describe("creator program memberships, referral codes, named links, and similar 
       async (tx) => {
         const res = await tx.query<{ id: string }>(
           `select public.join_program($1, $2, true) as id`,
-          [pulseAppId, pulseTermsVersionId],
+          [monetraAppId, monetraTermsVersionId],
         );
         return res.rows[0]!.id;
       },
       { commit: true },
     );
-    expect(secondId).toBe(creatorAPulseMembershipId);
+    expect(secondId).toBe(creatorAMonetraMembershipId);
 
     await asUser(db, creatorA, async (tx) => {
       const memberships = await tx.query<{
@@ -164,9 +164,9 @@ describe("creator program memberships, referral codes, named links, and similar 
       }>(`select id, app_id, accepted_terms_version_id, referral_code from public.creator_program_memberships`);
 
       expect(memberships.rows).toHaveLength(1);
-      expect(memberships.rows[0]!.id).toBe(creatorAPulseMembershipId);
-      expect(memberships.rows[0]!.accepted_terms_version_id).toBe(pulseTermsVersionId);
-      expect(memberships.rows[0]!.referral_code).toMatch(/^PULSE-[A-Z0-9]{6}$/);
+      expect(memberships.rows[0]!.id).toBe(creatorAMonetraMembershipId);
+      expect(memberships.rows[0]!.accepted_terms_version_id).toBe(monetraTermsVersionId);
+      expect(memberships.rows[0]!.referral_code).toMatch(/^MONETRA-[A-Z0-9]{6}$/);
 
       const links = await tx.query<{
         label: string;
@@ -179,15 +179,15 @@ describe("creator program memberships, referral codes, named links, and similar 
         `select label, channel, destination_kind, target_url, token, is_default
          from public.creator_referral_links
          where membership_id = $1`,
-        [creatorAPulseMembershipId],
+        [creatorAMonetraMembershipId],
       );
       expect(links.rows).toEqual([
         {
           label: "Primary link",
           channel: "instagram",
           destination_kind: "website",
-          target_url: "https://pulsecoach.example.com",
-          token: expect.stringMatching(/^pulse-coach-[a-z0-9]{8}$/),
+          target_url: "https://monetra.example.com",
+          token: expect.stringMatching(/^monetra-[a-z0-9]{8}$/),
           is_default: true,
         },
       ]);
@@ -201,11 +201,11 @@ describe("creator program memberships, referral codes, named links, and similar 
       async (tx) => {
         await tx.query(
           `select public.create_referral_link($1, 'Instagram bio', 'instagram', 'ios_store')`,
-          [creatorAPulseMembershipId],
+          [creatorAMonetraMembershipId],
         );
         await tx.query(
           `select public.create_referral_link($1, 'TikTok video 1', 'tiktok', 'android_store')`,
-          [creatorAPulseMembershipId],
+          [creatorAMonetraMembershipId],
         );
       },
       { commit: true },
@@ -216,19 +216,19 @@ describe("creator program memberships, referral codes, named links, and similar 
       asUser(db, creatorA, (tx) =>
         tx.query(
           `select public.create_referral_link($1, 'instagram bio', 'instagram', 'website')`,
-          [creatorAPulseMembershipId],
+          [creatorAMonetraMembershipId],
         ),
       ),
     ).rejects.toThrow(/duplicate_link_label/);
 
-    // Join Lexi Notes (web/saas only — no iOS/Android store URLs)
-    const lexiMembershipId = await asUser(
+    // Join Draftly (web/saas only — no iOS/Android store URLs)
+    const draftlyMembershipId = await asUser(
       db,
       creatorA,
       async (tx) => {
         const res = await tx.query<{ id: string }>(
           `select public.join_program($1, $2, true) as id`,
-          [lexiAppId, lexiTermsVersionId],
+          [draftlyAppId, draftlyTermsVersionId],
         );
         return res.rows[0]!.id;
       },
@@ -240,7 +240,7 @@ describe("creator program memberships, referral codes, named links, and similar 
       asUser(db, creatorA, (tx) =>
         tx.query(
           `select public.create_referral_link($1, 'iOS attempt', 'youtube', 'ios_store')`,
-          [lexiMembershipId],
+          [draftlyMembershipId],
         ),
       ),
     ).rejects.toThrow(/destination_not_available_for_app/);
@@ -251,8 +251,8 @@ describe("creator program memberships, referral codes, named links, and similar 
         tx.query(
           `insert into public.creator_referral_links
              (membership_id, app_id, creator_id, label, channel, destination_kind, target_url, token)
-           values ($1, $2, $3, 'Phishing link', 'other', 'website', 'https://evil.example.com/steal', 'pulse-coach-evil1234')`,
-          [creatorAPulseMembershipId, pulseAppId, creatorA],
+           values ($1, $2, $3, 'Phishing link', 'other', 'website', 'https://evil.example.com/steal', 'monetra-evil1234')`,
+          [creatorAMonetraMembershipId, monetraAppId, creatorA],
         ),
       ),
     ).rejects.toThrow(/arbitrary_redirect_url_forbidden/);
@@ -273,7 +273,7 @@ describe("creator program memberships, referral codes, named links, and similar 
       asUser(db, creatorB, (tx) =>
         tx.query(
           `select public.create_referral_link($1, 'Hijack link', 'tiktok', 'website')`,
-          [creatorAPulseMembershipId],
+          [creatorAMonetraMembershipId],
         ),
       ),
     ).rejects.toThrow(/not_allowed/);
@@ -288,21 +288,23 @@ describe("creator program memberships, referral codes, named links, and similar 
       expect(emptySuggestions.rows).toHaveLength(0);
     });
 
-    // Creator A has joined Pulse Coach (fitness, lifestyle) and Lexi Notes (ai, productivity).
-    // Similar published apps sharing those categories in seed.sql:
-    //   - framecut-studio (creative, ai) -> shares 'ai'
-    //   - tempo-focus (productivity, lifestyle) -> shares 'productivity' and 'lifestyle' (2 matches!)
-    //   - tracebeacon (developer, productivity) -> shares 'productivity'
-    // Already-joined (pulse-coach, lexi-notes) and unpublished (stealth-draft-app, pending-review-app) must be excluded.
+    // Creator A has joined Monetra (finance, lifestyle) and Draftly (ai, productivity).
+    // Similar published apps in seed.sql, by shared categories, then max commission:
+    //   - mellow (productivity, lifestyle) -> 2 shared categories
+    //   - crewpass 30%, orbitly 28%, lumio 26%, pipely 22%, payvio 15% -> 1 each
+    //   - boxora 12% (productivity) also shares one but falls past the limit of 6
+    // stacklane (developer) shares none. Already-joined (monetra, draftly) and
+    // unpublished (stealth-draft-app, pending-review-app) must be excluded.
     await asUser(db, creatorA, async (tx) => {
       const suggestions = await tx.query<{ slug: string; shared_categories: string[] }>(
         `select slug, shared_categories from public.suggest_similar_apps_for_creator(6)`,
       );
       const slugs = suggestions.rows.map((r) => r.slug);
 
-      expect(slugs).toEqual(["tempo-focus", "framecut-studio", "tracebeacon"]);
-      expect(slugs).not.toContain("pulse-coach");
-      expect(slugs).not.toContain("lexi-notes");
+      expect(slugs).toEqual(["mellow", "crewpass", "orbitly", "lumio", "pipely", "payvio"]);
+      expect(slugs).not.toContain("monetra");
+      expect(slugs).not.toContain("draftly");
+      expect(slugs).not.toContain("stacklane");
       expect(slugs).not.toContain("stealth-draft-app");
       expect(slugs).not.toContain("pending-review-app");
     });

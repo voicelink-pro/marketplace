@@ -202,8 +202,8 @@ Brak kodu, więc brak testów. Wykonano tylko inwentaryzację plików, narzędzi
   - nagłówek produktu (logo, firma, opis krótki, kategorie, platformy, języki, linki do strony/App Store/Google Play), grafika główna, pełny opis, galeria screenów (`aspect-[16/10]`), sekcja wideo produktu, warunki programu z numerem wersji (`Terms vN`, okno atrybucji, ochrona historycznych stawek) oraz pełna tabela abonamentów z cenami i stawkami prowizji;
   - wyraźne CTA do promowania (na desktopie w przyklejonej kolumnie bocznej, na mobile także bezpośrednio pod grafiką główną): dla niezalogowanego prowadzi do `/login?next=/apps/[slug]` (oraz `/signup?next=/apps/[slug]`) z zachowaniem docelowej aplikacji;
   - link powrotny („Back to filtered results” / „All apps”) odtwarzający bezpiecznie zwalidowane filtry i numer strony z `?from=`.
-- **Dane demo (`supabase/seed.sql`, `public/demo/*.svg`):**
-  - 8 opublikowanych aplikacji demo i 2 nieopublikowane (`stealth-draft-app` jako `draft`, `pending-review-app` jako `submitted`) bez fikcyjnych statystyk i liczb partnerów.
+- **Dane demo (`supabase/seed.sql`, `public/demo/presets/`):**
+  - 10 opublikowanych aplikacji demo (Boxora, Crewpass, Draftly, Lumio, Mellow, Monetra, Orbitly, Payvio, Pipely, Stacklane; od 29.10 z presetami dashboardów Karola jako okładką i screenem, logo wycięte z presetu skryptem `scripts/crop-preset-logos.mjs`) i 2 nieopublikowane (`stealth-draft-app` jako `draft`, `pending-review-app` jako `submitted`) bez fikcyjnych statystyk i liczb partnerów.
 
 ### Weryfikacja etapu 2 (co faktycznie uruchomiono)
 
@@ -222,11 +222,11 @@ Brak kodu, więc brak testów. Wykonano tylko inwentaryzację plików, narzędzi
 
 - **Z lokalnym Supabase (po usunięciu B-01):**
   1. `pnpm db:start && pnpm db:reset` (ładuje migracje i `supabase/seed.sql`), następnie `pnpm dev`.
-  2. Bez logowania otworzyć `http://localhost:3000/` — widoczne 6 kafelków na stronie 1 i 2 na stronie 2 (`Showing 1–6 of 8 apps`).
+  2. Bez logowania otworzyć `http://localhost:3000/` — widoczne 6 kafelków na stronie 1 i 4 na stronie 2 (`Showing 1–6 of 10 apps`).
   3. Użyć wyszukiwarki i filtrów (Category, Commission, Platform, App language) — URL aktualizuje się, można usuwać pojedyncze filtry lub kliknąć „Clear filters”.
-  4. Kliknąć kafelek (np. `Pulse Coach`) — otwiera pełną stronę `/apps/pulse-coach` z tabelą abonamentów (`15%` i `25%`), opisem, screenami, wideo i warunkami programu.
+  4. Kliknąć kafelek (np. `Monetra`) — otwiera pełną stronę `/apps/monetra` z tabelą abonamentów (`15%` i `25%`), opisem, screenem i warunkami programu.
   5. Kliknąć „Back to filtered results” lub Wstecz w przeglądarce — powrót do katalogu z zachowanymi filtrami.
-  6. Kliknąć „Promote this app” bez logowania — przejście na `/login?next=%2Fapps%2Fpulse-coach`.
+  6. Kliknąć „Promote this app” bez logowania — przejście na `/login?next=%2Fapps%2Fmonetra`.
   7. Wejść na `/apps/stealth-draft-app` lub `/apps/pending-review-app` — brak dostępu (strona nie istnieje).
 - **Bez Dockera (lokalny sandbox SQL PGlite):**
   - `LOCAL_PGLITE_SANDBOX=1 pnpm dev` (z danymi z `supabase/seed.sql`) albo `LOCAL_PGLITE_SANDBOX=1 LOCAL_PGLITE_SEED=0 pnpm dev` (pusty stan katalogu).
@@ -267,10 +267,10 @@ Brak kodu, więc brak testów. Wykonano tylko inwentaryzację plików, narzędzi
 ### Jak przetestować ręcznie etap 4
 
 1. Otworzyć `http://localhost:3001/login` i zalogować się kontem twórcy (np. `creator@example.com` lub `demo@example.com` albo utworzyć nowe konto na `/signup` i dodać profil społecznościowy).
-2. Wejść na ofertę w katalogu, np. `http://localhost:3001/apps/pulse-coach`.
+2. Wejść na ofertę w katalogu, np. `http://localhost:3001/apps/monetra`.
 3. Spróbować kliknąć **Join program & get link** bez zaznaczenia checkboxa warunków — formularz pokaże błąd walidacji.
-4. Zaznaczyć akceptację warunków (`Terms v1`) i kliknąć **Join program & get link** — nastąpi natychmiastowe dołączenie i przejście na `/creator/programs/pulse-coach?joined=1`.
-5. Sprawdzić wprowadzenie „How to promote on the marketplace”, skopiować kod (`PULSE-…`) i główny link przyciskami **Copy code** / **Copy link**.
+4. Zaznaczyć akceptację warunków (`Terms v1`) i kliknąć **Join program & get link** — nastąpi natychmiastowe dołączenie i przejście na `/creator/programs/monetra?joined=1`.
+5. Sprawdzić wprowadzenie „How to promote on the marketplace”, skopiować kod (`MONETRA-…`) i główny link przyciskami **Copy code** / **Copy link**.
 6. W sekcji **Create a named link** utworzyć nazwany link (np. `Instagram bio`, kanał `Instagram`, cel `App Store (iOS)`) i skopiować jego URL z tabeli.
 7. Przejść na `/creator/programs`, `/creator/links` oraz `/creator` (Overview) — sprawdzić listę programów, filtrowanie linków, uczciwy pusty stan zarobków oraz sekcję **Similar apps to promote**.
 

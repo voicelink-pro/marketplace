@@ -197,13 +197,9 @@ export function AppDraftEditorForm({
 
   function fillDemoVisuals() {
     markEdited();
-    setLogoUrl("/demo/logo-pulse.svg");
-    setCoverImageUrl("/demo/cover-pulse.svg");
-    setVideoUrl("https://pulsecoach.example.com/demo/overview.mp4");
-    setScreenshots([
-      { url: "/demo/screen-pulse-1.svg", alt: `${app.name} main workflow view` },
-      { url: "/demo/screen-pulse-2.svg", alt: `${app.name} subscriber progress screen` },
-    ]);
+    setLogoUrl("/demo/presets/logo-crewpass.png");
+    setCoverImageUrl("/demo/presets/crewpass.png");
+    setScreenshots([{ url: "/demo/presets/crewpass.png", alt: `${app.name} dashboard overview` }]);
   }
 
   const submitLabel =

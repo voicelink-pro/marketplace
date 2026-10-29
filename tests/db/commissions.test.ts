@@ -15,7 +15,7 @@ describe('E7 immutable balanced commissions, history, corrections and month clos
   return(await db.query<{id:string}>(`insert into public.payment_adjustments(app_id,environment,referral_id,transaction_id,kind,state,amount_minor,occurred_at,event_ref) values($1,'sandbox',$2,$3,$4,$5,$6,$7,$8) returning id`,[app,referral,tx,kind,state,amount,time,randomUUID()])).rows[0]!.id;
  }
  beforeAll(async()=>{
-  db=await createTestDb();await db.exec(readFileSync(new URL('../../supabase/seed.sql',import.meta.url),'utf8'));app=(await db.query<{id:string}>(`select id from public.apps where slug='pulse-coach'`)).rows[0]!.id;
+  db=await createTestDb();await db.exec(readFileSync(new URL('../../supabase/seed.sql',import.meta.url),'utf8'));app=(await db.query<{id:string}>(`select id from public.apps where slug='monetra'`)).rows[0]!.id;
   owner=await createAuthUser(db,{email:'e7owner@example.test'});creator=await createAuthUser(db,{email:'e7creator@example.test'});other=await createAuthUser(db,{email:'e7other@example.test'});
   await db.query(`insert into public.organization_members(organization_id,user_id,role) select organization_id,$1,'owner' from public.apps where id=$2`,[owner,app]);
   await db.query(`insert into public.creator_profiles(user_id) values($1)`,[creator]);await db.query(`insert into public.creator_social_links(creator_id,platform,url) values($1,'instagram','https://instagram.com/e7fixture')`,[creator]);

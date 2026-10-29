@@ -21,7 +21,7 @@ describe("Stage 1–4 regression boundaries", () => {
     stranger = await createAuthUser(db, { email: "stranger-hardening@example.test" });
     await db.query(`insert into public.platform_admins(user_id, granted_by) values ($1, 'test')`, [admin]);
     const listing = await db.query<{ app_id: string; terms_version_id: string }>(
-      `select app_id, terms_version_id from public.catalog_listings where slug = 'pulse-coach'`,
+      `select app_id, terms_version_id from public.catalog_listings where slug = 'monetra'`,
     );
     appId = listing.rows[0]!.app_id;
     termsId = listing.rows[0]!.terms_version_id;
@@ -37,7 +37,7 @@ describe("Stage 1–4 regression boundaries", () => {
   afterAll(async () => db?.close());
 
   it("never exposes the working media inventory to anon or unrelated accounts after publication", async () => {
-    await asUser(db, owner, tx => tx.query(`select public.save_app_draft($1, 'Pulse Coach',
+    await asUser(db, owner, tx => tx.query(`select public.save_app_draft($1, 'Monetra',
       p_logo_url => 'https://assets.example.com/unapproved-draft.svg')`, [appId]));
     await expect(as(db, "anon", null, tx => tx.query(`select storage_path from public.app_media_assets`)))
       .rejects.toThrow(/permission denied/);

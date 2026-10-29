@@ -18,9 +18,9 @@ describe("E5 customer attribution and isolation", () => {
   beforeAll(async () => {
     db=await createTestDb();
     await db.exec(readFileSync(new URL("../../supabase/seed.sql", import.meta.url),"utf8"));
-    const apps=await db.query<{id:string;slug:string;created_by:string}>(`select id,slug,created_by from public.apps where slug in ('pulse-coach','lexi-notes') order by slug`);
-    app=apps.rows.find(a=>a.slug==='pulse-coach')!.id;
-    otherApp=apps.rows.find(a=>a.slug==='lexi-notes')!.id;
+    const apps=await db.query<{id:string;slug:string;created_by:string}>(`select id,slug,created_by from public.apps where slug in ('monetra','draftly') order by slug`);
+    app=apps.rows.find(a=>a.slug==='monetra')!.id;
+    otherApp=apps.rows.find(a=>a.slug==='draftly')!.id;
     owner=await createAuthUser(db,{email:'owner@example.test'});
     await db.query(`insert into public.organization_members(organization_id,user_id,role) select organization_id,$1,'owner' from public.apps where id=$2`,[owner,app]);
     key=await as(db,'service_role',null,async tx=>(await tx.query<{k:string}>(`select public.rotate_attribution_api_key($1) k`,[app])).rows[0]!.k,{commit:true});

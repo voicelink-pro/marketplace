@@ -558,8 +558,8 @@ describe("catalog, plans, and terms versions (RLS, immutability, filters, pagina
         `select slug, total_count from public.list_catalog_apps(p_page => 2, p_page_size => 6)`,
       );
       expect(page1.rows).toHaveLength(6);
-      expect(page2.rows).toHaveLength(2);
-      expect(Number(page1.rows[0]!.total_count)).toBe(8);
+      expect(page2.rows).toHaveLength(4);
+      expect(Number(page1.rows[0]!.total_count)).toBe(10);
 
       const allSlugs = [...page1.rows, ...page2.rows].map((r) => r.slug);
       expect(allSlugs).not.toContain("stealth-draft-app");

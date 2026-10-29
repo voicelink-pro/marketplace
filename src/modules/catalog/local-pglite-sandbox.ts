@@ -59,7 +59,7 @@ const SANDBOX_ACCOUNTS_SEED_SQL = `
     v_demo_id uuid := '00000000-0000-4000-8000-000000000001';
     v_creator_id uuid := '00000000-0000-4000-8000-000000000002';
     v_company_id uuid := '00000000-0000-4000-8000-000000000003';
-    v_pulse_org_id uuid;
+    v_monetra_org_id uuid;
     v_stealth_org_id uuid;
   begin
     if exists (select 1 from auth.users where id = v_demo_id) then
@@ -83,10 +83,10 @@ const SANDBOX_ACCOUNTS_SEED_SQL = `
       (v_demo_id, 'youtube', 'https://www.youtube.com/@alexrivera'),
       (v_creator_id, 'tiktok', 'https://www.tiktok.com/@majakowalska');
 
-    select id into v_pulse_org_id from public.organizations where name = 'Pulse Labs (Demo)' limit 1;
-    if v_pulse_org_id is not null then
+    select id into v_monetra_org_id from public.organizations where name = 'Monetra (Demo)' limit 1;
+    if v_monetra_org_id is not null then
       insert into public.organization_members (organization_id, user_id, role)
-      values (v_pulse_org_id, v_demo_id, 'owner')
+      values (v_monetra_org_id, v_demo_id, 'owner')
       on conflict do nothing;
     end if;
 
@@ -105,7 +105,7 @@ declare global {
   var __mpPgliteSandboxVersion: number | undefined;
 }
 
-const SANDBOX_SCHEMA_VERSION = 7;
+const SANDBOX_SCHEMA_VERSION = 8;
 
 export function isLocalPgliteSandboxEnabled(): boolean {
   if (process.env.LOCAL_PGLITE_SANDBOX !== "1") return false;

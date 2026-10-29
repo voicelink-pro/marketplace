@@ -54,8 +54,8 @@ describe("company app and plan validation helpers (Stage 3)", () => {
       websiteUrl: "https://orbithabit.example.com",
       iosStoreUrl: null,
       androidStoreUrl: null,
-      coverImageUrl: "/demo/cover-pulse.svg",
-      logoUrl: "/demo/logo-pulse.svg",
+      coverImageUrl: "/demo/presets/orbitly.png",
+      logoUrl: "/demo/presets/logo-orbitly.png",
       termsText: "20% recurring commission on all paid renewals.",
       activePlanCount: 2,
     });
