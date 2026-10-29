@@ -90,7 +90,13 @@ export function displayUrl(url: string): string {
   return url.replace(/^https?:\/\//, "");
 }
 
-export const plural = (count: number, word: string) => `${count} ${count === 1 ? word : `${word}s`}`;
+const number = new Intl.NumberFormat("en");
+
+/** "click" or "clicks", for when the number is styled on its own. */
+export const pluralWord = (count: number, word: string) => (count === 1 ? word : `${word}s`);
+
+/** "1 click", "1,320 clicks". */
+export const plural = (count: number, word: string) => `${number.format(count)} ${pluralWord(count, word)}`;
 
 /** "30 days", or the range when programs differ. */
 export function windowPhrase(days: number[]): string {

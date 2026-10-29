@@ -81,24 +81,26 @@ export function ProgramListCard({
   const link = program.defaultLink?.shareUrl;
   return (
     <article className={CARD}>
-      <ProgramCover program={program}>
-        {isNew ? (
-          <Badge variant="secondary" className="absolute top-3.5 left-3.5">
-            New
-          </Badge>
-        ) : null}
-      </ProgramCover>
+      <ProgramCover program={program} />
       <div className="flex flex-1 flex-col gap-3.5 px-4 pt-8 pb-4 sm:px-[18px] sm:pb-[18px]">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex min-w-0 flex-col gap-0.5">
-            <h3 className="truncate text-[17px] leading-6">
-              <Link
-                href={`/creator/programs/${program.slug}`}
-                className="rounded-sm outline-none hover:underline focus-visible:ring-3 focus-visible:ring-ring/50"
-              >
-                {program.appName}
-              </Link>
-            </h3>
+        {/* The chip drops below the name when name, badge and chip don't fit on one line. */}
+        <div className="flex flex-wrap items-start justify-between gap-x-2 gap-y-2">
+          <div className="flex max-w-full min-w-0 flex-col gap-0.5">
+            <div className="flex min-w-0 items-center gap-2">
+              <h3 className="truncate text-[17px] leading-6">
+                <Link
+                  href={`/creator/programs/${program.slug}`}
+                  className="rounded-sm outline-none hover:underline focus-visible:ring-3 focus-visible:ring-ring/50"
+                >
+                  {program.appName}
+                </Link>
+              </h3>
+              {isNew ? (
+                <Badge variant="secondary" className="h-5 shrink-0 px-1.5 text-[11px]">
+                  New
+                </Badge>
+              ) : null}
+            </div>
             <span className="truncate text-[13px] leading-5 text-muted-foreground">{program.organizationName}</span>
           </div>
           <span className="inline-flex h-6.5 shrink-0 items-center rounded-full border px-2.5 text-xs font-bold whitespace-nowrap">

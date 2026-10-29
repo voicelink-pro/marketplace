@@ -17,27 +17,20 @@ export function HowToPromoteGuide({
       title: "Share your link",
       text: (
         <>
-          Place your referral link in your bio, video description, or newsletter. Customers who sign up within{" "}
-          <span className="tabular font-medium text-foreground">{attributionWindowDays} days</span> of clicking are
-          attributed to you.
+          In your bio, video description or newsletter. Sign-ups within{" "}
+          <span className="tabular font-medium text-foreground">{attributionWindowDays} days</span> count.
         </>
       ),
     },
-    {
-      title: "Mention your code",
-      text: "For iOS and Android apps, viewers often install from the App Store or Google Play directly. Ask them to enter your referral code during sign-up so the referral is linked to you.",
-    },
-    {
-      title: "Name each placement",
-      text: "Create separate named links (like “Instagram bio”, “TikTok”, or “Video 1”) to compare which channel brings paying subscribers. You never need to upload or pre-approve your posts.",
-    },
+    { title: "Mention your code", text: "People who install from an app store type it at sign-up." },
+    { title: "Name each place", text: "A link per channel shows which one brings paying customers." },
   ];
   return (
     <HomeCard titleId="promote-heading" className={cn(highlighted && "ring-2 ring-primary")}>
       <CardHeading
         id="promote-heading"
         title={`How to promote ${appName}`}
-        note={`Everything you need to share ${appName} with your audience and get credited for every subscriber you bring.`}
+        note="Three things that get you credited."
         action={highlighted ? <Badge className="shrink-0">You’re in the program</Badge> : null}
       />
       <ol className="grid gap-3 sm:grid-cols-3">

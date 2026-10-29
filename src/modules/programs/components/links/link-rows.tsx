@@ -5,7 +5,7 @@ import { AppLogo } from "@/modules/catalog/components/app-card";
 import { ChannelIcon } from "../channel-icon";
 import { CopyValueButton } from "../copy-value-button";
 import { percentOf } from "../home/home-data";
-import { displayUrl, type LinkRow, sharePath } from "./link-data";
+import { displayUrl, type LinkRow, pluralWord, sharePath } from "./link-data";
 
 const count = new Intl.NumberFormat("en");
 const show = (value: number | null) => (value === null ? "—" : count.format(value));
@@ -86,8 +86,9 @@ function LinkCard({ row, max, withApp, inset }: { row: LinkRow; max: number; wit
         <>
           <ClicksBar clicks={row.clicks} max={max} />
           <span className="tabular text-[13px] text-muted-foreground">
-            <b className="text-foreground">{count.format(row.clicks)}</b> clicks ·{" "}
-            <b className="text-foreground">{show(row.signups)}</b> sign-ups · {rateOf(row)}
+            <b className="text-foreground">{count.format(row.clicks)}</b> {pluralWord(row.clicks, "click")} ·{" "}
+            <b className="text-foreground">{show(row.signups)}</b> {pluralWord(row.signups ?? 0, "sign-up")} ·{" "}
+            {rateOf(row)}
           </span>
         </>
       )}
@@ -192,11 +193,13 @@ export function ProgramLinkRows({ rows }: { rows: LinkRow[] }) {
             </div>
             <span className="w-20 text-right text-sm">
               <b>{show(row.clicks)}</b>
-              <span className="block text-[11px] text-muted-foreground">clicks</span>
+              <span className="block text-[11px] text-muted-foreground">{pluralWord(row.clicks ?? 0, "click")}</span>
             </span>
             <span className="w-20 text-right text-sm">
               <b>{show(row.signups)}</b>
-              <span className="block text-[11px] text-muted-foreground">sign-ups</span>
+              <span className="block text-[11px] text-muted-foreground">
+                {pluralWord(row.signups ?? 0, "sign-up")}
+              </span>
             </span>
             <CopyLink row={row} withApp={false} />
           </li>

@@ -4,17 +4,14 @@ import { AppLogo } from "@/modules/catalog/components/app-card";
 import type { CreatorProgramSummary } from "../../queries";
 import { CopyValueButton } from "../copy-value-button";
 import { CardHeading, CardTitle, HomeCard } from "../home/card";
-import { windowPhrase } from "./link-data";
+import { plural, windowPhrase } from "./link-data";
 import { loadAttribution } from "./load-attribution";
-
-const count = new Intl.NumberFormat("en");
 
 /** "{app} · {n} sign-ups" from this app's code sign-ups; just the app while loading or without tracking. */
 async function CodeSignups({ appId, appName }: { appId: string; appName: string }) {
   const summary = await loadAttribution(appId);
   if (!summary) return appName;
-  const signups = summary.code_registrations;
-  return `${appName} · ${count.format(signups)} ${signups === 1 ? "sign-up" : "sign-ups"}`;
+  return `${appName} · ${plural(summary.code_registrations, "sign-up")}`;
 }
 
 /** One code per program, for viewers who install from an app store. */

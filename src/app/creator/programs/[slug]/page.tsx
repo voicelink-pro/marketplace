@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { StatStrip, StatValue, StatValueSkeleton } from "@/components/layout/stat-strip";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { formatMinorCurrency } from "@/lib/money";
 import { requireViewer } from "@/modules/accounts/viewer";
 import { settled } from "@/modules/attribution/components/result-metrics";
@@ -14,7 +15,7 @@ import { CreateLinkDialog } from "@/modules/programs/components/create-link-dial
 import { CodeAndLink } from "@/modules/programs/components/detail/code-and-link";
 import { ProgramHero } from "@/modules/programs/components/detail/program-hero";
 import { CustomersCard, CustomersCardSkeleton, TermsCard } from "@/modules/programs/components/detail/side-cards";
-import { CardHeading, HomeCard } from "@/modules/programs/components/home/card";
+import { CardHeading, HOME_CARD, HomeCard } from "@/modules/programs/components/home/card";
 import { earnedInMonth, monthKey, monthLabel, percentOf } from "@/modules/programs/components/home/home-data";
 import { HowToPromoteGuide } from "@/modules/programs/components/how-to-promote-guide";
 import { linkRows, plural, sortLinkRows } from "@/modules/programs/components/links/link-data";
@@ -52,7 +53,10 @@ async function SignupsStat({ data }: { data: ProgramData }) {
   if (!summary) return untracked;
   const rate = percentOf(signupsOf(summary), summary.clicks);
   const byCode = `${count.format(summary.code_registrations)} by code`;
-  return <StatValue value={count.format(signupsOf(summary))} caption={rate ? `${rate} of clicks · ${byCode}` : byCode} />;
+  // Short enough for one line in a phone cell: "7.5% · 12 by code".
+  let caption = byCode;
+  if (rate) caption = summary.code_registrations > 0 ? `${rate} · ${byCode}` : `${rate} of clicks`;
+  return <StatValue value={count.format(signupsOf(summary))} caption={caption} />;
 }
 
 async function PayingStat({ data }: { data: ProgramData }) {
@@ -81,21 +85,27 @@ async function EarnedStat({ data }: { data: ProgramData }) {
   );
 }
 
+/** The strip's cells, shared with the page skeleton so the frame doesn't move when data arrives. */
+const RESULT_CELLS = [
+  { icon: MousePointerClick, label: "Clicks", Value: ClicksStat },
+  { icon: UserPlus, label: "Sign-ups", Value: SignupsStat },
+  { icon: Users, label: "Paying customers", Value: PayingStat },
+  { icon: Wallet, label: "Earned this month", Value: EarnedStat },
+];
+
 function Results({ data }: { data: ProgramData }) {
-  const cell = (Value: (props: { data: ProgramData }) => Promise<React.ReactNode>) => (
-    <Suspense fallback={<StatValueSkeleton />}>
-      <Value data={data} />
-    </Suspense>
-  );
   return (
     <StatStrip
       ariaLabel={`Results for ${data.program.appName}`}
-      cells={[
-        { icon: MousePointerClick, label: "Clicks", value: cell(ClicksStat) },
-        { icon: UserPlus, label: "Sign-ups", value: cell(SignupsStat) },
-        { icon: Users, label: "Paying customers", value: cell(PayingStat) },
-        { icon: Wallet, label: "Earned this month", value: cell(EarnedStat) },
-      ]}
+      cells={RESULT_CELLS.map(({ icon, label, Value }) => ({
+        icon,
+        label,
+        value: (
+          <Suspense fallback={<StatValueSkeleton />}>
+            <Value data={data} />
+          </Suspense>
+        ),
+      }))}
     />
   );
 }
@@ -162,10 +172,7 @@ async function Customers({ data }: { data: ProgramData }) {
  * after and stream into their own <Suspense>, so a failed query shows "—"
  * or "Unavailable" in its place only.
  */
-export default async function CreatorProgramDetailPage({
-  params,
-  searchParams,
-}: PageProps<"/creator/programs/[slug]">) {
+async function ProgramDetail({ params, searchParams }: PageProps<"/creator/programs/[slug]">) {
   const [{ slug }, rawSearch] = await Promise.all([params, searchParams]);
   const viewer = await requireViewer(`/creator/programs/${encodeURIComponent(slug)}`);
   const program = await getCreatorProgramDetailBySlug(viewer.userId, slug);
@@ -213,5 +220,37 @@ export default async function CreatorProgramDetailPage({
         </div>
       </div>
     </div>
+  );
+}
+
+/** Hero, strip and the two columns' first cards, in the same boxes as the page. */
+function ProgramDetailSkeleton() {
+  return (
+    <div aria-busy className="flex flex-col gap-7">
+      <div className={`${HOME_CARD} overflow-hidden`}>
+        <Skeleton className="h-[150px] rounded-none" />
+        <div className="flex flex-col gap-3 px-5 pt-11 pb-5 sm:px-7 sm:pb-6">
+          <Skeleton className="h-9 w-56 max-w-full" />
+          <Skeleton className="h-4 w-80 max-w-full" />
+        </div>
+      </div>
+      <StatStrip
+        ariaLabel="Results"
+        cells={RESULT_CELLS.map(({ icon, label }) => ({ icon, label, value: <StatValueSkeleton /> }))}
+      />
+      <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3">
+        <Skeleton className="h-56 rounded-[20px] lg:col-span-2" />
+        <Skeleton className="h-96 rounded-[20px]" />
+      </div>
+    </div>
+  );
+}
+
+/** Synchronous like Home: everything that reads the request streams in below. */
+export default function CreatorProgramDetailPage(props: PageProps<"/creator/programs/[slug]">) {
+  return (
+    <Suspense fallback={<ProgramDetailSkeleton />}>
+      <ProgramDetail {...props} />
+    </Suspense>
   );
 }

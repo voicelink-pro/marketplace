@@ -256,7 +256,7 @@ async function ClickToPaidResult({ data }: { data: HomeData }) {
   if (!summary || !payments) return unavailableResult;
   const share = payments.paying_customers > 0 ? percentOf(payments.paying_customers, summary.clicks) : null;
   return share ? (
-    <StatValue value={share} caption="Clicks that became paying customers" />
+    <StatValue value={share} caption="Clicks that paid" />
   ) : (
     <StatValue value="—" caption="After the first payment" muted />
   );

@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { StatStrip, StatValue, StatValueSkeleton } from "@/components/layout/stat-strip";
 import { EmptyModule } from "@/components/states/empty-module";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { requireViewer } from "@/modules/accounts/viewer";
 import { CreateLinkDialog } from "@/modules/programs/components/create-link-dialog";
 import { HomeCard } from "@/modules/programs/components/home/card";
@@ -49,30 +50,38 @@ async function LinkSignupsStat({ data }: { data: LinksData }) {
   if (!summary) return untracked;
   const rate = percentOf(summary.registrations, summary.clicks);
   return (
-    <StatValue value={count.format(summary.registrations)} caption={rate ? `${rate} of clicks` : "After a click on a link"} />
+    <StatValue value={count.format(summary.registrations)} caption={rate ? `${rate} of clicks` : "Via your links"} />
   );
 }
 
 async function CodeSignupsStat({ data }: { data: LinksData }) {
   const summary = await data.attribution;
   if (!summary) return untracked;
-  return <StatValue value={count.format(summary.code_registrations)} caption="Typed at sign-up, no click" />;
+  return <StatValue value={count.format(summary.code_registrations)} caption="Typed at sign-up" />;
 }
 
+/** The strip's cells, shared with the page skeleton; Links counts come with the programs. */
+const STAT_CELLS = [
+  { icon: MousePointerClick, label: "Clicks", Value: ClicksStat },
+  { icon: UserPlus, label: "Link sign-ups", Value: LinkSignupsStat },
+  { icon: KeyRound, label: "Code sign-ups", Value: CodeSignupsStat },
+];
+
 function Overview({ data }: { data: LinksData }) {
-  const cell = (Value: (props: { data: LinksData }) => Promise<React.ReactNode>) => (
-    <Suspense fallback={<StatValueSkeleton />}>
-      <Value data={data} />
-    </Suspense>
-  );
   const links = data.visible.reduce((total, program) => total + program.links.length, 0);
   return (
     <StatStrip
       ariaLabel="Link results, all time"
       cells={[
-        { icon: MousePointerClick, label: "Clicks", value: cell(ClicksStat) },
-        { icon: UserPlus, label: "Sign-ups from links", value: cell(LinkSignupsStat) },
-        { icon: KeyRound, label: "Sign-ups by code", value: cell(CodeSignupsStat) },
+        ...STAT_CELLS.map(({ icon, label, Value }) => ({
+          icon,
+          label,
+          value: (
+            <Suspense fallback={<StatValueSkeleton />}>
+              <Value data={data} />
+            </Suspense>
+          ),
+        })),
         {
           icon: Link2,
           label: "Links",
@@ -130,7 +139,7 @@ function CreateLinkButton({
  * sign-ups stream into their own <Suspense>. Without tracking (local PGlite
  * sandbox or a failed query) results show "—", never 0.
  */
-export default async function CreatorLinksPage({ searchParams }: PageProps<"/creator/links">) {
+async function LinksContent({ searchParams }: Pick<PageProps<"/creator/links">, "searchParams">) {
   const [viewer, rawSearch] = await Promise.all([requireViewer("/creator/links"), searchParams]);
   const programs = await listCreatorProgramMemberships(viewer.userId);
 
@@ -204,5 +213,37 @@ export default async function CreatorLinksPage({ searchParams }: PageProps<"/cre
         </div>
       </div>
     </>
+  );
+}
+
+/** Header with a placeholder for its button, the strip and both columns, in the page's boxes. */
+function LinksSkeleton() {
+  return (
+    <div aria-busy>
+      <PageHeader title="Links" description={DESCRIPTION} actions={<Skeleton className="h-9 w-32 rounded-full" />} />
+      <div className="flex flex-col gap-7">
+        <StatStrip
+          ariaLabel="Link results, all time"
+          cells={[...STAT_CELLS, { icon: Link2, label: "Links" }].map(({ icon, label }) => ({
+            icon,
+            label,
+            value: <StatValueSkeleton />,
+          }))}
+        />
+        <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3">
+          <Skeleton className="h-64 rounded-[20px] lg:col-span-2" />
+          <Skeleton className="h-56 rounded-[20px]" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Synchronous like Home: the viewer, programs and search params are read below, inside <Suspense>. */
+export default function CreatorLinksPage({ searchParams }: PageProps<"/creator/links">) {
+  return (
+    <Suspense fallback={<LinksSkeleton />}>
+      <LinksContent searchParams={searchParams} />
+    </Suspense>
   );
 }

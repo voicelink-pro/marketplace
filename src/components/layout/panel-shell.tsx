@@ -48,13 +48,15 @@ async function PanelAccount({ area }: { area: PanelArea }) {
 
 /**
  * Three zones: the side ones share the leftover width equally, so the search
- * trigger stays centered; it shrinks first when space runs out. Phones get the
- * logo on the left and search, bell and avatar on the right.
+ * trigger stays centered. The left zone never goes below its natural width
+ * (the breadcrumb never truncates); when space runs out the search shrinks
+ * first, down to 13rem. Phones get the logo on the left and search, bell and
+ * avatar on the right.
  */
 function SiteHeader({ area, hasTabs }: { area: PanelArea; hasTabs: boolean }) {
   return (
     <header className="sticky top-0 z-40 flex h-(--header-height) w-full shrink-0 items-center gap-3 border-b bg-background/85 px-3 backdrop-blur sm:px-4">
-      <div className="flex min-w-0 flex-1 basis-0 items-center gap-2">
+      <div className="flex min-w-max flex-1 basis-0 items-center gap-2">
         {/* With a tab bar, phones open the menu from "More". */}
         <SidebarTrigger
           size="icon-lg"
@@ -67,7 +69,7 @@ function SiteHeader({ area, hasTabs }: { area: PanelArea; hasTabs: boolean }) {
           <ActivePanelBreadcrumb area={area} />
         </Suspense>
       </div>
-      <div className="hidden min-w-0 shrink md:block md:w-90 xl:w-140">
+      <div className="hidden min-w-52 shrink md:block md:w-90 xl:w-140">
         <PanelSearchTrigger />
       </div>
       <div className="flex flex-1 basis-0 items-center justify-end gap-1">

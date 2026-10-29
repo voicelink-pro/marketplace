@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { CreatorReferralLinkView } from "../../queries";
-import { displayUrl, linkRows, parseSort, sharePath, sortLinkRows, windowPhrase } from "./link-data";
+import { displayUrl, linkRows, parseSort, plural, sharePath, sortLinkRows, windowPhrase } from "./link-data";
 
 function link(id: string, isDefault = false): CreatorReferralLinkView {
   return {
@@ -60,6 +60,12 @@ describe("link rows", () => {
   it("shows URLs without the scheme, or just the path", () => {
     expect(displayUrl("https://boostlink.example/r/abc")).toBe("boostlink.example/r/abc");
     expect(sharePath("https://boostlink.example/r/abc")).toBe("/r/abc");
+  });
+
+  it("pluralizes with a formatted number", () => {
+    expect(plural(1, "click")).toBe("1 click");
+    expect(plural(0, "sign-up")).toBe("0 sign-ups");
+    expect(plural(1320, "click")).toBe("1,320 clicks");
   });
 
   it("words the attribution window from the programs' terms", () => {

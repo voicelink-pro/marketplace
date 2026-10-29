@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- boostlink mockup: example numbers only. Reference for layout, spacing and copy; build with existing components and tokens. -->
+<meta charset="utf-8">
+<title>Links, phone</title>
+
+</head>
+<body>
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0b0b0b}
+svg.i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+</style>
+
+<div style="width: 390px; min-height: 1420px; background: #0b0b0b; color: #f5f5f5; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; display: flex; flex-direction: column; position: relative; overflow: hidden">
+
+<header style="height: 56px; box-sizing: border-box; border-bottom: 1px solid #2a2a2a; display: flex; align-items: center; gap: 4px; padding: 0 12px 0 16px; position: relative; z-index: 2; background: #0b0b0b">
+<span style="width: 28px; height: 28px; border-radius: 8px; background: #ffd600; color: #111111; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px">b</span>
+<span style="font-size: 16px; font-weight: 700; margin-left: 10px; flex-grow: 1">Links</span>
+<button type="button" aria-label="Search" style="width: 40px; height: 40px; border-radius: 999px; border: 0; background: transparent; color: #c9ccd1; display: flex; align-items: center; justify-content: center"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg></button>
+<button type="button" aria-label="Notifications" style="width: 40px; height: 40px; border-radius: 999px; border: 0; background: transparent; color: #c9ccd1; display: flex; align-items: center; justify-content: center"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"></path><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"></path></svg></button>
+<button type="button" aria-label="Account menu" style="width: 40px; height: 40px; border-radius: 999px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center"><span style="width: 32px; height: 32px; border-radius: 999px; background: #ffd600; color: #111111; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px">RK</span></button>
+</header>
+
+<svg viewBox="-0.5 -0.5 25 25" aria-hidden="true" style="position: absolute; right: -170px; top: 640px; width: 520px; height: 520px; transform: rotate(-8deg); opacity: 0.22; color: #ffd600; pointer-events: none"><mask id="bm4"><g fill="white" stroke="white" stroke-width="0.2"><rect x="2.5" y="1" width="6.5" height="22" rx="3.25"></rect><path fill-rule="evenodd" d="M14 7a8 8 0 1 1 0 16a8 8 0 1 1 0-16Zm0 4.8a3.2 3.2 0 1 0 0 6.4a3.2 3.2 0 1 0 0-6.4Z"></path></g><g fill="black"><rect x="2.5" y="1" width="6.5" height="22" rx="3.25"></rect><path fill-rule="evenodd" d="M14 7a8 8 0 1 1 0 16a8 8 0 1 1 0-16Zm0 4.8a3.2 3.2 0 1 0 0 6.4a3.2 3.2 0 1 0 0-6.4Z"></path></g></mask><rect x="-0.5" y="-0.5" width="25" height="25" fill="currentColor" mask="url(#bm4)"></rect></svg>
+
+<main style="padding: 20px 16px 100px; display: flex; flex-direction: column; gap: 18px; position: relative">
+<div style="display: flex; flex-direction: column; gap: 4px"><h1 style="margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -0.035em">Links</h1><span style="font-size: 14px; color: #9ca3af">One link per place you post.</span></div>
+<button type="button" style="height: 48px; border-radius: 999px; border: 0; background: #ffd600; color: #111111; font-family: inherit; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 6px"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 16px; height: 16px"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>Create link</button>
+
+<section aria-label="Link results, all time" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: #2a2a2a; border: 1px solid #2a2a2a; border-radius: 20px; overflow: hidden">
+<div style="position: relative; overflow: hidden; padding: 16px; display: flex; flex-direction: column; gap: 8px; background: #161616"><svg aria-hidden="true" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; -webkit-mask-image: radial-gradient(ellipse 80% 90% at 100% 100%, #000 0%, transparent 75%); mask-image: radial-gradient(ellipse 80% 90% at 100% 100%, #000 0%, transparent 75%)"><defs><pattern id="p1" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="#f5f5f5" fill-opacity="0.28"></circle></pattern></defs><rect width="100%" height="100%" fill="url(#p1)"></rect></svg><span style="position: relative; font-size: 12px; font-weight: 600; color: #c9ccd1">Clicks</span><span style="position: relative; font-size: 28px; font-weight: 800; letter-spacing: -0.045em; line-height: 1">2,480</span></div>
+<div style="position: relative; overflow: hidden; padding: 16px; display: flex; flex-direction: column; gap: 8px; background: #161616"><svg aria-hidden="true" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; -webkit-mask-image: radial-gradient(ellipse 80% 90% at 100% 100%, #000 0%, transparent 75%); mask-image: radial-gradient(ellipse 80% 90% at 100% 100%, #000 0%, transparent 75%)"><defs><pattern id="p2" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="#f5f5f5" fill-opacity="0.28"></circle></pattern></defs><rect width="100%" height="100%" fill="url(#p2)"></rect></svg><span style="position: relative; font-size: 12px; font-weight: 600; color: #c9ccd1">Sign-ups from links</span><span style="position: relative; font-size: 28px; font-weight: 800; letter-spacing: -0.045em; line-height: 1">174</span></div>
+<div style="position: relative; overflow: hidden; padding: 16px; display: flex; flex-direction: column; gap: 8px; background: #161616"><svg aria-hidden="true" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; -webkit-mask-image: radial-gradient(ellipse 80% 90% at 100% 100%, #000 0%, transparent 75%); mask-image: radial-gradient(ellipse 80% 90% at 100% 100%, #000 0%, transparent 75%)"><defs><pattern id="p3" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="#f5f5f5" fill-opacity="0.28"></circle></pattern></defs><rect width="100%" height="100%" fill="url(#p3)"></rect></svg><span style="position: relative; font-size: 12px; font-weight: 600; color: #c9ccd1">Sign-ups by code</span><span style="position: relative; font-size: 28px; font-weight: 800; letter-spacing: -0.045em; line-height: 1">12</span></div>
+<div style="position: relative; overflow: hidden; padding: 16px; display: flex; flex-direction: column; gap: 8px; background: #161616"><svg aria-hidden="true" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; -webkit-mask-image: radial-gradient(ellipse 80% 90% at 100% 100%, #000 0%, transparent 75%); mask-image: radial-gradient(ellipse 80% 90% at 100% 100%, #000 0%, transparent 75%)"><defs><pattern id="p4" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="#f5f5f5" fill-opacity="0.28"></circle></pattern></defs><rect width="100%" height="100%" fill="url(#p4)"></rect></svg><span style="position: relative; font-size: 12px; font-weight: 600; color: #c9ccd1">Links</span><span style="position: relative; font-size: 28px; font-weight: 800; letter-spacing: -0.045em; line-height: 1">5</span></div>
+</section>
+
+<div role="tablist" aria-label="Filter by program" style="display: flex; gap: 8px; overflow: hidden; font-size: 13px; font-weight: 600">
+<button type="button" role="tab" aria-selected="true" style="height: 34px; padding: 0 14px; border-radius: 999px; border: 0; background: #f5f5f5; color: #111111; font-family: inherit; font-weight: 700; white-space: nowrap">All</button>
+<button type="button" role="tab" style="height: 34px; padding: 0 14px; border-radius: 999px; border: 1px solid #2a2a2a; background: #161616; color: #c9ccd1; font-family: inherit; font-weight: 600; white-space: nowrap">Lexi Notes</button>
+<button type="button" role="tab" style="height: 34px; padding: 0 14px; border-radius: 999px; border: 1px solid #2a2a2a; background: #161616; color: #c9ccd1; font-family: inherit; font-weight: 600; white-space: nowrap">Tempo Focus</button>
+</div>
+
+<article style="background: #161616; border: 1px solid #2a2a2a; border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: center; gap: 12px"><span style="width: 40px; height: 40px; border-radius: 12px; background: #000; border: 1px solid #3a3a3a; color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 17px; height: 17px"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg></span><div style="display: flex; flex-direction: column; flex-grow: 1; min-width: 0"><span style="font-size: 15px; font-weight: 700">TikTok bio</span><span style="font-size: 12px; color: #9ca3af">Lexi Notes</span></div><button type="button" aria-label="Copy TikTok bio link" style="height: 36px; padding: 0 14px; border-radius: 999px; border: 0; background: #222222; color: #f5f5f5; font-family: inherit; font-size: 13px; font-weight: 600">Copy</button></div>
+<span style="font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: #9ca3af; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">boostlink.app/r/lexi-notes/tiktok-bio</span>
+<span style="height: 6px; border-radius: 99px; background: #222222; overflow: hidden"><span style="display: block; height: 100%; width: 100%; background: #9ca3af; border-radius: 99px"></span></span>
+<span style="font-size: 13px; color: #c9ccd1"><b style="color: #f5f5f5">1,320</b> clicks · <b style="color: #f5f5f5">98</b> sign-ups · 7.4%</span>
+</article>
+
+<article style="background: #161616; border: 1px solid #2a2a2a; border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: center; gap: 12px"><span style="width: 40px; height: 40px; border-radius: 12px; background: #e1306c; color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 17px; height: 17px"><rect width="20" height="20" x="2" y="2" rx="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path></svg></span><div style="display: flex; flex-direction: column; flex-grow: 1; min-width: 0"><span style="font-size: 15px; font-weight: 700">Instagram bio</span><span style="font-size: 12px; color: #9ca3af">Lexi Notes</span></div><button type="button" aria-label="Copy Instagram bio link" style="height: 36px; padding: 0 14px; border-radius: 999px; border: 0; background: #222222; color: #f5f5f5; font-family: inherit; font-size: 13px; font-weight: 600">Copy</button></div>
+<span style="font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: #9ca3af; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">boostlink.app/r/lexi-notes/instagram-bio</span>
+<span style="height: 6px; border-radius: 99px; background: #222222; overflow: hidden"><span style="display: block; height: 100%; width: 58%; background: #9ca3af; border-radius: 99px"></span></span>
+<span style="font-size: 13px; color: #c9ccd1"><b style="color: #f5f5f5">760</b> clicks · <b style="color: #f5f5f5">52</b> sign-ups · 6.8%</span>
+</article>
+
+<article style="background: #161616; border: 1px solid #2a2a2a; border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: center; gap: 12px"><span style="width: 40px; height: 40px; border-radius: 12px; background: #ff0000; color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 17px; height: 17px"><path d="m10 15 5-3-5-3z"></path></svg></span><div style="display: flex; flex-direction: column; flex-grow: 1; min-width: 0"><span style="font-size: 15px; font-weight: 700">YouTube · Video 1</span><span style="font-size: 12px; color: #9ca3af">Lexi Notes</span></div><button type="button" aria-label="Copy YouTube link" style="height: 36px; padding: 0 14px; border-radius: 999px; border: 0; background: #222222; color: #f5f5f5; font-family: inherit; font-size: 13px; font-weight: 600">Copy</button></div>
+<span style="font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: #9ca3af; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">boostlink.app/r/lexi-notes/video-1</span>
+<span style="height: 6px; border-radius: 99px; background: #222222; overflow: hidden"><span style="display: block; height: 100%; width: 30%; background: #9ca3af; border-radius: 99px"></span></span>
+<span style="font-size: 13px; color: #c9ccd1"><b style="color: #f5f5f5">400</b> clicks · <b style="color: #f5f5f5">24</b> sign-ups · 6.0%</span>
+</article>
+
+<article style="background: #161616; border: 1px solid #2a2a2a; border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: center; gap: 12px"><span style="width: 40px; height: 40px; border-radius: 12px; background: #ffd600; color: #111; font-weight: 800; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0">b</span><div style="display: flex; flex-direction: column; flex-grow: 1; min-width: 0"><span style="font-size: 15px; font-weight: 700">Primary link</span><span style="font-size: 12px; color: #9ca3af">Lexi Notes</span></div><button type="button" aria-label="Copy Lexi Notes primary link" style="height: 36px; padding: 0 14px; border-radius: 999px; border: 0; background: #222222; color: #f5f5f5; font-family: inherit; font-size: 13px; font-weight: 600">Copy</button></div>
+<span style="font-size: 13px; color: #9ca3af">No clicks yet</span>
+</article>
+
+<article style="background: #161616; border: 1px solid #2a2a2a; border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: center; gap: 12px"><span style="width: 40px; height: 40px; border-radius: 12px; background: #ffd600; color: #111; font-weight: 800; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0">b</span><div style="display: flex; flex-direction: column; flex-grow: 1; min-width: 0"><span style="font-size: 15px; font-weight: 700">Primary link</span><span style="font-size: 12px; color: #9ca3af">Tempo Focus</span></div><button type="button" aria-label="Copy Tempo Focus primary link" style="height: 36px; padding: 0 14px; border-radius: 999px; border: 0; background: #222222; color: #f5f5f5; font-family: inherit; font-size: 13px; font-weight: 600">Copy</button></div>
+<span style="font-size: 13px; color: #9ca3af">No clicks yet</span>
+</article>
+
+<article style="background: #161616; border: 1px solid #2a2a2a; border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-size: 15px; font-weight: 700">Your referral codes</h2>
+<div style="display: flex; align-items: center; gap: 10px"><span style="font-family: ui-monospace, Menlo, monospace; font-size: 14px; font-weight: 700; flex-grow: 1">LEXI-5C89C6</span><span style="font-size: 12px; color: #9ca3af">12 sign-ups</span><button type="button" style="height: 32px; padding: 0 12px; border-radius: 999px; border: 0; background: #222222; color: #f5f5f5; font-family: inherit; font-size: 13px; font-weight: 600">Copy</button></div>
+<div style="display: flex; align-items: center; gap: 10px"><span style="font-family: ui-monospace, Menlo, monospace; font-size: 14px; font-weight: 700; flex-grow: 1">TEMPO-41AA20</span><span style="font-size: 12px; color: #9ca3af">0 sign-ups</span><button type="button" style="height: 32px; padding: 0 12px; border-radius: 999px; border: 0; background: #222222; color: #f5f5f5; font-family: inherit; font-size: 13px; font-weight: 600">Copy</button></div>
+</article>
+</main>
+
+<nav aria-label="Main" style="position: absolute; left: 0; right: 0; bottom: 0; height: 72px; box-sizing: border-box; padding: 8px 8px 16px; border-top: 1px solid #2a2a2a; background: #0b0b0b; display: grid; grid-template-columns: repeat(5, 1fr); font-size: 11px; font-weight: 600; z-index: 3">
+<a href="#" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: #9ca3af; text-decoration: none"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"></path><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>Home</a>
+<a href="#" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: #9ca3af; text-decoration: none"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>Discover</a>
+<a href="#" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: #9ca3af; text-decoration: none"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"></path><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"></path><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"></path></svg>Programs</a>
+<a href="#" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: #9ca3af; text-decoration: none"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"></path><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"></path></svg>Earnings</a>
+<a href="#" aria-current="page" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: #f5f5f5; text-decoration: none"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="color: #ffd600"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>More</a>
+</nav>
+</div>
+
+
+</body>
+</html>

@@ -17,16 +17,14 @@ const SIZES = {
 
 /**
  * The listing's own cover with its logo over the bottom-left edge; without a
- * cover, a neutral one with the initial. `children` sit on top (e.g. a badge).
+ * cover, a neutral one with the initial.
  */
 export function ProgramCover({
   program,
   size = "card",
-  children,
 }: {
   program: Pick<CreatorProgramSummary, "appName" | "logoUrl" | "coverImageUrl">;
   size?: keyof typeof SIZES;
-  children?: React.ReactNode;
 }) {
   const sizes = SIZES[size];
   return (
@@ -43,7 +41,6 @@ export function ProgramCover({
         app={{ name: program.appName, logoUrl: program.logoUrl }}
         className={cn("absolute border-[3px] border-card", sizes.logo)}
       />
-      {children}
     </div>
   );
 }

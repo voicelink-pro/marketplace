@@ -41,13 +41,20 @@ const count = new Intl.NumberFormat("en");
 const unavailableStat = <StatValue value="—" caption="Unavailable" muted />;
 const dash = <MiniStatValue value="—" muted />;
 
+/** The apps by name, shortened past two so the caption stays on one line on phones. */
+function programNames(names: string[]): string {
+  if (names.length === 0) return "None yet";
+  if (names.length <= 2) return names.join(", ");
+  return `${names[0]} and ${names.length - 1} more`;
+}
+
 async function ProgramsStat({ data }: { data: ProgramsData }) {
   const programs = await data.programs;
   if (!programs) return unavailableStat;
   return (
     <StatValue
       value={count.format(programs.length)}
-      caption={programs.length > 0 ? programs.map((program) => program.appName).join(", ") : "None yet"}
+      caption={programNames(programs.map((program) => program.appName))}
       muted={programs.length === 0}
     />
   );
@@ -77,7 +84,7 @@ async function LinksStat({ data }: { data: ProgramsData }) {
   const programs = await data.programs;
   if (!programs) return unavailableStat;
   const links = programs.reduce((total, program) => total + program.links.length, 0);
-  return <StatValue value={count.format(links)} caption="Plus one code per program" muted={links === 0} />;
+  return <StatValue value={count.format(links)} caption="Plus a code per app" muted={links === 0} />;
 }
 
 function Overview({ data }: { data: ProgramsData }) {
