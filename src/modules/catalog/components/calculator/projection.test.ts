@@ -8,9 +8,9 @@ describe("estimateMonthly", () => {
     expect(result.commission).toBe(1_425);
   });
 
-  it("gives the apps defaults: 20 creators with 1 customer each, $39 at 20%", () => {
-    const result = estimateMonthly({ newCustomers: 20 * 1, price: 39, commissionRate: 0.2 });
-    expect(result).toEqual({ customers: 20, revenue: 780, commission: 156, kept: 624 });
+  it("gives the apps defaults: 20 creators with 5 customers each, $39 at 20%", () => {
+    const result = estimateMonthly({ newCustomers: 20 * 5, price: 39, commissionRate: 0.2 });
+    expect(result).toEqual({ customers: 100, revenue: 3_900, commission: 780, kept: 3_120 });
   });
 
   it("returns zeros without customers", () => {

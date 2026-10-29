@@ -15,6 +15,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Slider } from "@/components/ui/slider";
+import { cn } from "@/lib/utils";
 import type { HomeAudience } from "../../audience";
 import { HeroDotGrid } from "../hero-dot-grid";
 import { useMediaQuery } from "../use-media-query";
@@ -95,7 +96,7 @@ const CONTENT: Record<
     rate: {
       label: "Paying customers per creator a month",
       addon: { text: "per creator", align: "inline-end" },
-      defaultValue: 1,
+      defaultValue: 5,
       min: 0,
       max: 1_000,
       decimals: true,
@@ -263,11 +264,8 @@ export function EarningsCalculator({ audience, signedIn = false }: { audience: H
     commissionRate: commission / 100,
   });
 
-  const amount = (
-    <span className={`${KEY_PHRASE} whitespace-nowrap tabular-nums`}>
-      {formatMoney(audience === "creators" ? estimate.commission : estimate.revenue)}
-    </span>
-  );
+  const marked = (text: string) => <span className={`${KEY_PHRASE} whitespace-nowrap tabular-nums`}>{text}</span>;
+  const amount = marked(formatMoney(audience === "creators" ? estimate.commission : estimate.revenue));
   const customers = <b className="font-bold text-foreground">{plural(estimate.customers, "paying customer")}</b>;
 
   return (
@@ -285,14 +283,19 @@ export function EarningsCalculator({ audience, signedIn = false }: { audience: H
 
         <h2
           id="earnings-calculator-heading"
-          className="max-w-3xl text-[34px] leading-[1.05] font-extrabold tracking-[-0.045em] text-balance sm:text-5xl lg:text-[52px]"
+          className={cn(
+            "leading-[1.05] font-extrabold tracking-[-0.045em] text-balance sm:text-5xl lg:text-[52px]",
+            // The apps sentence is longer: smaller on phones and wider from sm, so it stays within 3 / 2 lines.
+            audience === "apps" ? "max-w-4xl text-[28px]" : "max-w-3xl text-[34px]",
+          )}
         >
           <span aria-live="polite" aria-atomic>
             {audience === "creators" ? (
               <>Your audience could earn you {amount} a month</>
             ) : (
               <>
-                {plural(reach, "creator")} could bring you {amount} a month
+                {plural(reach, "creator")} could bring you {marked(plural(estimate.customers, "customer"))} and{" "}
+                {amount} a month
               </>
             )}
           </span>
@@ -305,8 +308,8 @@ export function EarningsCalculator({ audience, signedIn = false }: { audience: H
             </>
           ) : (
             <>
-              {customers} a month · you keep <b className="font-bold text-foreground">{formatMoney(estimate.kept)}</b>,
-              creators get <b className="font-bold text-foreground">{formatMoney(estimate.commission)}</b>
+              You keep <b className="font-bold text-foreground">{formatMoney(estimate.kept)}</b> · creators get{" "}
+              <b className="font-bold text-foreground">{formatMoney(estimate.commission)}</b>
             </>
           )}
         </p>
