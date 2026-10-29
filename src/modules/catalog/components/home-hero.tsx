@@ -11,6 +11,7 @@ import { CanvasText } from "@/components/ui/canvas-text";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { cn } from "@/lib/utils";
 import type { HomeAudience } from "../audience";
+import { CTA_SIZE, PRIMARY_CTA, PRIMARY_CTA_ARROW } from "./cta-styles";
 import { HeroDotGrid } from "./hero-dot-grid";
 import { HomeSectionLink } from "./home-section-link";
 import { usePrefersReducedMotion } from "./use-media-query";
@@ -98,22 +99,6 @@ function KeyPhrase({ text }: { text: string }) {
     </span>
   );
 }
-
-/** 52px tall, 28px sides, 16px semibold; shared by both hero CTAs. */
-const CTA_SIZE = "h-13 gap-2 px-7 text-base font-semibold max-sm:w-full";
-
-/**
- * Primary CTA motion: 1px lift, soft yellow glow, arrow nudges right, one
- * faint sheen across, 0.98 on press. All of it only without reduced motion.
- * The background stays the brand yellow in every state.
- */
-const PRIMARY_CTA = cn(
-  CTA_SIZE,
-  "group/cta relative overflow-hidden transition-[translate,scale,box-shadow] duration-300 ease-out hover:bg-primary active:bg-primary active:not-aria-[haspopup]:translate-y-0",
-  "motion-safe:hover:-translate-y-px motion-safe:hover:shadow-[0_6px_14px_-6px_rgb(255_214_0/0.4)] motion-safe:active:scale-[0.98]",
-  // Sheen: parked off the left edge, crosses once on hover, snaps back unseen on leave.
-  "before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:hidden before:w-1/5 before:-translate-x-full before:-skew-x-12 before:bg-linear-to-r before:from-transparent before:via-white/25 before:to-transparent motion-safe:before:block motion-safe:hover:before:translate-x-[600%] motion-safe:hover:before:transition-transform motion-safe:hover:before:duration-700 motion-safe:hover:before:ease-out",
-);
 
 /** Six months of example earnings, trending up; the current month is the yellow bar. */
 const EARNINGS_BARS = [28, 36, 44, 58, 74, 100];
@@ -384,10 +369,7 @@ export function HomeHero({ audience, signedIn = false }: { audience: HomeAudienc
           <Button asChild size="lg" className={PRIMARY_CTA}>
             <Link href={primaryHref}>
               {content.primary.label}
-              <ArrowRight
-                aria-hidden
-                className="size-4.5 transition-transform duration-300 ease-out motion-safe:group-hover/cta:translate-x-1"
-              />
+              <ArrowRight aria-hidden className={PRIMARY_CTA_ARROW} />
             </Link>
           </Button>
           {/* In-page anchor: keeps the query, only scrolls to the catalog. */}

@@ -2,7 +2,9 @@ import { ArrowRight, ChevronDown, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { Fragment } from "react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import type { HomeAudience } from "../audience";
+import { PRIMARY_CTA, PRIMARY_CTA_ARROW } from "./cta-styles";
 import {
   CommissionScene,
   CreatorsJoinScene,
@@ -144,10 +146,11 @@ export function HowItWorks({ audience, signedIn = false }: { audience: HomeAudie
         ))}
       </ol>
 
-      <Button asChild variant="outline" className="mt-8 h-11.5 gap-2 px-[22px] text-[15px] font-bold">
+      {/* The hero's primary button; a centered pill on phones too, under the centered steps. */}
+      <Button asChild size="lg" className={cn(PRIMARY_CTA, "mt-8 max-sm:w-auto")}>
         <Link href={ctaHref}>
           {content.cta.label}
-          <ArrowRight aria-hidden className="size-4" />
+          <ArrowRight aria-hidden className={PRIMARY_CTA_ARROW} />
         </Link>
       </Button>
     </section>
