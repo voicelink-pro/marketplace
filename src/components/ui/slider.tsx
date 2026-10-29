@@ -31,6 +31,7 @@ function Slider({
   step = 1,
   ticks = false,
   "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
   ...props
 }: React.ComponentProps<typeof SliderPrimitive.Root> & {
   /** A mark on the track at every step; marks inside the filled part follow `value`. */
@@ -100,6 +101,7 @@ function Slider({
           key={index}
           // The thumb carries role="slider", so the label goes there.
           aria-label={ariaLabel}
+          aria-labelledby={ariaLabelledBy}
           className="block size-[22px] shrink-0 rounded-full border-4 border-card bg-foreground ring-1 ring-foreground/20 transition-shadow outline-none hover:ring-3 hover:ring-ring/30 focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none"
         />
       ))}

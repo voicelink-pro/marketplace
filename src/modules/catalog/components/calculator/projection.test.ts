@@ -2,15 +2,15 @@ import { describe, expect, it } from "vitest";
 import { estimateMonthly } from "./projection";
 
 describe("estimateMonthly", () => {
-  it("gives the creators defaults: 150,000 views at 0.05%, $19 at 20%", () => {
-    const result = estimateMonthly({ newCustomers: (150_000 * 0.05) / 100, price: 19, commissionRate: 0.2 });
-    expect(result.customers).toBe(75);
-    expect(result.commission).toBe(285);
+  it("gives the creators defaults: 500,000 views at 0.05%, $19 at 30%", () => {
+    const result = estimateMonthly({ newCustomers: (500_000 * 0.05) / 100, price: 19, commissionRate: 0.3 });
+    expect(result.customers).toBe(250);
+    expect(result.commission).toBe(1_425);
   });
 
-  it("gives the apps defaults: 10 creators with 1 customer each, $39 at 20%", () => {
-    const result = estimateMonthly({ newCustomers: 10 * 1, price: 39, commissionRate: 0.2 });
-    expect(result).toEqual({ customers: 10, revenue: 390, commission: 78, kept: 312 });
+  it("gives the apps defaults: 20 creators with 1 customer each, $39 at 20%", () => {
+    const result = estimateMonthly({ newCustomers: 20 * 1, price: 39, commissionRate: 0.2 });
+    expect(result).toEqual({ customers: 20, revenue: 780, commission: 156, kept: 624 });
   });
 
   it("returns zeros without customers", () => {
