@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- boostlink mockup: compact landing calculator (static state). Numbers come from the formula in the Cursor prompt. -->
+<meta charset="utf-8">
+<title>Calculator, creators (compact)</title>
+
+</head>
+<body>
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0b0b0b}
+a{color:#f5f5f5}
+svg.i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.box{max-width:1152px;margin:0 auto;border-radius:28px;background:#161616;border:1px solid #2a2a2a;padding:48px;box-sizing:border-box;position:relative;overflow:hidden}
+.eyebrow{font-size:14px;font-weight:700;color:#ffd600}
+.h2{margin:0;font-size:44px;font-weight:800;letter-spacing:-.045em;line-height:1.05}
+.sub{margin:0;font-size:17px;line-height:1.55;color:#9ca3af;max-width:460px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 520px;gap:48px;align-items:start;margin-top:36px}
+.field{display:flex;flex-direction:column;gap:12px;padding:20px 0;border-top:1px solid #262626}
+.field:first-child{border-top:0;padding-top:0}
+.lab{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.lab span{font-size:15px;font-weight:600;color:#c9ccd1}
+.val{font-size:15px;font-weight:800;color:#f5f5f5;background:#0b0b0b;border:1px solid #2a2a2a;border-radius:10px;padding:5px 10px}
+.track{position:relative;height:6px;border-radius:99px;background:#2a2a2a;margin:8px 0 4px}
+.fill{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:#f5f5f5}
+.thumb{position:absolute;top:50%;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;background:#f5f5f5;border:4px solid #161616;box-sizing:border-box;box-shadow:0 0 0 1px #3a3a3a}
+.ticks{display:flex;justify-content:space-between;font-size:12px;color:#6b7280}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{height:38px;padding:0 16px;border-radius:999px;border:1px solid #2a2a2a;background:#0b0b0b;color:#c9ccd1;font-family:inherit;font-size:14px;font-weight:700}
+.chip.on{background:#f5f5f5;border-color:#f5f5f5;color:#111}
+.assume{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.5;color:#9ca3af;padding-top:20px;border-top:1px solid #262626}
+.assume a{color:#f5f5f5;font-weight:700;text-decoration:underline;text-decoration-color:#555;text-underline-offset:3px}
+.res{background:#0b0b0b;border:1px solid #2a2a2a;border-radius:22px;padding:28px;display:flex;flex-direction:column;gap:14px}
+.res .k{font-size:14px;font-weight:600;color:#9ca3af}
+.big{display:flex;align-items:baseline;gap:8px}
+.big b{font-size:60px;font-weight:800;letter-spacing:-.05em;line-height:1}
+.big span{font-size:18px;color:#9ca3af;font-weight:600}
+.cap{font-size:14px;color:#c9ccd1}
+.cap b{color:#f5f5f5}
+.bars{display:flex;align-items:flex-end;gap:6px;height:120px;margin-top:6px}
+.bars i{flex:1;border-radius:6px 6px 2px 2px;background:#3a3a3a;display:block;position:relative}
+.bars i.last{background:#ffd600}
+.bars i em{position:absolute;left:0;right:0;top:0;border-radius:6px 6px 0 0;background:#ffd600;display:block}
+.mx{display:flex;justify-content:space-between;font-size:11px;color:#6b7280}
+.note{font-size:12px;color:#6b7280;line-height:1.5}
+.cta{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:52px;padding:0 28px;border-radius:999px;background:#ffd600;color:#111;font-size:16px;font-weight:700;text-decoration:none;position:relative;overflow:hidden}
+.split{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:#2a2a2a;border:1px solid #2a2a2a;border-radius:14px;overflow:hidden}
+.split div{background:#111;padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.split span{font-size:12px;color:#9ca3af;font-weight:600}
+.split b{font-size:18px;letter-spacing:-.02em}
+.legend{display:flex;gap:14px;font-size:12px;color:#9ca3af}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.box{padding:32px 36px}
+.row3{display:grid;grid-template-columns:260px minmax(0,1fr) 300px;gap:40px;align-items:center}
+.h3{margin:0;font-size:28px;font-weight:800;letter-spacing:-.04em;line-height:1.08}
+.sub2{margin:0;font-size:14px;line-height:1.5;color:#9ca3af}
+.field{padding:0;border:0;gap:8px}
+.fields{display:flex;flex-direction:column;gap:18px}
+.pair{display:grid;grid-template-columns:auto auto;gap:24px;justify-content:start}
+.chip{height:32px;padding:0 12px;font-size:13px}
+.lab span{font-size:13px}
+.val{font-size:13px;padding:3px 8px;border-radius:8px}
+.track{margin:4px 0 0}
+.res{padding:20px;gap:8px;border-radius:18px}
+.res .k{font-size:12px}
+.big b{font-size:40px}
+.big span{font-size:14px}
+.cap{font-size:12px;color:#9ca3af}
+.bars{height:44px;gap:4px;margin-top:4px}
+.bars i{border-radius:3px 3px 1px 1px}
+.note{font-size:11px}
+.link{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:700;color:#f5f5f5;text-decoration:underline;text-decoration-color:#555;text-underline-offset:4px}
+.assume{padding-top:0;border-top:0;font-size:12px}
+</style>
+
+<div style="min-height:480px;background:#0b0b0b;color:#f5f5f5;font-family:'Plus Jakarta Sans',system-ui,sans-serif;padding:0 40px;box-sizing:border-box">
+<div aria-hidden="true" style="max-width:1152px;margin:0 auto 40px;height:56px;border-radius:0 0 20px 20px;background:#141414;border:1px dashed #2a2a2a;border-top:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#6b7280">How it works (above)</div>
+<section class="box" aria-labelledby="CalcCreators-h"><div class="row3"><div style="display:flex;flex-direction:column;gap:8px"><span class="eyebrow" style="font-size:13px">Earnings calculator</span><h2 id="CalcCreators-h" class="h3">What could you earn?</h2><p class="sub2">Your income stacks up every month a customer stays.</p><a href="#" class="link" style="margin-top:4px">Start as a creator<svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width:17px;height:17px"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></a></div><div class="fields"><div class="field"><div class="lab"><span>Monthly views on your posts</span><label style="display:inline-flex;align-items:center;gap:6px;background:#0b0b0b;border:1px solid #3a3a3a;border-radius:10px;padding:3px 8px 3px 10px;font-size:13px;font-weight:800;color:#f5f5f5;cursor:text"><input aria-label="Monthly views, type any number" value="150,000" style="width:64px;background:transparent;border:0;outline:none;color:#f5f5f5;font:inherit;text-align:right"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width:13px;height:13px;color:#9ca3af"><path d="M12 20h9"></path><path d="M16.4 3.6a2 2 0 0 1 2.8 2.8L7 18.6l-4 1 1-4Z"></path></svg></label></div><div class="track" role="slider" aria-label="Monthly views" aria-valuemin="0" aria-valuemax="300000" aria-valuenow="150000"><span class="fill" style="width:50%"></span><span class="thumb" style="left:50%"></span><span style="position:absolute;top:50%;left:8.333%;width:2px;height:6px;margin:-3px 0 0 -1px;background:#0b0b0b;opacity:.6"></span><span style="position:absolute;top:50%;left:16.667%;width:2px;height:6px;margin:-3px 0 0 -1px;background:#0b0b0b;opacity:.6"></span><span style="position:absolute;top:50%;left:25.000%;width:2px;height:6px;margin:-3px 0 0 -1px;background:#0b0b0b;opacity:.6"></span><span style="position:absolute;top:50%;left:33.333%;width:2px;height:6px;margin:-3px 0 0 -1px;background:#0b0b0b;opacity:.6"></span><span style="position:absolute;top:50%;left:41.667%;width:2px;height:6px;margin:-3px 0 0 -1px;background:#0b0b0b;opacity:.6"></span><span style="position:absolute;top:50%;left:58.333%;width:2px;height:6px;margin:-3px 0 0 -1px;background:#3a3a3a;opacity:.6"></span><span style="position:absolute;top:50%;left:66.667%;width:2px;height:6px;margin:-3px 0 0 -1px;background:#3a3a3a;opacity:.6"></span><span style="position:absolute;top:50%;left:75.000%;width:2px;height:6px;margin:-3px 0 0 -1px;background:#3a3a3a;opacity:.6"></span><span style="position:absolute;top:50%;left:83.333%;width:2px;height:6px;margin:-3px 0 0 -1px;background:#3a3a3a;opacity:.6"></span><span style="position:absolute;top:50%;left:91.667%;width:2px;height:6px;margin:-3px 0 0 -1px;background:#3a3a3a;opacity:.6"></span></div><div class="ticks"><span>0</span><span>75k</span><span>150k</span><span>225k</span><span>300k+</span></div></div><div class="pair"><div class="field"><div class="lab"><span>Plan price</span></div><div class="chips" role="radiogroup" aria-label="Plan price"><button type="button" role="radio" aria-checked="false" class="chip">$9</button><button type="button" role="radio" aria-checked="true" class="chip on">$19</button><button type="button" role="radio" aria-checked="false" class="chip">$39</button><button type="button" role="radio" aria-checked="false" class="chip">$99</button></div></div><div class="field"><div class="lab"><span>Commission</span></div><div class="chips" role="radiogroup" aria-label="Commission"><button type="button" role="radio" aria-checked="false" class="chip">10%</button><button type="button" role="radio" aria-checked="true" class="chip on">20%</button><button type="button" role="radio" aria-checked="false" class="chip">30%</button></div></div></div><div class="assume"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width:16px;height:16px;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg><span>Assumes 1 in 10,000 viewers subscribes and 8% cancel monthly. <a href="#">Change</a></span></div></div><div class="res"><span class="k">After 12 months</span><div class="big"><b>$451</b><span>/ month</span></div><span class="cap">About 119 paying customers. Estimate, before the platform fee.</span><div class="bars" aria-hidden="true"><i class="" style="height:13%"></i><i class="" style="height:24%"></i><i class="" style="height:35%"></i><i class="" style="height:45%"></i><i class="" style="height:54%"></i><i class="" style="height:62%"></i><i class="" style="height:70%"></i><i class="" style="height:77%"></i><i class="" style="height:83%"></i><i class="" style="height:89%"></i><i class="" style="height:95%"></i><i class="last" style="height:100%"></i></div></div></div></section>
+<div aria-hidden="true" style="max-width:1152px;margin:40px auto 0;height:56px;border-radius:20px 20px 0 0;background:#141414;border:1px dashed #2a2a2a;border-bottom:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#6b7280">Why creators join (below)</div>
+</div>
+
+
+</body>
+</html>

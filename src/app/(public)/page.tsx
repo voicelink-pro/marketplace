@@ -8,6 +8,7 @@ import {
 } from "@/modules/catalog/audience";
 import { getDefaultHomeAudience } from "@/modules/catalog/audience-server";
 import { BenefitGrid } from "@/modules/catalog/components/benefit-grid";
+import { EarningsCalculator } from "@/modules/catalog/components/calculator/earnings-calculator";
 import { CatalogSection } from "@/modules/catalog/components/catalog-section";
 import { AudienceSwitch } from "@/modules/catalog/components/home-audience";
 import { HomeHero } from "@/modules/catalog/components/home-hero";
@@ -67,6 +68,18 @@ async function HowItWorksByAudience({ audience }: { audience: Promise<HomeAudien
   );
 }
 
+/** The calculator for the resolved audience; its apps link follows the hero's sign-up rule. Keyed so each side keeps its own inputs. */
+async function CalculatorByAudience({ audience }: { audience: Promise<HomeAudience> }) {
+  const [currentAudience, viewer] = await Promise.all([audience, getViewer()]);
+  return (
+    <AudienceSwitch
+      audience={currentAudience}
+      creators={<EarningsCalculator key="creators" audience="creators" />}
+      apps={<EarningsCalculator key="apps" audience="apps" signedIn={viewer !== null} />}
+    />
+  );
+}
+
 /** First catalog page, unfiltered: the strip sits above the search, so it never echoes the results. */
 async function HomeLogoCloud() {
   const result = await listCatalogApps(parseCatalogFilters({}));
@@ -89,7 +102,7 @@ function LogoCloudSkeleton() {
 export default function CatalogPage({ searchParams }: PageProps<"/">) {
   const audience = resolveAudience(searchParams);
 
-  // Intro (hero, new era, how it works, benefits), then the join strip with the logo cloud and the catalog. The static
+  // Intro (hero, new era, how it works, calculator, benefits), then the join strip with the logo cloud and the catalog. The static
   // shell shows the creator version; the resolved audience streams in.
   return (
     <div className="flex flex-col gap-10 sm:gap-14">
@@ -111,6 +124,10 @@ export default function CatalogPage({ searchParams }: PageProps<"/">) {
 
       <Suspense fallback={<HowItWorks audience="creators" />}>
         <HowItWorksByAudience audience={audience} />
+      </Suspense>
+
+      <Suspense fallback={<EarningsCalculator audience="creators" />}>
+        <CalculatorByAudience audience={audience} />
       </Suspense>
 
       {/* Keyed so switching sides replays the illustrations. */}
