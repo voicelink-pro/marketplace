@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { Logo } from "@/components/brand/logo";
 import { siteConfig } from "@/config/site";
+import { getViewer } from "@/modules/accounts/viewer";
+import { HERO_CONTENT } from "@/modules/catalog/components/home-hero-content";
 import type { HomeSection } from "@/modules/catalog/components/home-section-link";
 import { AudienceSectionLink } from "./audience-section-link";
 
@@ -13,7 +16,7 @@ const COLUMNS = [
       { label: "Discover apps", section: "offers" },
       { label: "For creators", href: "/?for=creators" },
       { label: "For apps", href: "/?for=apps" },
-      { label: "List your app", href: "/onboarding/company" },
+      { label: "List your app", listApp: true },
     ],
   },
   {
@@ -27,6 +30,15 @@ const COLUMNS = [
 
 const linkClassName =
   "rounded-sm text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50";
+
+/** Same target as the hero's "List your app": sign-up first for visitors without a session. */
+const LIST_APP = HERO_CONTENT.apps.primary;
+const listAppHref = (signedIn: boolean) => (!signedIn && LIST_APP.signedOutHref) || LIST_APP.href;
+
+async function ListYourAppLink({ label }: { label: string }) {
+  const viewer = await getViewer();
+  return <FooterLink label={label} href={listAppHref(viewer !== null)} />;
+}
 
 function FooterLink(link: { label: string; href: string } | { label: string; section: HomeSection }) {
   if ("section" in link) {
@@ -63,7 +75,14 @@ export function PublicFooter() {
                 <ul className="flex flex-col gap-3 text-sm">
                   {column.links.map((link) => (
                     <li key={link.label}>
-                      <FooterLink {...link} />
+                      {"listApp" in link ? (
+                        // Reads the session, so it streams in; the static shell links the signed-out target.
+                        <Suspense fallback={<FooterLink label={link.label} href={listAppHref(false)} />}>
+                          <ListYourAppLink label={link.label} />
+                        </Suspense>
+                      ) : (
+                        <FooterLink {...link} />
+                      )}
                     </li>
                   ))}
                 </ul>

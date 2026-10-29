@@ -174,7 +174,7 @@ export function TestimonialBoard({ items, children }: { items: Testimonial[]; ch
         className="pointer-events-none absolute inset-0 hidden [background-image:radial-gradient(var(--foreground)_1px,transparent_1px)] [background-size:22px_22px] opacity-[0.07] lg:block"
       />
 
-      {/* The heading block: above the cards; only its links take the pointer, so cards under the veil stay draggable. */}
+      {/* The heading block: above the cards; only its text takes the pointer, so cards under the veil stay draggable. */}
       <div className="pointer-events-none relative z-20 flex flex-col items-center gap-4 text-center *:pointer-events-auto lg:absolute lg:top-1/2 lg:left-1/2 lg:w-[620px] lg:-translate-x-1/2 lg:-translate-y-1/2 lg:gap-5">
         {/* A flat fade in the stage color, so dimmed cards behind never reduce the text's contrast. */}
         <div

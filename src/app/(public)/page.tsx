@@ -104,18 +104,6 @@ async function CatalogPreviewByAudience({ audience }: { audience: Promise<HomeAu
   return <HomeCatalogPreview audience={currentAudience} signedIn={viewer !== null} />;
 }
 
-/** Testimonials for the resolved audience; the CTA follows the hero's sign-up rule. */
-async function TestimonialsByAudience({ audience }: { audience: Promise<HomeAudience> }) {
-  const [currentAudience, viewer] = await Promise.all([audience, getViewer()]);
-  return (
-    <AudienceSwitch
-      audience={currentAudience}
-      creators={<Testimonials audience="creators" />}
-      apps={<Testimonials audience="apps" signedIn={viewer !== null} />}
-    />
-  );
-}
-
 /** The FAQ for the resolved audience; its final CTA follows the hero's sign-up rule. Keyed so an open answer doesn't carry over. */
 async function FaqByAudience({ audience }: { audience: Promise<HomeAudience> }) {
   const [currentAudience, viewer] = await Promise.all([audience, getViewer()]);
@@ -197,7 +185,11 @@ export default function CatalogPage({ searchParams }: PageProps<"/">) {
       </Suspense>
 
       <Suspense fallback={<Testimonials audience="creators" />}>
-        <TestimonialsByAudience audience={audience} />
+        <ByAudience
+          audience={audience}
+          creators={<Testimonials audience="creators" />}
+          apps={<Testimonials audience="apps" />}
+        />
       </Suspense>
 
       <Suspense fallback={<HomeFaq audience="creators" />}>

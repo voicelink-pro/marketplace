@@ -1,10 +1,5 @@
-import { ArrowRight } from "lucide-react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import type { HomeAudience } from "../audience";
 import { APP_TESTIMONIALS, CREATOR_TESTIMONIALS } from "../testimonials-data";
-import { PRIMARY_CTA, PRIMARY_CTA_ARROW } from "./cta-styles";
-import { HERO_CONTENT } from "./home-hero-content";
 import { TestimonialBoard } from "./testimonial-board";
 
 /** The hero's key phrase color: black on a yellow marker in light, yellow letters in dark. */
@@ -24,14 +19,12 @@ const CONTENT = {
 } satisfies Record<HomeAudience, unknown>;
 
 /**
- * Testimonials for the selected side: the heading, subtitle and the hero's
- * primary CTA in the middle of a stage of draggable quote cards (from lg),
- * or above a swipeable row of them (below lg).
+ * Testimonials for the selected side: the heading and subtitle in the middle
+ * of a stage of draggable quote cards (from lg), or above a swipeable row of
+ * them (below lg). No CTA: the FAQ's final CTA follows right after.
  */
-export function Testimonials({ audience, signedIn = false }: { audience: HomeAudience; signedIn?: boolean }) {
+export function Testimonials({ audience }: { audience: HomeAudience }) {
   const content = CONTENT[audience];
-  const cta = HERO_CONTENT[audience].primary;
-  const ctaHref = (!signedIn && cta.signedOutHref) || cta.href;
 
   return (
     <section aria-labelledby="testimonials-heading" className="mx-auto w-full max-w-6xl">
@@ -43,12 +36,6 @@ export function Testimonials({ audience, signedIn = false }: { audience: HomeAud
           {content.heading.before} <span className={KEY_PHRASE}>{content.heading.phrase}</span> {content.heading.after}
         </h2>
         <p className="max-w-[500px] text-base text-pretty text-muted-foreground sm:text-[17px]">{content.subtitle}</p>
-        <Button asChild size="lg" className={PRIMARY_CTA}>
-          <Link href={ctaHref}>
-            {cta.label}
-            <ArrowRight aria-hidden className={PRIMARY_CTA_ARROW} />
-          </Link>
-        </Button>
       </TestimonialBoard>
     </section>
   );

@@ -333,9 +333,10 @@ export function EarningsCalculator({ audience, signedIn = false }: { audience: H
           </div>
         </div>
 
-        <p className="max-w-[600px] text-[13px] text-balance text-muted-foreground">
+        {/* Wider from lg, so the creators line with its platform-fee note stays on one line. */}
+        <p className="max-w-[600px] text-[13px] text-balance text-muted-foreground lg:max-w-[760px]">
           {audience === "creators"
-            ? `Assumes ${formatNumber(rate)}% of viewers subscribe to a ${formatMoney(price)} plan at ${commission}% commission.`
+            ? `Assumes ${formatNumber(rate)}% of viewers subscribe to a ${formatMoney(price)} plan at ${commission}% commission, before the platform fee.`
             : `Assumes ${plural(rate, "paying customer")} per creator a month on a ${formatMoney(price)} plan at ${commission}% commission.`}{" "}
           <Popover>
             <PopoverTrigger asChild>
