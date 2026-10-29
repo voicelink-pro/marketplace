@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- boostlink mockup: example numbers only. Reference for layout, spacing and copy; build with existing components and tokens. -->
+<meta charset="utf-8">
+<title>Customers</title>
+
+</head>
+<body>
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0b0b0b}
+a{color:#f5f5f5}a:hover{color:#ffd600}
+svg.i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+</style>
+<style>
+.wrap{max-width:1152px;margin:0 auto;display:flex;flex-direction:column;gap:24px;position:relative}
+.card{background:#161616;border:1px solid #2a2a2a;border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.h1{margin:0;font-size:30px;font-weight:800;letter-spacing:-.035em}
+.h2{margin:0;font-size:16px;font-weight:700}
+.sub{font-size:13px;color:#9ca3af}
+.desc{font-size:15px;color:#9ca3af}
+.strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:#2a2a2a;border:1px solid #2a2a2a;border-radius:20px;overflow:hidden}
+.cell{position:relative;overflow:hidden;padding:20px 20px 18px;display:flex;flex-direction:column;gap:12px;background:#161616;min-width:0}
+.dots{position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(#f5f5f5 1px,transparent 1px);background-size:20px 20px;opacity:.2;-webkit-mask-image:radial-gradient(ellipse 80% 90% at 100% 100%,#000,transparent 75%);mask-image:radial-gradient(ellipse 80% 90% at 100% 100%,#000,transparent 75%)}
+.lbl{position:relative;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#9ca3af;white-space:nowrap}
+.num{position:relative;font-size:36px;font-weight:800;letter-spacing:-.045em;line-height:1}
+.cap{position:relative;font-size:12px;color:#9ca3af;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cap b{color:#f5f5f5}
+.chip{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:700;border:1px solid #2a2a2a;color:#c9ccd1;white-space:nowrap;box-sizing:border-box}
+.chip.paid{background:#222;border-color:#222;color:#f5f5f5}
+.chip.avail{background:rgba(255,214,0,.14);border-color:transparent;color:#ffd600}
+.chip.wait{color:#9ca3af}
+.chip.bad{background:rgba(248,113,113,.12);border-color:transparent;color:#f87171}
+.dot{width:6px;height:6px;border-radius:99px;background:currentColor}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:40px;padding:0 16px;border-radius:999px;font-family:inherit;font-size:14px;font-weight:700;border:1px solid #3a3a3a;background:transparent;color:#f5f5f5;white-space:nowrap;box-sizing:border-box}
+.btn.y{background:#ffd600;border-color:#ffd600;color:#111}
+.btn.g{background:#222;border-color:#222}
+.btn.sm{height:32px;padding:0 12px;font-size:13px}
+.btn.lg{height:46px;padding:0 22px;font-size:15px}
+.btn[disabled]{opacity:.45}
+.mono{font-family:ui-monospace,Menlo,monospace}
+.logo{width:20px;height:20px;border-radius:6px;background:#8b5cf6;color:#fff;font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo.t{background:#ff6b4a}
+.inset{padding:14px;border-radius:14px;background:#0b0b0b;border:1px solid #2a2a2a}
+.seg{display:inline-flex;padding:3px;border-radius:999px;background:#0b0b0b;border:1px solid #2a2a2a;font-size:13px;font-weight:600}
+.seg span{height:30px;display:inline-flex;align-items:center;padding:0 14px;border-radius:999px;color:#9ca3af}
+.seg span.on{background:#222;color:#f5f5f5;font-weight:700}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+table.t th{text-align:left;font-size:12px;color:#9ca3af;font-weight:600;padding:0 12px 10px 0;white-space:nowrap}
+table.t td{padding:13px 12px 13px 0;border-top:1px solid #222;vertical-align:middle;white-space:nowrap}
+table.t .r{text-align:right}
+table.t td.mut{color:#9ca3af}
+.prog{display:inline-flex;align-items:center;gap:8px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}
+.span2{grid-column:span 2}
+.col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.row{display:flex;align-items:center;gap:12px}
+.between{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.info{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;border:1px solid #2a2a2a;background:#111;font-size:13px;color:#9ca3af}
+ul.b{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px;font-size:13px;line-height:1.5;color:#c9ccd1}
+ul.b li{display:flex;gap:10px}
+ul.b li:before{content:"";width:6px;height:6px;border-radius:99px;background:#ffd600;margin-top:7px;flex-shrink:0}
+dl.kv{margin:0;display:flex;flex-direction:column;font-size:14px}
+dl.kv div{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid #2a2a2a}
+dl.kv dt{color:#9ca3af}dl.kv dd{margin:0;font-weight:700}
+</style>
+
+<div style="min-height: 1060px; background: #0b0b0b; color: #f5f5f5; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; display: flex; flex-direction: column">
+
+<header style="height: 56px; box-sizing: border-box; border-bottom: 1px solid #2a2a2a; display: flex; align-items: center; gap: 12px; padding: 0 16px; flex-shrink: 0; position: relative; z-index: 2; background: #0b0b0b">
+<div style="flex: 1 1 0; min-width: 0; display: flex; align-items: center; gap: 12px">
+<button type="button" aria-label="Collapse sidebar" style="width: 36px; height: 36px; border-radius: 10px; border: 0; background: transparent; color: #9ca3af; display: flex; align-items: center; justify-content: center"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M9 3v18"></path></svg></button>
+<a href="#" style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: #f5f5f5"><span style="width: 28px; height: 28px; border-radius: 8px; background: #ffd600; color: #111111; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px">b</span><span style="font-weight: 800; font-size: 19px; letter-spacing: -0.03em">boostlink</span></a>
+<nav aria-label="Breadcrumb" style="display: flex; align-items: center; gap: 6px; font-size: 14px; color: #9ca3af; margin-left: 12px; white-space: nowrap"><span>Creator</span><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px"><path d="m9 18 6-6-6-6"></path></svg><span style="color: #f5f5f5; font-weight: 600">Customers</span></nav>
+</div>
+<button type="button" aria-label="Search apps, pages and settings" style="width: 560px; flex-shrink: 1; min-width: 0; height: 40px; box-sizing: border-box; padding: 0 8px 0 14px; border-radius: 12px; background: #161616; border: 1px solid #2a2a2a; color: #9ca3af; font-family: inherit; font-size: 14px; display: flex; align-items: center; gap: 10px; text-align: left"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 16px; height: 16px"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg><span style="flex-grow: 1">Search apps, pages and settings</span><kbd style="height: 24px; display: inline-flex; align-items: center; padding: 0 7px; border-radius: 7px; border: 1px solid #333333; background: #0b0b0b; color: #9ca3af; font-family: inherit; font-size: 12px; font-weight: 600">⌘K</kbd></button>
+<div style="flex: 1 1 0; min-width: 0; display: flex; align-items: center; justify-content: flex-end; gap: 6px">
+<button type="button" aria-label="Notifications" style="width: 36px; height: 36px; border-radius: 999px; border: 0; background: transparent; color: #9ca3af; display: flex; align-items: center; justify-content: center"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"></path><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"></path></svg></button>
+<button type="button" aria-label="Account and workspace menu" style="display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 10px 0 4px; border-radius: 999px; border: 1px solid #2a2a2a; background: #161616; color: #f5f5f5; font-family: inherit; text-align: left"><span style="width: 32px; height: 32px; border-radius: 999px; background: #ffd600; color: #111111; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px">RK</span><span style="display: flex; flex-direction: column; line-height: 1.15"><span style="font-size: 13px; font-weight: 700">Roch K.</span><span style="font-size: 11px; color: #9ca3af">Creator</span></span><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width: 15px; height: 15px; color: #9ca3af"><path d="m7 15 5 5 5-5"></path><path d="m7 9 5-5 5 5"></path></svg></button>
+</div>
+</header>
+
+<div style="display: flex; flex-wrap: wrap; flex-grow: 1">
+
+<aside style="flex: 0 0 256px; box-sizing: border-box; border-right: 1px solid #2a2a2a; padding: 12px; display: flex; flex-direction: column; gap: 12px; position: relative; z-index: 2; background: #0b0b0b">
+<section aria-label="Balance" style="padding: 10px 12px; border-radius: 14px; background: #161616; border: 1px solid #2a2a2a; display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: #9ca3af"><span style="font-weight: 600">Balance</span><span>€129.20 pending</span></div>
+<span style="font-size: 20px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.25">€87.40</span>
+</section>
+<nav aria-label="Creator" style="display: flex; flex-direction: column; gap: 2px; font-size: 14px">
+<a href="#" style="display: flex; align-items: center; gap: 10px; height: 38px; padding: 0 10px; border-radius: 10px; color: #c9ccd1; text-decoration: none"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"></path><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>Home</a>
+<a href="#" style="display: flex; align-items: center; gap: 10px; height: 38px; padding: 0 10px; border-radius: 10px; color: #c9ccd1; text-decoration: none"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>Discover</a>
+<span style="height: 30px; display: flex; align-items: flex-end; padding: 0 10px 4px; font-size: 12px; color: #9ca3af">Promote</span>
+<a href="#" style="display: flex; align-items: center; gap: 10px; height: 38px; padding: 0 10px; border-radius: 10px; color: #c9ccd1; text-decoration: none"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"></path><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"></path><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"></path></svg>Programs</a>
+<a href="#" style="display: flex; align-items: center; gap: 10px; height: 38px; padding: 0 10px; border-radius: 10px; color: #c9ccd1; text-decoration: none"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>Links</a>
+<span style="height: 30px; display: flex; align-items: flex-end; padding: 0 10px 4px; font-size: 12px; color: #9ca3af">Results</span>
+<a href="#" aria-current="page" style="display: flex; align-items: center; gap: 10px; height: 38px; padding: 0 10px; border-radius: 10px; background: #222222; color: #f5f5f5; text-decoration: none; font-weight: 600"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="color: #ffd600"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>Customers</a>
+<a href="#" style="display: flex; align-items: center; gap: 10px; height: 38px; padding: 0 10px; border-radius: 10px; color: #c9ccd1; text-decoration: none"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"></path><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"></path></svg>Earnings</a>
+</nav>
+<div style="flex-grow: 1"></div>
+<nav aria-label="More" style="display: flex; flex-direction: column; gap: 2px; font-size: 14px; border-top: 1px solid #2a2a2a; padding-top: 12px">
+<a href="#" style="display: flex; align-items: center; gap: 10px; height: 36px; padding: 0 10px; border-radius: 10px; color: #c9ccd1; text-decoration: none"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1 7 17M17 7l2.1-2.1"></path></svg>Settings</a>
+<a href="#" style="display: flex; align-items: center; gap: 10px; height: 36px; padding: 0 10px; border-radius: 10px; color: #c9ccd1; text-decoration: none"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4"></circle><path d="m4.93 4.93 4.24 4.24M14.83 9.17l4.24-4.24M14.83 14.83l4.24 4.24M9.17 14.83l-4.24 4.24"></path></svg>Support</a>
+</nav>
+</aside>
+
+<main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 36px 40px 56px; position: relative; overflow: hidden">
+<svg viewBox="-0.5 -0.5 25 25" aria-hidden="true" style="position:absolute;right:-220px;top:300px;width:780px;height:780px;transform:rotate(-8deg);opacity:.28;color:#ffd600;pointer-events:none"><mask id="bmCustomers"><g fill="white" stroke="white" stroke-width="0.2"><rect x="2.5" y="1" width="6.5" height="22" rx="3.25"></rect><path fill-rule="evenodd" d="M14 7a8 8 0 1 1 0 16a8 8 0 1 1 0-16Zm0 4.8a3.2 3.2 0 1 0 0 6.4a3.2 3.2 0 1 0 0-6.4Z"></path></g><g fill="black"><rect x="2.5" y="1" width="6.5" height="22" rx="3.25"></rect><path fill-rule="evenodd" d="M14 7a8 8 0 1 1 0 16a8 8 0 1 1 0-16Zm0 4.8a3.2 3.2 0 1 0 0 6.4a3.2 3.2 0 1 0 0-6.4Z"></path></g></mask><rect x="-0.5" y="-0.5" width="25" height="25" fill="currentColor" mask="url(#bmCustomers)"></rect></svg>
+<div class="wrap">
+<section class="between" style="align-items:flex-end"><div style="display:flex;flex-direction:column;gap:6px"><h1 class="h1">Customers</h1><span class="desc">People who signed up through your links and codes.</span></div></section>
+<dl class="strip" style="grid-template-columns:repeat(4,minmax(0,1fr))"><div class="cell"><div class="dots"></div><span class="lbl"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width:16px;height:16px;"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>Sign-ups</span><span class="num">186</span><span class="cap"><b>174</b> from links · <b>12</b> by code</span></div><div class="cell"><div class="dots"></div><span class="lbl"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width:16px;height:16px;"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>Paying customers</span><span class="num">34</span><span class="cap"><b>18.3%</b> of sign-ups</span></div><div class="cell"><div class="dots"></div><span class="lbl"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width:16px;height:16px;"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>Paying now</span><span class="num">31</span><span class="cap">Active subscriptions</span></div><div class="cell"><div class="dots"></div><span class="lbl"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width:16px;height:16px;"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg>Click to customer</span><span class="num">1.4%</span><span class="cap">34 of 2,480 clicks</span></div></dl>
+<section class="grid3">
+<article class="card span2" style="padding:20px 24px 12px;gap:0">
+<div class="between" style="padding-bottom:14px"><div class="seg"><span class="on">All programs</span><span>Lexi Notes</span><span>Tempo Focus</span></div><span class="sub">Newest first</span></div>
+<table class="t"><thead><tr><th>Customer</th><th>Program</th><th>Source</th><th>Signed up</th><th class="r">Payments</th><th class="r">You earned</th><th class="r">Status</th></tr></thead><tbody><tr><td><a href="#" class="mono" style="font-weight:700;text-decoration:none">#7F3A9C21B04E</a></td><td><span class="prog"><span class="logo">L</span>Lexi Notes</span></td><td><span class="chip"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width:12px;height:12px;"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>Link</span></td><td class="mut">Oct 21</td><td class="r">1</td><td class="r" style="font-weight:700">€3.42</td><td class="r"><span class="chip paid"><span class="dot"></span>Paying</span></td><td</tr><tr><td><a href="#" class="mono" style="font-weight:700;text-decoration:none">#C1D80E55A2F9</a></td><td><span class="prog"><span class="logo">L</span>Lexi Notes</span></td><td><span class="chip"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width:12px;height:12px;"><path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"/><path d="m21 2-9.6 9.6"/><circle cx="7.5" cy="15.5" r="5.5"/></svg>Code</span></td><td class="mut">Oct 19</td><td class="r">0</td><td class="r" style="font-weight:700;color:#9ca3af">—</td><td class="r"><span class="chip wait">No payment yet</span></td><td</tr><tr><td><a href="#" class="mono" style="font-weight:700;text-decoration:none">#0B9E44F7D312</a></td><td><span class="prog"><span class="logo">L</span>Lexi Notes</span></td><td><span class="chip"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width:12px;height:12px;"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>Link</span></td><td class="mut">Oct 12</td><td class="r">1</td><td class="r" style="font-weight:700">€32.40</td><td class="r"><span class="chip paid"><span class="dot"></span>Paying</span></td><td</tr><tr><td><a href="#" class="mono" style="font-weight:700;text-decoration:none">#5AE2B19C7740</a></td><td><span class="prog"><span class="logo t">T</span>Tempo Focus</span></td><td><span class="chip"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width:12px;height:12px;"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>Link</span></td><td class="mut">Oct 9</td><td class="r">0</td><td class="r" style="font-weight:700;color:#9ca3af">—</td><td class="r"><span class="chip wait">No payment yet</span></td><td</tr><tr><td><a href="#" class="mono" style="font-weight:700;text-decoration:none">#9D04F6A1E8B3</a></td><td><span class="prog"><span class="logo">L</span>Lexi Notes</span></td><td><span class="chip"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width:12px;height:12px;"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>Link</span></td><td class="mut">Sep 28</td><td class="r">2</td><td class="r" style="font-weight:700">€6.84</td><td class="r"><span class="chip paid"><span class="dot"></span>Paying</span></td><td</tr><tr><td><a href="#" class="mono" style="font-weight:700;text-decoration:none">#E6713C0D9A25</a></td><td><span class="prog"><span class="logo">L</span>Lexi Notes</span></td><td><span class="chip"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width:12px;height:12px;"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>Link</span></td><td class="mut">Sep 14</td><td class="r">2</td><td class="r" style="font-weight:700">€6.84</td><td class="r"><span class="chip paid"><span class="dot"></span>Paying</span></td><td</tr><tr><td><a href="#" class="mono" style="font-weight:700;text-decoration:none">#3F8B27D6C011</a></td><td><span class="prog"><span class="logo">L</span>Lexi Notes</span></td><td><span class="chip"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width:12px;height:12px;"><path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"/><path d="m21 2-9.6 9.6"/><circle cx="7.5" cy="15.5" r="5.5"/></svg>Code</span></td><td class="mut">Aug 30</td><td class="r">3</td><td class="r" style="font-weight:700">€10.26</td><td class="r"><span class="chip paid"><span class="dot"></span>Paying</span></td><td</tr><tr><td><a href="#" class="mono" style="font-weight:700;text-decoration:none">#A47C9E02B5D8</a></td><td><span class="prog"><span class="logo">L</span>Lexi Notes</span></td><td><span class="chip"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width:12px;height:12px;"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>Link</span></td><td class="mut">Aug 2</td><td class="r">3</td><td class="r" style="font-weight:700">€10.26</td><td class="r"><span class="chip paid"><span class="dot"></span>Paying</span></td><td</tr></tbody></table>
+<div class="between" style="padding-top:14px;border-top:1px solid #222"><span class="sub">1–8 of 186</span><div class="row" style="gap:8px"><button class="btn sm" disabled>Previous</button><button class="btn sm">Next</button></div></div>
+</article>
+<div class="col"><article class="card"><div><h2 class="h2">From click to customer</h2><span class="sub">All time, all programs</span></div>
+<div style="display:flex;flex-direction:column;gap:0">
+<div class="row" style="padding:12px 0;"><span style="width:36px;height:36px;border-radius:10px;background:#222;display:flex;align-items:center;justify-content:center;color:#c9ccd1"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width:16px;height:16px;"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg></span><div style="display:flex;flex-direction:column;flex-grow:1"><span style="font-size:13px;color:#9ca3af">Clicks</span><span style="font-size:20px;font-weight:800;letter-spacing:-.03em">2,480</span></div></div><div class="row" style="padding:12px 0;border-top:1px solid #2a2a2a;"><span style="width:36px;height:36px;border-radius:10px;background:#222;display:flex;align-items:center;justify-content:center;color:#c9ccd1"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width:16px;height:16px;"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg></span><div style="display:flex;flex-direction:column;flex-grow:1"><span style="font-size:13px;color:#9ca3af">Sign-ups</span><span style="font-size:20px;font-weight:800;letter-spacing:-.03em">186</span></div><span class="chip">7.5% of clicks</span></div><div class="row" style="padding:12px 0;border-top:1px solid #2a2a2a;"><span style="width:36px;height:36px;border-radius:10px;background:#222;display:flex;align-items:center;justify-content:center;color:#c9ccd1"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width:16px;height:16px;"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg></span><div style="display:flex;flex-direction:column;flex-grow:1"><span style="font-size:13px;color:#9ca3af">Paying customers</span><span style="font-size:20px;font-weight:800;letter-spacing:-.03em">34</span></div><span class="chip">18.3% of sign-ups</span></div>
+</div></article><article class="card"><h2 class="h2">What counts</h2><ul class="b">
+<li>A customer is someone who signed up through your link or code.</li>
+<li>You earn when they pay. Trials and €0 payments don't count.</li>
+<li>Full refunds and lost disputes are taken off your earnings.</li>
+<li>You see an ID, never names or emails.</li></ul></article></div>
+</section>
+</div>
+</main>
+</div>
+</div>
+
+
+</body>
+</html>

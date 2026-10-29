@@ -11,7 +11,7 @@ import { requireViewer } from "@/modules/accounts/viewer";
 import { CreateLinkDialog } from "@/modules/programs/components/create-link-dialog";
 import { HomeCard } from "@/modules/programs/components/home/card";
 import { percentOf } from "@/modules/programs/components/home/home-data";
-import { type LinkSort, linkRows, parseSort, plural, sortLinkRows } from "@/modules/programs/components/links/link-data";
+import { type LinkSort, linkRows, linksHref, parseSort, plural, sortLinkRows } from "@/modules/programs/components/links/link-data";
 import { LinkRowsSkeleton, LinkTable } from "@/modules/programs/components/links/link-rows";
 import { CountingRules, ReferralCodes } from "@/modules/programs/components/links/links-side-cards";
 import { type AttributionSummary, loadAttribution } from "@/modules/programs/components/links/load-attribution";
@@ -195,7 +195,7 @@ async function LinksContent({ searchParams }: Pick<PageProps<"/creator/links">, 
                 <ProgramFilter
                   programs={programs.map(({ slug, appName }) => ({ slug, appName }))}
                   selected={selected?.slug ?? null}
-                  sort={data.sort}
+                  hrefFor={(program) => linksHref(program, data.sort)}
                 />
               ) : (
                 <span />

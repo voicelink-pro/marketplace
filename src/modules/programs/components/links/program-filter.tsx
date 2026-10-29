@@ -1,18 +1,17 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { type LinkSort, linksHref } from "./link-data";
 
 export type ProgramFilterOption = { slug: string; appName: string };
 
-/** "All programs" and one segment per program, as links that keep the sort. */
+/** "All programs" and one segment per program, as links; `hrefFor` keeps the page's other params. */
 export function ProgramFilter({
   programs,
   selected,
-  sort,
+  hrefFor,
 }: {
   programs: ProgramFilterOption[];
   selected: string | null;
-  sort: LinkSort;
+  hrefFor: (slug: string | null) => string;
 }) {
   const options = [{ slug: null, appName: "All programs" }, ...programs];
   return (
@@ -23,7 +22,7 @@ export function ProgramFilter({
           return (
             <li key={option.slug ?? "all"} className="shrink-0">
               <Link
-                href={linksHref(option.slug, sort)}
+                href={hrefFor(option.slug)}
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "inline-flex h-[30px] items-center rounded-full px-3.5 whitespace-nowrap outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
