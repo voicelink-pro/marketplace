@@ -30,8 +30,8 @@ function Row({ label, note, values }: { label: string; note?: string; values: st
   );
 }
 
-/** Replaces the old "How you get paid" card while there is no money yet. */
-function HowPayoutsWork() {
+/** Replaces the old "How you get paid" card while there is no money yet; Earnings shows it before the first one. */
+export function HowPayoutsWork() {
   return (
     <div className="flex flex-col gap-1.5 rounded-[14px] border bg-background p-3 text-[13px] leading-5 text-muted-foreground">
       <span className="font-bold text-foreground">How payouts work</span>
