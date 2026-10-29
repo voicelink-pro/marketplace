@@ -1,10 +1,10 @@
 "use client";
 
-import { ArrowRight, Info, Pencil } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { RadioGroup } from "radix-ui";
-import { Fragment, useId, useState } from "react";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { useId, useState } from "react";
+import { Field, FieldGroup, FieldLabel, FieldTitle } from "@/components/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/components/ui/input-group";
 import {
   Popover,
@@ -14,95 +14,63 @@ import {
   PopoverTitle,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Slider, SliderScale, sliderPercent } from "@/components/ui/slider";
+import { Slider } from "@/components/ui/slider";
 import type { HomeAudience } from "../../audience";
+import { useMediaQuery } from "../use-media-query";
 import { estimateMonthly } from "./projection";
 
 type Assumption = {
   label: string;
   /** Unit shown beside the input in the popover. */
-  addon: { text: string; align: "inline-start" | "inline-end" };
-  defaultValue: number;
+  addon?: { text: string; align: "inline-start" | "inline-end" };
   min: number;
   max: number;
   decimals: boolean;
 };
 
-/** Caps what the number fields accept, so results stay within the result panel. */
+/** Caps what the number fields accept, so the heading's amount stays readable. */
 const MAX_DIGITS = 9;
 
 const CONTENT: Record<
   HomeAudience,
   {
     eyebrow: string;
-    heading: string;
-    subtitle: string;
     /** Same targets as the hero's primary CTA; `signedOutHref` replaces `href` for visitors without a session. */
     cta: { href: string; signedOutHref?: string; label: string };
     /**
-     * The slider: a tick at every step, a label every `labelEvery`. Its number
-     * field takes any whole number up to `inputMax`.
+     * The slider runs 0..`max` in `step`s; the popover's number field takes
+     * any whole number up to `inputMax`, and the slider then sits at `max`.
      */
-    reach: {
-      label: string;
-      name: string;
-      defaultValue: number;
-      max: number;
-      step: number;
-      labelEvery: number;
-      inputMax: number;
-    };
+    reach: { label: string; defaultValue: number; max: number; step: number; inputMax: number };
     prices: { options: number[]; defaultValue: number };
     /** Turns the slider value into paying customers a month. */
-    rate: Assumption;
+    rate: Assumption & { defaultValue: number };
     assumptionsHint: string;
-    resultLabel: string;
   }
 > = {
   creators: {
     eyebrow: "Earnings calculator",
-    heading: "What could you earn?",
-    subtitle: "You earn on every renewal, not just the first payment.",
     cta: { href: "/signup", label: "Start as a creator" },
-    reach: {
-      label: "Views a month",
-      name: "Views a month",
-      defaultValue: 150_000,
-      max: 300_000,
-      step: 25_000,
-      labelEvery: 50_000,
-      inputMax: 100_000_000,
-    },
+    reach: { label: "Views a month", defaultValue: 150_000, max: 300_000, step: 25_000, inputMax: 100_000_000 },
     prices: { options: [9, 19, 39, 99], defaultValue: 19 },
     rate: {
-      label: "Viewers who become paying customers",
+      label: "Viewers who subscribe",
       addon: { text: "%", align: "inline-end" },
       defaultValue: 0.05,
       min: 0,
       max: 100,
       decimals: true,
     },
-    assumptionsHint: "Change it to match your audience.",
-    resultLabel: "Your monthly income",
+    assumptionsHint: "Change them to match your audience.",
   },
   apps: {
     eyebrow: "Growth calculator",
-    heading: "What could creators bring you?",
-    subtitle: "You only pay when a customer pays.",
     cta: {
       href: "/onboarding/company",
       signedOutHref: "/signup?for=apps&next=/onboarding/company",
       label: "List your app",
     },
-    reach: {
-      label: "Creators promoting your app",
-      name: "Creators promoting your app",
-      defaultValue: 10,
-      max: 20,
-      step: 5,
-      labelEvery: 5,
-      inputMax: 99_999_999,
-    },
+    reach: { label: "Creators promoting your app", defaultValue: 10, max: 20, step: 5, inputMax: 99_999_999 },
     prices: { options: [19, 39, 99], defaultValue: 39 },
     rate: {
       label: "Paying customers per creator a month",
@@ -112,8 +80,7 @@ const CONTENT: Record<
       max: 1_000,
       decimals: true,
     },
-    assumptionsHint: "Change it to match your app.",
-    resultLabel: "New revenue a month",
+    assumptionsHint: "Change them to match your app.",
   },
 };
 
@@ -124,11 +91,20 @@ const moneyFormat = new Intl.NumberFormat("en-US", { style: "currency", currency
 const compactFormat = new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 });
 const formatNumber = (value: number) => numberFormat.format(value);
 const formatMoney = (value: number) => moneyFormat.format(value);
-/** 150k, 1.2M: thousands in lowercase, like the slider labels. */
+/** 150k, 1.2M: thousands in lowercase. */
 const formatCompact = (value: number) => compactFormat.format(value).replace("K", "k");
 const plural = (count: number, word: string) => `${formatNumber(count)} ${count === 1 ? word : `${word}s`}`;
 
-const LABEL = "text-[13px] font-semibold text-muted-foreground";
+/** The hero's key phrase color: black on a yellow marker in light, yellow letters in dark. */
+const KEY_PHRASE = "rounded-[0.1em] bg-[#FFD600] px-[0.08em] text-[#111111] dark:bg-transparent dark:px-0 dark:text-primary";
+
+/**
+ * Restyles the shared slider from outside: a 6px track, the yellow fill and a
+ * 30px white thumb. `py-3` makes the root as tall as the thumb, so the whole
+ * thumb is a hit area.
+ */
+const SLIDER =
+  "py-3 **:data-[slot=slider-track]:bg-foreground/15 dark:**:data-[slot=slider-track]:bg-[#2a2a2a] **:data-[slot=slider-range]:bg-primary **:data-[slot=slider-thumb]:size-[30px] **:data-[slot=slider-thumb]:border-0 **:data-[slot=slider-thumb]:bg-white **:data-[slot=slider-thumb]:shadow-[0_2px_8px_rgb(0_0_0/0.3)] **:data-[slot=slider-thumb]:transition-[box-shadow,scale] **:data-[slot=slider-thumb]:hover:scale-105";
 
 /**
  * Number field props: formatted while idle, the text as typed while editing
@@ -169,59 +145,6 @@ function useNumberField({
   } as const;
 }
 
-function ReachField({
-  reach,
-  value,
-  onValueChange,
-}: {
-  reach: (typeof CONTENT)[HomeAudience]["reach"];
-  value: number;
-  onValueChange: (value: number) => void;
-}) {
-  const field = useNumberField({ value, onValueChange, min: 0, max: reach.inputMax, decimals: false });
-  const labels = Array.from({ length: reach.max / reach.labelEvery + 1 }, (_, index) => index * reach.labelEvery);
-  return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-between gap-3">
-        <span className={LABEL}>{reach.label}</span>
-        <label className="inline-flex cursor-text items-center gap-1.5 rounded-[10px] border border-foreground/20 bg-background py-0.5 pr-2 pl-2.5 text-[13px] font-extrabold focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50">
-          <input
-            {...field}
-            aria-label={`${reach.name}, type any number`}
-            // Grows with the number; ch fits the digits, the extra half covers separators.
-            style={{ width: `${Math.max(field.value.length, 1) + 0.5}ch` }}
-            className="bg-transparent text-right tabular-nums outline-none"
-          />
-          <Pencil aria-hidden className="size-[13px] text-muted-foreground" />
-        </label>
-      </div>
-      <Slider
-        aria-label={reach.name}
-        min={0}
-        max={reach.max}
-        step={reach.step}
-        value={[Math.min(value, reach.max)]}
-        onValueChange={([next]) => onValueChange(next)}
-        ticks
-        className="py-0"
-      />
-      {/* Each number centered under the thumb at that value; the last one's "+" hangs off to the right. */}
-      <SliderScale aria-hidden className="h-4 text-xs text-muted-foreground">
-        {labels.map((label) => (
-          <span
-            key={label}
-            style={{ left: `${sliderPercent(label, 0, reach.max)}%` }}
-            className="absolute top-0 -translate-x-1/2 tabular-nums"
-          >
-            {formatCompact(label)}
-            {label === reach.max ? <span className="absolute left-full">+</span> : null}
-          </span>
-        ))}
-      </SliderScale>
-    </div>
-  );
-}
-
 /** Single-choice pills; arrow keys move between them. */
 function ChipGroup({
   label,
@@ -238,10 +161,8 @@ function ChipGroup({
 }) {
   const labelId = useId();
   return (
-    <div className="flex flex-col gap-2">
-      <span id={labelId} className={LABEL}>
-        {label}
-      </span>
+    <Field>
+      <FieldTitle id={labelId}>{label}</FieldTitle>
       <RadioGroup.Root
         aria-labelledby={labelId}
         orientation="horizontal"
@@ -253,13 +174,13 @@ function ChipGroup({
           <RadioGroup.Item
             key={option}
             value={String(option)}
-            className="h-8 rounded-full border bg-background px-3 text-[13px] font-bold text-foreground/80 transition-colors outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 data-[state=checked]:border-foreground data-[state=checked]:bg-foreground data-[state=checked]:text-background"
+            className="h-[34px] rounded-full border bg-background px-3.5 text-[13px] font-bold text-foreground/80 transition-colors outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 data-[state=checked]:border-foreground data-[state=checked]:bg-foreground data-[state=checked]:text-background"
           >
             {format(option)}
           </RadioGroup.Item>
         ))}
       </RadioGroup.Root>
-    </div>
+    </Field>
   );
 }
 
@@ -285,38 +206,30 @@ function AssumptionField({
       <FieldLabel htmlFor={id}>{assumption.label}</FieldLabel>
       <InputGroup className="h-10">
         <InputGroupInput id={id} {...field} className="tabular-nums" />
-        <InputGroupAddon align={assumption.addon.align}>
-          <InputGroupText>{assumption.addon.text}</InputGroupText>
-        </InputGroupAddon>
+        {assumption.addon ? (
+          <InputGroupAddon align={assumption.addon.align}>
+            <InputGroupText>{assumption.addon.text}</InputGroupText>
+          </InputGroupAddon>
+        ) : null}
       </InputGroup>
     </Field>
   );
 }
 
-/** How the figure is built, e.g. "150k views → 75 customers → $285"; wraps on phones. */
-function FlowLine({ steps }: { steps: string[] }) {
-  return (
-    <p className="mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 border-t pt-3 text-xs text-muted-foreground tabular-nums">
-      {steps.map((step, index) => (
-        <Fragment key={index}>
-          {index > 0 ? <ArrowRight aria-hidden className="size-3 shrink-0" /> : null}
-          <span>{step}</span>
-        </Fragment>
-      ))}
-    </p>
-  );
-}
-
 /**
- * Compact monthly estimate under How it works: a title block, the inputs and
- * a result panel. The slider value times the rate assumption gives paying
- * customers for one month; the result is their payments at the chosen plan
- * price, split by the commission. One row from xl; from lg the title sits on
- * top of inputs and result; stacked below that. Inputs stay in local state.
+ * Compact monthly estimate under How it works, as one centered column: the
+ * result is part of the heading's sentence, a subline shows how it is built,
+ * and one slider drives it. The remaining assumptions (rate, plan price,
+ * commission) sit in a line under the slider; its "Change" popover edits them
+ * and also takes a typed slider value beyond the slider's range. The slider
+ * value times the rate gives paying customers for one month; the amount is
+ * their payments at the plan price (apps) or the commission on them
+ * (creators). Inputs stay in local state.
  */
 export function EarningsCalculator({ audience, signedIn = false }: { audience: HomeAudience; signedIn?: boolean }) {
   const content = CONTENT[audience];
   const ctaHref = (!signedIn && content.cta.signedOutHref) || content.cta.href;
+  const wide = useMediaQuery("(min-width: 640px)", true);
 
   const [reach, setReach] = useState(content.reach.defaultValue);
   const [price, setPrice] = useState(content.prices.defaultValue);
@@ -329,111 +242,122 @@ export function EarningsCalculator({ audience, signedIn = false }: { audience: H
     commissionRate: commission / 100,
   });
 
-  const assumptions =
-    audience === "creators"
-      ? `Assumes ${formatNumber(rate)}% of viewers become paying customers.`
-      : `Assumes ${plural(rate, "paying customer")} per creator a month.`;
-  const flow =
-    audience === "creators"
-      ? [`${formatCompact(reach)} views`, plural(estimate.customers, "customer"), formatMoney(estimate.commission)]
-      : [plural(reach, "creator"), plural(estimate.customers, "customer"), formatMoney(estimate.revenue)];
+  const amount = (
+    <span className={`${KEY_PHRASE} whitespace-nowrap tabular-nums`}>
+      {formatMoney(audience === "creators" ? estimate.commission : estimate.revenue)}
+    </span>
+  );
+  const customers = <b className="font-bold text-foreground">{plural(estimate.customers, "paying customer")}</b>;
 
   return (
     <section
       id="earnings-calculator"
       aria-labelledby="earnings-calculator-heading"
-      className="mx-auto w-full max-w-6xl rounded-3xl border bg-card px-5 py-6 sm:rounded-[28px] sm:px-9 sm:py-8"
+      className="mx-auto flex w-full max-w-6xl flex-col items-center gap-[18px] rounded-3xl border bg-card px-5 py-10 text-center sm:gap-[22px] sm:rounded-[28px] sm:px-12 sm:py-14"
     >
-      <div className="grid items-center gap-6 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-x-10 xl:grid-cols-[260px_minmax(0,1fr)_300px] xl:gap-10">
-        <div className="flex flex-col items-start gap-2 lg:col-span-2 xl:col-span-1">
-          {/* The hero's key phrase color: black on a yellow marker in light, yellow letters in dark. */}
-          <span className="rounded-[0.1em] bg-[#FFD600] px-[0.08em] text-[13px] font-bold text-[#111111] dark:bg-transparent dark:px-0 dark:text-primary">
-            {content.eyebrow}
-          </span>
-          <h2
-            id="earnings-calculator-heading"
-            className="text-[28px] leading-[1.08] font-extrabold tracking-[-0.04em] text-balance"
-          >
-            {content.heading}
-          </h2>
-          <p className="text-sm text-pretty text-muted-foreground">{content.subtitle}</p>
-          <Link
-            href={ctaHref}
-            className="mt-1 inline-flex items-center gap-1.5 rounded-sm text-sm font-bold underline decoration-foreground/35 underline-offset-4 outline-none hover:decoration-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
-          >
-            {content.cta.label}
-            <ArrowRight aria-hidden className="size-[17px]" />
-          </Link>
-        </div>
+      <span className={`${KEY_PHRASE} text-[13px] font-bold`}>{content.eyebrow}</span>
 
-        <div className="flex min-w-0 flex-col gap-[18px]">
-          <ReachField reach={content.reach} value={reach} onValueChange={setReach} />
-          <div className="flex flex-col gap-3.5 sm:flex-row sm:gap-6">
-            <ChipGroup
-              label="Plan price"
-              options={content.prices.options}
-              value={price}
-              onValueChange={setPrice}
-              format={formatMoney}
-            />
-            <ChipGroup
-              label="Commission"
-              options={COMMISSIONS.options}
-              value={commission}
-              onValueChange={setCommission}
-              format={(value) => `${value}%`}
-            />
-          </div>
-          {/* One line from lg; may wrap on smaller screens. */}
-          <div className="flex items-start gap-2.5 text-xs text-muted-foreground lg:items-center lg:whitespace-nowrap">
-            <Info aria-hidden className="mt-px size-4 shrink-0 lg:mt-0" />
-            <span>
-              {assumptions}{" "}
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button
-                    type="button"
-                    aria-label="Change assumptions"
-                    className="rounded-sm font-bold text-foreground underline decoration-foreground/35 underline-offset-3 outline-none hover:decoration-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
-                  >
-                    Change
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent align="start" className="w-80 gap-4 rounded-2xl p-4">
-                  <PopoverHeader>
-                    <PopoverTitle className="font-bold">Assumptions</PopoverTitle>
-                    <PopoverDescription>{content.assumptionsHint}</PopoverDescription>
-                  </PopoverHeader>
-                  <FieldGroup className="gap-4">
-                    <AssumptionField assumption={content.rate} value={rate} onValueChange={setRate} />
-                  </FieldGroup>
-                </PopoverContent>
-              </Popover>
-            </span>
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-2 rounded-[18px] border bg-background p-5">
-          <span className="text-xs font-semibold text-muted-foreground">{content.resultLabel}</span>
-          <p aria-live="polite" aria-atomic className="flex flex-wrap items-baseline gap-x-2">
-            <span className="text-[40px] leading-none font-extrabold tracking-[-0.05em] tabular-nums">
-              {formatMoney(audience === "creators" ? estimate.commission : estimate.revenue)}
-            </span>
-            <span className="text-sm font-semibold text-muted-foreground">/ month</span>
-          </p>
+      <h2
+        id="earnings-calculator-heading"
+        className="max-w-3xl text-[34px] leading-[1.05] font-extrabold tracking-[-0.045em] text-balance sm:text-5xl lg:text-[52px]"
+      >
+        <span aria-live="polite" aria-atomic>
           {audience === "creators" ? (
-            <p className="text-xs text-muted-foreground">
-              From about {plural(estimate.customers, "paying customer")}. Paid again every month they stay subscribed.
-            </p>
+            <>Your audience could earn you {amount} a month</>
           ) : (
-            <p className="text-xs text-muted-foreground">
-              You keep <b className="text-foreground">{formatMoney(estimate.kept)}</b> · commission{" "}
-              <b className="text-primary-ink">{formatMoney(estimate.commission)}</b>
-            </p>
+            <>
+              {plural(reach, "creator")} could bring you {amount} a month
+            </>
           )}
-          <FlowLine steps={flow} />
+        </span>
+      </h2>
+
+      <p className="max-w-xl text-[15px] text-muted-foreground tabular-nums sm:text-[17px]">
+        {audience === "creators" ? (
+          <>
+            From <b className="font-bold text-foreground">{formatCompact(reach)} views</b> a month · about {customers}
+          </>
+        ) : (
+          <>
+            {customers} a month · you keep <b className="font-bold text-foreground">{formatMoney(estimate.kept)}</b>,
+            creators get <b className="font-bold text-foreground">{formatMoney(estimate.commission)}</b>
+          </>
+        )}
+      </p>
+
+      <div className="flex w-full max-w-[320px] flex-col gap-1.5 py-3.5 sm:max-w-[560px] sm:py-4.5">
+        <Slider
+          aria-label={content.reach.label}
+          min={0}
+          max={content.reach.max}
+          step={content.reach.step}
+          value={[Math.min(reach, content.reach.max)]}
+          onValueChange={([next]) => setReach(next)}
+          className={SLIDER}
+        />
+        <div aria-hidden className="flex justify-between text-xs font-semibold text-muted-foreground">
+          <span>0</span>
+          <span>{formatCompact(content.reach.max)}+</span>
         </div>
       </div>
+
+      <p className="max-w-[600px] text-[13px] text-balance text-muted-foreground">
+        {audience === "creators"
+          ? `Assumes ${formatNumber(rate)}% of viewers subscribe to a ${formatMoney(price)} plan at ${commission}% commission.`
+          : `Assumes ${plural(rate, "paying customer")} per creator a month on a ${formatMoney(price)} plan at ${commission}% commission.`}{" "}
+        <Popover>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              aria-label="Change assumptions"
+              className="rounded-sm font-bold whitespace-nowrap text-foreground underline decoration-foreground/35 underline-offset-3 outline-none hover:decoration-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+            >
+              Change
+            </button>
+          </PopoverTrigger>
+          <PopoverContent
+            align={wide ? "end" : "center"}
+            // Keeps the page's 16px gutter when the trigger sits near the screen edge.
+            collisionPadding={16}
+            className="w-80 gap-4 rounded-2xl p-4"
+          >
+            <PopoverHeader>
+              <PopoverTitle className="font-bold">Assumptions</PopoverTitle>
+              <PopoverDescription>{content.assumptionsHint}</PopoverDescription>
+            </PopoverHeader>
+            <FieldGroup className="gap-4">
+              <AssumptionField
+                assumption={{ label: content.reach.label, min: 0, max: content.reach.inputMax, decimals: false }}
+                value={reach}
+                onValueChange={setReach}
+              />
+              <AssumptionField assumption={content.rate} value={rate} onValueChange={setRate} />
+              <ChipGroup
+                label="Plan price"
+                options={content.prices.options}
+                value={price}
+                onValueChange={setPrice}
+                format={formatMoney}
+              />
+              <ChipGroup
+                label="Commission"
+                options={COMMISSIONS.options}
+                value={commission}
+                onValueChange={setCommission}
+                format={(value) => `${value}%`}
+              />
+            </FieldGroup>
+          </PopoverContent>
+        </Popover>
+      </p>
+
+      <Link
+        href={ctaHref}
+        className="inline-flex items-center gap-1.5 rounded-sm text-sm font-bold underline decoration-foreground/35 underline-offset-4 outline-none hover:decoration-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+      >
+        {content.cta.label}
+        <ArrowRight aria-hidden className="size-[17px]" />
+      </Link>
     </section>
   );
 }
