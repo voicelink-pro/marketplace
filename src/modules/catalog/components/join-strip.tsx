@@ -7,6 +7,9 @@ import { usePrefersReducedMotion } from "./use-media-query";
 
 const WORDS = ["apps", "creators"];
 
+/** The headline's lead-in, before the flipping word. */
+export const JOIN_LEAD = "Join thousands of";
+
 /** Matches LayoutTextFlip's own lead-in text. */
 const TEXT_CLASS = "text-2xl font-bold tracking-tight drop-shadow-lg md:text-4xl";
 
@@ -19,11 +22,11 @@ function JoinHeadline() {
 
   return (
     <h2 id="join-strip-heading">
-      <span className="sr-only">Join the first apps and creators on boostlink</span>
+      <span className="sr-only">{JOIN_LEAD} apps and creators on boostlink</span>
       <span aria-hidden className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
         {reducedMotion ? (
           <>
-            <span className={TEXT_CLASS}>Join the first</span>
+            <span className={TEXT_CLASS}>{JOIN_LEAD}</span>
             <span className="rounded-md bg-neutral-950 px-4 py-2 text-2xl font-bold tracking-tight text-primary shadow-sm ring-1 ring-white/10 md:text-4xl dark:bg-neutral-900">
               apps and creators
             </span>
@@ -31,7 +34,7 @@ function JoinHeadline() {
           </>
         ) : (
           <>
-            <LayoutTextFlip text="Join the first" words={WORDS} duration={3000} className={CHIP_CLASS} />
+            <LayoutTextFlip text={JOIN_LEAD} words={WORDS} duration={3000} className={CHIP_CLASS} />
             {/* Slides along as the chip changes width. */}
             <motion.span layout className={TEXT_CLASS}>
               on boostlink
@@ -44,18 +47,19 @@ function JoinHeadline() {
 }
 
 /**
- * Strip above the catalog: the flipping "Join the first apps / creators on
- * boostlink" line, the app logo cloud (`children`), and the platforms creators post on.
- * With reduced motion the line is static.
+ * Strip above the catalog: the flipping "Join thousands of apps / creators on
+ * boostlink" line, the app logo cloud (`children`), and the platforms creators
+ * post on as one centered group. With reduced motion the line is static.
  */
 export function JoinStrip({ children }: { children: React.ReactNode }) {
   return (
     <section aria-labelledby="join-strip-heading" className="flex flex-col gap-6 sm:gap-8">
       <JoinHeadline />
       {children}
-      <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
+      {/* One compact group under the headline; if it wraps on phones, each line stays centered. */}
+      <div className="mx-auto inline-flex w-fit flex-wrap items-center justify-center gap-3 text-center text-sm text-muted-foreground">
         <span>Creators share on</span>
-        <PlatformLogos />
+        <PlatformLogos className="gap-4" />
       </div>
     </section>
   );

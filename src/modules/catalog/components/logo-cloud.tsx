@@ -18,14 +18,43 @@ const ROWS = [
   { direction: "left", timing: "[--animation-duration:50s]! [&>ul]:[animation-delay:-8s]" },
 ] as const;
 
-/** Enough tiles per row that a few apps still fill a wide screen before the loop repeats. */
+/** Enough apps per row that a few still fill a wide screen before the loop repeats. */
 const MIN_TILES = 14;
+/** Chance of an empty tile after each app. */
+const EMPTY_CHANCE = 0.25;
 
-function rowTiles(apps: LogoCloudApp[], offset: number): Tile[] {
-  const rotated = [...apps.slice(offset % apps.length), ...apps.slice(0, offset % apps.length)];
+/** mulberry32: a small seeded PRNG, so the server and the client draw the same rows. */
+function seededRandom(seed: number) {
+  return () => {
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/**
+ * One row: the apps in a shuffled order of its own, repeated until there are
+ * at least `MIN_TILES`, with an occasional empty tile after an app. So apps
+ * often sit side by side, a row never starts with a gap and never has two
+ * gaps in a row. Repeating one order also keeps the same app from meeting
+ * itself, including where the loop wraps.
+ */
+function rowTiles(apps: LogoCloudApp[], row: number): Tile[] {
+  const random = seededRandom(row + 1);
+  const order = [...apps];
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    [order[i], order[j]] = [order[j]!, order[i]!];
+  }
   const tiles: Tile[] = [];
-  while (tiles.length < MIN_TILES) {
-    for (const app of rotated) tiles.push({ kind: "app", app }, { kind: "empty" });
+  let appCount = 0;
+  while (appCount < MIN_TILES) {
+    for (const app of order) {
+      tiles.push({ kind: "app", app });
+      appCount += 1;
+      if (random() < EMPTY_CHANCE) tiles.push({ kind: "empty" });
+    }
   }
   return tiles;
 }
@@ -63,19 +92,21 @@ function LogoTile({ tile, focusable = true }: { tile: Tile; focusable?: boolean 
 
 /**
  * Logos of the apps on the first catalog page, in three rows that scroll
- * in alternating directions. With reduced motion it is a static grid.
+ * in alternating directions, each with its own irregular order and gaps
+ * (`rowTiles`). With reduced motion it is a static grid.
  */
 export function LogoCloud({ apps }: { apps: LogoCloudApp[] }) {
   const [paused, setPaused] = useState(false);
   if (apps.length === 0) return null;
 
   return (
-    <section aria-label="Apps on boostlink" className="flex flex-col">
+    // relative: the pause button sits in the cloud's bottom-right corner.
+    <section aria-label="Apps on boostlink" className="relative flex flex-col">
       <div aria-hidden className={cn("flex flex-col motion-reduce:hidden", paused && "[&_ul]:[animation-play-state:paused]")}>
         {ROWS.map((row, i) => (
           <InfiniteMovingCards
             key={i}
-            items={rowTiles(apps, i * 2)}
+            items={rowTiles(apps, i)}
             renderItem={(tile) => <LogoTile tile={tile} focusable={false} />}
             getKey={(tile, index) => (tile.kind === "app" ? `${tile.app.slug}-${index}` : `empty-${index}`)}
             direction={row.direction}
@@ -94,7 +125,7 @@ export function LogoCloud({ apps }: { apps: LogoCloudApp[] }) {
         type="button"
         onClick={() => setPaused((value) => !value)}
         aria-pressed={paused}
-        className="mt-1 inline-flex size-8 self-end items-center justify-center rounded-full border bg-background text-muted-foreground outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 motion-reduce:hidden"
+        className="absolute right-2 bottom-2 z-10 inline-flex size-8 items-center justify-center rounded-full border bg-background text-muted-foreground outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 motion-reduce:hidden"
       >
         {paused ? <Play aria-hidden className="size-3.5" /> : <Pause aria-hidden className="size-3.5" />}
         <span className="sr-only">{paused ? "Play app logos" : "Pause app logos"}</span>
