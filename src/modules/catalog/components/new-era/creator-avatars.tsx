@@ -1,8 +1,5 @@
-import { useId } from "react";
 import { cn } from "@/lib/utils";
-import { PLATFORM_PATHS } from "../platform-logos";
-
-type Platform = "tiktok" | "instagram" | "youtube" | "x";
+import { type Platform, PlatformLogoTile } from "../platform-logos";
 
 // Flat illustrated faces on a "7 8 50 50" box. The circle behind each one is a
 // theme token tint (see CREATORS), so the faces work in light and dark.
@@ -144,63 +141,6 @@ const CREATORS: { Face: () => React.ReactNode; background: string; platform: Pla
 
 export const CREATOR_COUNT = CREATORS.length;
 
-/** Platform badge in the platform's own colors; the ring matches the page background. */
-function PlatformBadge({ platform }: { platform: Platform }) {
-  const instagramGradient = useId();
-  const ring =
-    "absolute -right-1 bottom-0 grid size-[30px] place-items-center rounded-full border-[2.5px] border-background";
-
-  if (platform === "tiktok") {
-    return (
-      <span className={cn(ring, "bg-black")}>
-        {/* Cyan and red offsets behind the white glyph. */}
-        <svg viewBox="0 0 24 24" overflow="visible" className="size-[15px]">
-          <path d={PLATFORM_PATHS.tiktok} fill="#25F4EE" transform="translate(-1 -1)" />
-          <path d={PLATFORM_PATHS.tiktok} fill="#FE2C55" transform="translate(1 1)" />
-          <path d={PLATFORM_PATHS.tiktok} fill="#FFFFFF" />
-        </svg>
-      </span>
-    );
-  }
-  if (platform === "instagram") {
-    return (
-      <span className={cn(ring, "overflow-hidden bg-white")}>
-        <svg viewBox="0 0 24 24" className="absolute -top-[2.5px] -left-[2.5px] size-[30px]">
-          <defs>
-            {/* Instagram's official radial gradient, from the bottom-left corner. */}
-            <radialGradient id={instagramGradient} cx="0.3" cy="1.07" r="1.3">
-              <stop offset="0" stopColor="#FDF497" />
-              <stop offset="0.05" stopColor="#FDF497" />
-              <stop offset="0.45" stopColor="#FD5949" />
-              <stop offset="0.6" stopColor="#D6249F" />
-              <stop offset="0.9" stopColor="#285AEB" />
-            </radialGradient>
-          </defs>
-          <rect width="24" height="24" fill={`url(#${instagramGradient})`} />
-          <path d={PLATFORM_PATHS.instagram} fill="#FFFFFF" transform="translate(6.6 6.6) scale(0.45)" />
-        </svg>
-      </span>
-    );
-  }
-  if (platform === "youtube") {
-    return (
-      <span className={cn(ring, "bg-white")}>
-        {/* The play arrow is a cut-out, so the white badge shows through. */}
-        <svg viewBox="0 0 24 24" className="size-[17px]">
-          <path d={PLATFORM_PATHS.youtube} fill="#FF0000" />
-        </svg>
-      </span>
-    );
-  }
-  return (
-    <span className={cn(ring, "bg-black")}>
-      <svg viewBox="0 0 24 24" className="size-3">
-        <path d={PLATFORM_PATHS.x} fill="#FFFFFF" />
-      </svg>
-    </span>
-  );
-}
-
 /** 80px creator face with its platform badge. Decorative: the orbit's label describes it. */
 export function CreatorAvatar({ index }: { index: number }) {
   const { Face, background, platform } = CREATORS[index % CREATORS.length];
@@ -211,7 +151,13 @@ export function CreatorAvatar({ index }: { index: number }) {
           <Face />
         </svg>
       </span>
-      <PlatformBadge platform={platform} />
+      {/* 25px plus a 2.5px ring in the page background: a 30px badge. */}
+      <PlatformLogoTile
+        platform={platform}
+        size={25}
+        variant="badge"
+        className="absolute right-[-1.5px] bottom-[2.5px] rounded-full ring-[2.5px] ring-background"
+      />
     </span>
   );
 }

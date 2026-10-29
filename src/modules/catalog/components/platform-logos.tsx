@@ -12,6 +12,86 @@ export const PLATFORM_PATHS = {
   x: "M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z",
 };
 
+export type Platform = keyof typeof PLATFORM_PATHS;
+
+/**
+ * Glyph size as a share of the tile. Badges are the small round marks on
+ * creator avatars (YouTube: white with the red logo); tiles are app-icon
+ * style (YouTube: red with the white logo).
+ */
+const TILE_GLYPH = {
+  badge: { tiktok: 0.6, instagram: 0.45, youtube: 0.68, x: 0.48 },
+  tile: { tiktok: 0.46, instagram: 0.46, youtube: 0.52, x: 0.4 },
+} satisfies Record<string, Record<Platform, number>>;
+
+const TILE_BACKGROUND = {
+  badge: { tiktok: "bg-black", instagram: "", youtube: "bg-white", x: "bg-black" },
+  tile: { tiktok: "bg-black", instagram: "", youtube: "bg-[#FF0000]", x: "bg-black" },
+} satisfies Record<keyof typeof TILE_GLYPH, Record<Platform, string>>;
+
+/**
+ * A platform logo on its own `size`px tile, in the platform's colors.
+ * Shape, border and position come from `className`. Decorative.
+ */
+export function PlatformLogoTile({
+  platform,
+  size,
+  variant = "tile",
+  className,
+}: {
+  platform: Platform;
+  size: number;
+  variant?: keyof typeof TILE_GLYPH;
+  className?: string;
+}) {
+  // Several tiles can be mounted at once, so the gradient id must be unique.
+  const instagramGradient = useId();
+  const scale = TILE_GLYPH[variant][platform];
+  const youtubeBadge = platform === "youtube" && variant === "badge";
+
+  return (
+    <span
+      aria-hidden
+      className={cn("relative grid shrink-0 place-items-center overflow-hidden", TILE_BACKGROUND[variant][platform], className)}
+      style={{ width: size, height: size }}
+    >
+      {platform === "instagram" ? (
+        // Badge: the gradient spans the badge plus its ring (a tenth of the size each side), as the full mark would.
+        <svg viewBox="0 0 24 24" className={cn("absolute size-full", variant === "badge" ? "-inset-[10%] size-[120%]" : "inset-0")}>
+          <defs>
+            {/* Instagram's official radial gradient, from the bottom-left corner. */}
+            <radialGradient id={instagramGradient} cx="0.3" cy="1.07" r="1.3">
+              <stop offset="0" stopColor="#FDF497" />
+              <stop offset="0.05" stopColor="#FDF497" />
+              <stop offset="0.45" stopColor="#FD5949" />
+              <stop offset="0.6" stopColor="#D6249F" />
+              <stop offset="0.9" stopColor="#285AEB" />
+            </radialGradient>
+          </defs>
+          <rect width="24" height="24" fill={`url(#${instagramGradient})`} />
+          <path
+            d={PLATFORM_PATHS.instagram}
+            fill="#FFFFFF"
+            transform={`translate(${12 * (1 - scale)} ${12 * (1 - scale)}) scale(${scale})`}
+          />
+        </svg>
+      ) : (
+        <svg viewBox="0 0 24 24" overflow="visible" style={{ width: size * scale, height: size * scale }}>
+          {/* TikTok: cyan and red offsets behind the white glyph. */}
+          {platform === "tiktok" ? (
+            <>
+              <path d={PLATFORM_PATHS.tiktok} fill="#25F4EE" transform="translate(-1 -1)" />
+              <path d={PLATFORM_PATHS.tiktok} fill="#FE2C55" transform="translate(1 1)" />
+            </>
+          ) : null}
+          {/* YouTube's play arrow is a cut-out, so the tile shows through it. */}
+          <path d={PLATFORM_PATHS[platform]} fill={youtubeBadge ? "#FF0000" : "#FFFFFF"} />
+        </svg>
+      )}
+    </span>
+  );
+}
+
 const logoProps = {
   role: "img",
   viewBox: "0 0 24 24",

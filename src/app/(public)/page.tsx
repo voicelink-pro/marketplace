@@ -55,6 +55,18 @@ async function HeroByAudience({ audience }: { audience: Promise<HomeAudience> })
   );
 }
 
+/** How it works for the resolved audience; its apps CTA follows the hero's sign-up rule. */
+async function HowItWorksByAudience({ audience }: { audience: Promise<HomeAudience> }) {
+  const [currentAudience, viewer] = await Promise.all([audience, getViewer()]);
+  return (
+    <AudienceSwitch
+      audience={currentAudience}
+      creators={<HowItWorks audience="creators" />}
+      apps={<HowItWorks audience="apps" signedIn={viewer !== null} />}
+    />
+  );
+}
+
 /** First catalog page, unfiltered: the strip sits above the search, so it never echoes the results. */
 async function HomeLogoCloud() {
   const result = await listCatalogApps(parseCatalogFilters({}));
@@ -88,11 +100,7 @@ export default function CatalogPage({ searchParams }: PageProps<"/">) {
       <NewEraSection />
 
       <Suspense fallback={<HowItWorks audience="creators" />}>
-        <ByAudience
-          audience={audience}
-          creators={<HowItWorks audience="creators" />}
-          apps={<HowItWorks audience="apps" />}
-        />
+        <HowItWorksByAudience audience={audience} />
       </Suspense>
 
       {/* Keyed so switching sides replays the illustrations. */}
