@@ -24,7 +24,6 @@ const CONTENT: Record<
     heading: string;
     subtitle: string;
     steps: [Step, Step, Step];
-    example: string;
     /** Same targets as the hero's primary CTA; `signedOutHref` replaces `href` for visitors without a session. */
     cta: { href: string; signedOutHref?: string; label: string };
   }
@@ -49,7 +48,6 @@ const CONTENT: Record<
         Scene: RenewalScene,
       },
     ],
-    example: "Example: 20% of a $39 plan = $7.80 every month, for as long as they stay.",
     cta: { href: "/signup", label: "Start as a creator" },
   },
   apps: {
@@ -72,8 +70,6 @@ const CONTENT: Record<
         Scene: PayingScene,
       },
     ],
-    example:
-      "Example: 40 paying subscribers on a $39 plan bring $1,560 a month. You pay $312 in commission.",
     cta: {
       href: "/onboarding/company",
       signedOutHref: "/signup?for=apps&next=/onboarding/company",
@@ -94,8 +90,8 @@ function Connector() {
 
 /**
  * "How it works": a centered header, then the selected side's three steps,
- * each with a static illustration, the worked example and a CTA. Steps sit
- * in a row from lg, in one centered column below that.
+ * each with a static illustration, and a CTA. Steps sit in a row from lg,
+ * in one centered column below that.
  */
 export function HowItWorks({ audience, signedIn = false }: { audience: HomeAudience; signedIn?: boolean }) {
   const content = CONTENT[audience];
@@ -148,8 +144,7 @@ export function HowItWorks({ audience, signedIn = false }: { audience: HomeAudie
         ))}
       </ol>
 
-      <p className="mt-6 text-sm text-balance text-muted-foreground">{content.example}</p>
-      <Button asChild variant="outline" className="mt-3 h-11.5 gap-2 px-[22px] text-[15px] font-bold">
+      <Button asChild variant="outline" className="mt-8 h-11.5 gap-2 px-[22px] text-[15px] font-bold">
         <Link href={ctaHref}>
           {content.cta.label}
           <ArrowRight aria-hidden className="size-4" />
