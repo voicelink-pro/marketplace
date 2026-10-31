@@ -1,11 +1,8 @@
 "use client";
 
 import { GlowingEffect } from "@/components/ui/glowing-effect";
+import { YELLOW_GLOW } from "./glow-styles";
 import { useMediaQuery, usePrefersReducedMotion } from "./use-media-query";
-
-/** Brand-yellow conic glow; overrides the component's inline multicolor gradient. */
-const YELLOW_GLOW =
-  "[--gradient:repeating-conic-gradient(from_236.84deg_at_50%_50%,var(--primary)_0%,color-mix(in_oklch,var(--primary)_30%,transparent)_10%,var(--primary)_20%)]!";
 
 /**
  * Border glow that follows the pointer around an offer card. Only for a

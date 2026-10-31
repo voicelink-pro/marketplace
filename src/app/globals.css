@@ -13,6 +13,32 @@
       transform: translate(calc(-50% - 0.5rem));
     }
   }
+  /* Slow drift for floating illustration cards: ±3px across, ±6px up and down. Uses transform, so `translate-*` utilities still apply. */
+  --animate-float-drift: float-drift 7s ease-in-out infinite;
+  @keyframes float-drift {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+    25% {
+      transform: translate3d(3px, -6px, 0);
+    }
+    50% {
+      transform: translate3d(0, 0, 0);
+    }
+    75% {
+      transform: translate3d(-3px, 6px, 0);
+    }
+  }
+  /* Entry for floating cards: fades in and rises 6px. Pure CSS, so it never depends on hydration;
+     `both` keeps the card hidden through its animation-delay. */
+  --animate-rise-in: rise-in 0.4s ease-out both;
+  @keyframes rise-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 6px, 0);
+    }
+  }
 }
 
 @theme inline {
@@ -63,57 +89,13 @@
   --radius-4xl: 2.5rem;
 }
 
-:root {
-  color-scheme: light;
-  /* boostlink brand board: #F5F5F5 canvas, white surfaces, #111111 ink, one
-     accent (#FFD600). Yellow is a fill only — it fails contrast as text, so
-     accent text uses --primary-ink (#7A5C00, 6:1 on white and on yellow tints). */
-  --background: oklch(0.970 0 0);
-  --foreground: oklch(0.178 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.178 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.178 0 0);
-  --primary: oklch(0.885 0.182 94.9);
-  --primary-foreground: oklch(0.178 0 0);
-  --primary-ink: oklch(0.492 0.101 86.4);
-  --secondary: oklch(0.946 0 0);
-  --secondary-foreground: oklch(0.178 0 0);
-  --muted: oklch(0.946 0 0);
-  --muted-foreground: oklch(0.498 0.022 262.9);
-  --accent: oklch(0.946 0 0);
-  --accent-foreground: oklch(0.178 0 0);
-  /* Darker than the shadcn default so red text passes AA on its own 10% tint. */
-  --destructive: oklch(0.505 0.19 27.3);
-  --border: oklch(0.920 0.004 286.3);
-  --input: oklch(0.871 0.005 286.3);
-  /* Focus must stay visible on yellow buttons and white cards alike. */
-  --ring: oklch(0.178 0 0);
-  --chart-1: oklch(0.885 0.182 94.9);
-  --chart-2: oklch(0.178 0 0);
-  --chart-3: oklch(0.492 0.101 86.4);
-  --chart-4: oklch(0.714 0.019 261.3);
-  --chart-5: oklch(0.871 0.005 286.3);
-  --radius: 0.75rem;
-  --sidebar: oklch(1 0 0);
-  --sidebar-foreground: oklch(0.178 0 0);
-  --sidebar-primary: oklch(0.885 0.182 94.9);
-  --sidebar-primary-foreground: oklch(0.178 0 0);
-  --sidebar-accent: oklch(0.946 0 0);
-  --sidebar-accent-foreground: oklch(0.178 0 0);
-  --sidebar-border: oklch(0.920 0.004 286.3);
-  --sidebar-ring: oklch(0.178 0 0);
-  /* Side colors, illustrations only: creators coral, apps violet. */
-  --side-creators: oklch(0.621 0.199 32.9);
-  --side-apps: oklch(0.541 0.247 293.0);
-}
-
-/* Dark theme (default): #0B0B0B canvas, #161616 surfaces, #2A2A2A lines,
+/* One theme, dark: #0B0B0B canvas, #161616 surfaces, #2A2A2A lines,
    #F5F5F5 text, #9CA3AF secondary text (≥6.2:1 on every surface here), yellow
    fills with #111111 on them. Yellow also marks accents (icons, active nav,
    links) at ≥12:1, never body copy. Inputs use #6B6B6B for a ≥3:1 boundary. */
-.dark {
+:root {
   color-scheme: dark;
+  --radius: 0.75rem;
   --background: oklch(0.150 0 0);
   --foreground: oklch(0.970 0 0);
   --card: oklch(0.200 0 0);

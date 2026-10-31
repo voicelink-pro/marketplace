@@ -1,9 +1,10 @@
-import { ArrowRight, Check, Megaphone } from "lucide-react";
+import { Check, Megaphone } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { LinkPendingIcon, LinkPendingSpinner } from "@/components/ui/link-pending-icon";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCommissionRange } from "@/lib/money";
 import { cn } from "@/lib/utils";
@@ -26,11 +27,15 @@ async function PromoteCtaActions({ app }: { app: PublishedAppDetail }) {
         <Button asChild size="lg" className="w-full">
           <Link href={`/login?next=${encodedNext}`}>
             <Megaphone data-icon="inline-start" />
-            Log in to join offer
+            Log in to join program
+            <LinkPendingSpinner />
           </Link>
         </Button>
         <Button asChild variant="outline" size="lg" className="w-full">
-          <Link href={`/signup?next=${encodedNext}`}>Create a creator account</Link>
+          <Link href={`/signup?next=${encodedNext}`}>
+            Create a creator account
+            <LinkPendingSpinner />
+          </Link>
         </Button>
         <p className="text-center text-xs text-muted-foreground">
           Join with your creator account to get your referral link and code.
@@ -48,6 +53,7 @@ async function PromoteCtaActions({ app }: { app: PublishedAppDetail }) {
           <Link href={`/onboarding/creator?next=${encodedNext}`}>
             <Megaphone data-icon="inline-start" />
             Add your social profile to promote
+            <LinkPendingSpinner />
           </Link>
         </Button>
         <p className="text-center text-xs text-muted-foreground">
@@ -86,7 +92,7 @@ async function PromoteCtaActions({ app }: { app: PublishedAppDetail }) {
         <Button asChild size="lg" className="w-full">
           <Link href={`/creator/programs/${app.slug}`}>
             Open program & named links
-            <ArrowRight data-icon="inline-end" />
+            <LinkPendingIcon data-icon="inline-end" />
           </Link>
         </Button>
       </div>

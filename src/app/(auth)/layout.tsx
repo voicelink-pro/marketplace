@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import { Logo } from "@/components/brand/logo";
-import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { AuthBrandPanel, AuthBrandPanelFromUrl } from "@/modules/auth/components/auth-brand-panel";
 
 /** Desktop: brand panel on the left (stays put while the form scrolls), form on the right. Phones: form only. */
@@ -15,7 +14,6 @@ export default function AuthLayout({ children }: LayoutProps<"/">) {
       <div className="flex min-w-0 flex-col">
         <header className="flex h-16 w-full items-center px-4 sm:px-6 lg:px-10">
           <Logo />
-          <ThemeToggle className="ml-auto" />
         </header>
         <main className="flex flex-1 items-start justify-center px-4 pt-6 pb-16 sm:items-center sm:pt-0 lg:px-10">
           <div className="w-full max-w-md">{children}</div>

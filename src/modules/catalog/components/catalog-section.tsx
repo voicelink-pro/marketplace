@@ -30,7 +30,6 @@ import { CatalogPagination } from "./catalog-pagination";
 import { CategoryTile } from "./category-tile";
 import { FeaturedCarousel } from "./featured-carousel";
 import { FeaturedSlide } from "./featured-slide";
-import { AudienceSwitch } from "./home-audience";
 import { ScrollRow } from "./scroll-row";
 
 function CatalogSkeleton() {
@@ -183,16 +182,10 @@ async function CatalogContent({ searchParams, basePath = "/", audience, showTitl
     // Below lg the header carries the toggle row, so anchors need more room.
     <div id="offers" className="flex scroll-mt-36 flex-col gap-8 lg:scroll-mt-24">
       <div className="flex flex-col gap-4">
-        {currentAudience ? (
-          <AudienceSwitch
-            audience={currentAudience}
-            creators={null}
-            apps={
-              <h2 className="text-2xl leading-tight font-extrabold tracking-[-0.04em] sm:text-3xl">
-                This is how creators see your offer
-              </h2>
-            }
-          />
+        {currentAudience === "apps" ? (
+          <h2 className="text-2xl leading-tight font-extrabold tracking-[-0.04em] sm:text-3xl">
+            This is how creators see your program
+          </h2>
         ) : null}
         <CatalogFilterBar
           filters={filters}

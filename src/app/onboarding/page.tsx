@@ -1,9 +1,10 @@
-import { ArrowRight, Megaphone, Store } from "lucide-react";
+import { Megaphone, Store } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { PanelSkeleton } from "@/components/layout/panel-shell";
 import { Badge } from "@/components/ui/badge";
+import { LinkPendingIcon } from "@/components/ui/link-pending-icon";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 import { ONBOARDING_CARD, OnboardingIntro } from "@/modules/accounts/components/onboarding";
@@ -43,7 +44,7 @@ async function ContextChoices({
       icon: Store,
       title: "List your app",
       description:
-        "Offer creators a commission on the subscriptions they bring you. Creators join your offer without manual approval.",
+        "Offer creators a commission on the subscriptions they bring you. Creators join your program without manual approval.",
       active: viewer.organizations.length > 0,
       nextStep: viewer.organizations.length > 0 ? "Open company workspace" : "Next: name your company",
     },
@@ -77,7 +78,7 @@ async function ContextChoices({
             </span>
             <span className="mt-auto inline-flex items-center gap-1.5 pt-2 text-sm font-semibold">
               {nextStep}
-              <ArrowRight
+              <LinkPendingIcon
                 aria-hidden
                 className="size-4 transition-transform duration-300 ease-out motion-safe:group-hover/role:translate-x-0.5"
               />

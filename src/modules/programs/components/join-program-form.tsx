@@ -63,9 +63,9 @@ export function JoinProgramForm({
           <FieldErrors state={state} field="acceptedTerms" />
         </Field>
 
-        <SubmitButton size="lg" className="w-full" pendingLabel="Joining offer…">
+        <SubmitButton size="lg" className="w-full" pendingLabel="Joining program…">
           <Megaphone data-icon="inline-start" />
-          Join offer & get link
+          Join program & get link
         </SubmitButton>
       </FieldGroup>
     </form>

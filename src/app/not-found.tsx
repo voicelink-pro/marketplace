@@ -2,6 +2,7 @@ import { SearchX } from "lucide-react";
 import Link from "next/link";
 import { EmptyModule } from "@/components/states/empty-module";
 import { Button } from "@/components/ui/button";
+import { LinkPendingSpinner } from "@/components/ui/link-pending-icon";
 
 export default function NotFound() {
   return (
@@ -12,7 +13,10 @@ export default function NotFound() {
         description="The page doesn't exist or you don't have access to it."
       >
         <Button asChild>
-          <Link href="/">Go to the marketplace</Link>
+          <Link href="/">
+            Go to the marketplace
+            <LinkPendingSpinner />
+          </Link>
         </Button>
       </EmptyModule>
     </main>

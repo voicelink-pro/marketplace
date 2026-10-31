@@ -250,7 +250,7 @@ export function OfferPreview({ app }: { app: CompanyWorkspaceApp }) {
 
   return (
     <section aria-labelledby="preview-heading" className="flex flex-col gap-3">
-      <SectionHeading id="preview-heading">This is how creators see your offer</SectionHeading>
+      <SectionHeading id="preview-heading">This is how creators see your program</SectionHeading>
       <AppCard app={card} href="/company/app/preview" planInfo={planInfo} />
     </section>
   );
@@ -333,7 +333,7 @@ export function SetupChecklistSkeleton() {
 export function OfferPreviewSkeleton() {
   return (
     <div aria-busy className="flex flex-col gap-3">
-      <SectionHeading id="preview-heading-loading">This is how creators see your offer</SectionHeading>
+      <SectionHeading id="preview-heading-loading">This is how creators see your program</SectionHeading>
       <div className="flex flex-col overflow-hidden rounded-[20px] border bg-card">
         <Skeleton className="aspect-[16/9] w-full rounded-none" />
         <div className="flex flex-col gap-3 p-4">

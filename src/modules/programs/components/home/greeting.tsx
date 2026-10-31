@@ -1,6 +1,6 @@
-import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { LinkPendingIcon } from "@/components/ui/link-pending-icon";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
@@ -14,7 +14,7 @@ export function GreetingFrame({ children }: { children: React.ReactNode }) {
       <Button asChild size="lg" className="h-12 shrink-0 px-6 text-[15px] font-bold">
         <Link href="/creator/discover">
           Discover apps
-          <ArrowRight data-icon="inline-end" />
+          <LinkPendingIcon data-icon="inline-end" />
         </Link>
       </Button>
     </section>

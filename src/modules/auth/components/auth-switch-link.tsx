@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { LinkPendingSpinner } from "@/components/ui/link-pending-icon";
 import { HOME_AUDIENCE_PARAM, parseHomeAudience } from "@/modules/catalog/audience";
 import { safeRedirectPath } from "../redirect";
 
@@ -19,6 +20,7 @@ function LinkWithParams({ href, children }: { href: "/login" | "/signup"; childr
   return (
     <Link href={query ? `${href}?${query}` : href} className={linkClassName}>
       {children}
+      <LinkPendingSpinner className="ml-1 align-[-2px]" />
     </Link>
   );
 }
@@ -30,6 +32,7 @@ export function AuthSwitchLink({ href, children }: { href: "/login" | "/signup";
       fallback={
         <Link href={href} className={linkClassName}>
           {children}
+          <LinkPendingSpinner className="ml-1 align-[-2px]" />
         </Link>
       }
     >

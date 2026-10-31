@@ -5,7 +5,6 @@ import { motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { Testimonial } from "../testimonials-data";
-import { PLATFORM_NAMES, PlatformLogoTile } from "./platform-logos";
 import { usePrefersReducedMotion } from "./use-media-query";
 
 /**
@@ -55,12 +54,8 @@ function TestimonialCard({ item, index, className }: { item: Testimonial; index:
         </span>
         <span className="flex min-w-0 flex-1 flex-col leading-tight">
           <span className="text-sm font-bold">{item.name}</span>
-          <span className="truncate text-xs text-muted-foreground">
-            {item.role}
-            {item.platform ? <span className="sr-only"> on {PLATFORM_NAMES[item.platform]}</span> : null}
-          </span>
+          <span className="truncate text-xs text-muted-foreground">{item.role}</span>
         </span>
-        {item.platform ? <PlatformLogoTile platform={item.platform} size={22} className="rounded-md" /> : null}
       </figcaption>
     </figure>
   );
@@ -164,7 +159,7 @@ export function TestimonialBoard({ items, children }: { items: Testimonial[]; ch
   return (
     <div
       className={cn(
-        "relative flex flex-col gap-8 [--stage:var(--card)] dark:[--stage:#0d0d0d]",
+        "relative flex flex-col gap-8 [--stage:#0d0d0d]",
         "lg:block lg:h-[760px] lg:overflow-hidden lg:rounded-[32px] lg:border lg:bg-(--stage)",
       )}
     >

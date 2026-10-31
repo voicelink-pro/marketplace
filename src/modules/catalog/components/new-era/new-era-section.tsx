@@ -4,8 +4,8 @@ import type { HomeAudience } from "../../audience";
 import { HomeSectionLink } from "../home-section-link";
 import { NewEraMarquee } from "./new-era-marquee";
 
-/** The hero's key phrase marker: black on yellow in light, yellow letters in dark. */
-const KEY_PHRASE = "rounded-[0.1em] bg-[#FFD600] px-[0.08em] text-[#111111] dark:bg-transparent dark:px-0 dark:text-primary";
+/** The hero's key phrase color: yellow letters. */
+const KEY_PHRASE = "text-primary";
 
 const PROMISES = [
   { lead: "Creators", rest: "earn a cut of every renewal." },
@@ -72,10 +72,9 @@ export function NewEraSection({ subtitle }: { subtitle: React.ReactNode }) {
             </li>
           ))}
         </ol>
-        {/* Only rendered on `/`, so this is always the in-page smooth scroll. */}
+        {/* Only rendered on the home pages, so this is always the in-page smooth scroll. */}
         <HomeSectionLink
           section="how-it-works"
-          defaultAudience={null}
           className="inline-flex items-center gap-1.5 rounded-sm text-base font-semibold text-foreground underline decoration-foreground/40 underline-offset-4 transition-colors hover:decoration-foreground focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
         >
           See how it works

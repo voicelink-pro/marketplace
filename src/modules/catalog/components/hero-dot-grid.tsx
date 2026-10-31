@@ -5,6 +5,7 @@ import { useMediaQuery, usePrefersReducedMotion } from "./use-media-query";
 
 const GAP = 20;
 const DOT_RADIUS = 1;
+/** Defaults for the cursor effect; pages can pass a stronger one. */
 const REACH = 120;
 const MAX_PUSH = 5;
 const TINT_REACH = 56;
@@ -15,29 +16,40 @@ const BRAND_YELLOW = "#FFD600";
 /** Faded towards the edges, same as the static grid. */
 const MASK = "[mask-image:radial-gradient(ellipse_at_center,black_35%,transparent_78%)]";
 
-function StaticDots() {
+/** The dot grid without the cursor effect: touch, reduced motion, and boxes that stay static. */
+export function StaticDots() {
   return (
     <div
       aria-hidden
-      className={`pointer-events-none absolute inset-0 [background-image:radial-gradient(var(--foreground)_1px,transparent_1px)] [background-size:20px_20px] opacity-[0.14] ${MASK} dark:opacity-[0.2]`}
+      className={`pointer-events-none absolute inset-0 [background-image:radial-gradient(var(--foreground)_1px,transparent_1px)] [background-size:20px_20px] opacity-[0.2] ${MASK}`}
     />
   );
 }
 
+type CursorEffect = {
+  /** Pixels from the cursor within which dots drift away. */
+  reach?: number;
+  /** How far the closest dots drift, in pixels. */
+  maxPush?: number;
+  /** Pixels from the cursor within which dots get the yellow tint. */
+  tintReach?: number;
+};
+
 /**
  * Hero dot grid. With a fine pointer, dots near the cursor drift away from it
- * (up to 5px within 120px) and ease back when it leaves; the closest ones get
- * a faint yellow tint. Drawn on canvas, at most once per animation frame and
- * only while something moves. Touch devices and reduced motion keep the CSS grid.
+ * (by default up to 5px within 120px) and ease back when it leaves; the closest
+ * ones (within 56px) get a faint yellow tint. Drawn on canvas, at most once per
+ * animation frame and only while something moves. Touch devices and reduced
+ * motion keep the CSS grid.
  */
-export function HeroDotGrid() {
+export function HeroDotGrid({ reach = REACH, maxPush = MAX_PUSH, tintReach = TINT_REACH }: CursorEffect) {
   const finePointer = useMediaQuery("(hover: hover) and (pointer: fine)", false);
   const reducedMotion = usePrefersReducedMotion();
   if (!finePointer || reducedMotion) return <StaticDots />;
-  return <InteractiveDots />;
+  return <InteractiveDots reach={reach} maxPush={maxPush} tintReach={tintReach} />;
 }
 
-function InteractiveDots() {
+function InteractiveDots({ reach, maxPush, tintReach }: Required<CursorEffect>) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -68,13 +80,12 @@ function InteractiveDots() {
     /** One frame: move every dot towards its target, paint, and report whether any is still moving. */
     function draw(): boolean {
       const style = getComputedStyle(canvas!);
-      const dark = document.documentElement.classList.contains("dark");
       context!.clearRect(0, 0, width, height);
       let moving = false;
       const tinted: [number, number, number][] = [];
 
       context!.fillStyle = style.color;
-      context!.globalAlpha = dark ? 0.2 : 0.14;
+      context!.globalAlpha = 0.2;
       context!.beginPath();
       for (let index = 0; index < offsets.length / 2; index++) {
         const baseX = (index % columns) * GAP + GAP / 2;
@@ -86,8 +97,8 @@ function InteractiveDots() {
           const dx = baseX - pointer.x;
           const dy = baseY - pointer.y;
           distance = Math.hypot(dx, dy);
-          if (distance < REACH && distance > 0.01) {
-            const push = (1 - distance / REACH) * MAX_PUSH;
+          if (distance < reach && distance > 0.01) {
+            const push = (1 - distance / reach) * maxPush;
             targetX = (dx / distance) * push;
             targetY = (dy / distance) * push;
           }
@@ -103,7 +114,7 @@ function InteractiveDots() {
         const y = baseY + offsets[index * 2 + 1];
         context!.moveTo(x + DOT_RADIUS, y);
         context!.arc(x, y, DOT_RADIUS, 0, Math.PI * 2);
-        if (distance < TINT_REACH) tinted.push([x, y, 1 - distance / TINT_REACH]);
+        if (distance < tintReach) tinted.push([x, y, 1 - distance / tintReach]);
       }
       context!.fill();
 
@@ -138,19 +149,15 @@ function InteractiveDots() {
 
     const observer = new ResizeObserver(resize);
     observer.observe(host);
-    // The theme toggle swaps the `dark` class; repaint in the new color.
-    const themeObserver = new MutationObserver(schedule);
-    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
     host.addEventListener("pointermove", handleMove);
     host.addEventListener("pointerleave", handleLeave);
     return () => {
       cancelAnimationFrame(frame);
       observer.disconnect();
-      themeObserver.disconnect();
       host.removeEventListener("pointermove", handleMove);
       host.removeEventListener("pointerleave", handleLeave);
     };
-  }, []);
+  }, [reach, maxPush, tintReach]);
 
   return (
     <canvas

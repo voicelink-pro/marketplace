@@ -1,26 +1,21 @@
-import { ArrowRight, Store } from "lucide-react";
-import Link from "next/link";
+import { Store } from "lucide-react";
 import { EmptyModule } from "@/components/states/empty-module";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
-import type { HomeAudience } from "../audience";
 import { FEATURED_MAX, FEATURED_MIN, sortByCommission } from "../discover";
 import { loadPlanInfo, loadPublishedCatalog } from "../discover-data";
 import { buildAppDetailHref, DEFAULT_CATALOG_FILTERS } from "../filters";
 import type { CatalogAppCard } from "../queries";
 import { AppCard } from "./app-card";
-import { PRIMARY_CTA, PRIMARY_CTA_ARROW } from "./cta-styles";
 import { FeaturedCarousel } from "./featured-carousel";
 import { FeaturedSlide } from "./featured-slide";
-import { AudienceSwitch } from "./home-audience";
+import { PrimaryCta } from "./primary-cta";
 
 /** Apps in the "More apps" grid: two full rows from lg. */
 const MORE_APPS_MAX = 6;
 
 const HEADING = "text-2xl leading-tight font-extrabold tracking-[-0.04em] sm:text-3xl";
 
-/** Below lg the header carries the toggle row, so anchors need more room. */
+/** Below lg the header carries the audience row, so anchors need more room. */
 const WRAPPER = "flex scroll-mt-36 flex-col gap-8 lg:scroll-mt-24";
 
 export function HomeCatalogPreviewSkeleton() {
@@ -37,11 +32,12 @@ export function HomeCatalogPreviewSkeleton() {
 }
 
 /**
- * The home page's catalog (`#offers`): the featured carousel, a few more of
- * the newest apps and a "See all apps" link to Discover, which needs an
- * account. No filters, search or pagination; those live on Discover.
+ * The apps home page's catalog (`#offers`), "how creators see your program":
+ * the featured carousel, a few more of the newest apps and a "See all apps"
+ * link to Discover, which needs an account. No filters, search or pagination;
+ * those live on Discover.
  */
-export async function HomeCatalogPreview({ audience, signedIn }: { audience: HomeAudience; signedIn: boolean }) {
+export async function HomeCatalogPreview({ signedIn }: { signedIn: boolean }) {
   const published = await loadPublishedCatalog();
   const ranked = published.complete ? sortByCommission(published.apps) : [];
   const featured = ranked.length >= FEATURED_MIN ? ranked.slice(0, FEATURED_MAX) : [];
@@ -53,16 +49,7 @@ export async function HomeCatalogPreview({ audience, signedIn }: { audience: Hom
 
   return (
     <div id="offers" className={WRAPPER}>
-      <AudienceSwitch
-        audience={audience}
-        creators={
-          <div className="flex flex-col gap-1.5">
-            <h2 className={HEADING}>Discover apps</h2>
-            <p className="text-base text-muted-foreground">A few of the programs open right now.</p>
-          </div>
-        }
-        apps={<h2 className={HEADING}>This is how creators see your offer</h2>}
-      />
+      <h2 className={HEADING}>This is how creators see your program</h2>
 
       {published.total === 0 ? (
         <EmptyModule
@@ -97,12 +84,9 @@ export async function HomeCatalogPreview({ audience, signedIn }: { audience: Hom
           ) : null}
 
           <div className="flex flex-col items-center gap-3 text-center">
-            <Button asChild size="lg" className={cn(PRIMARY_CTA, "max-sm:w-auto")}>
-              <Link href={signedIn ? "/creator/discover" : "/signup?next=/creator/discover"}>
-                See all apps
-                <ArrowRight aria-hidden className={PRIMARY_CTA_ARROW} />
-              </Link>
-            </Button>
+            <PrimaryCta href={signedIn ? "/creator/discover" : "/signup?next=/creator/discover"} className="max-sm:w-auto">
+              See all apps
+            </PrimaryCta>
             {signedIn ? null : (
               <p className="text-sm text-muted-foreground">Free account needed to see every program.</p>
             )}

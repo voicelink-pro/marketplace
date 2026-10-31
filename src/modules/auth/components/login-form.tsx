@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { LinkPendingSpinner } from "@/components/ui/link-pending-icon";
 import { idleFormState } from "@/lib/forms";
 import { signIn, signInSandboxAccount } from "../actions";
 import { AUTH_SUBMIT_CLASS } from "./auth-card";
@@ -75,6 +76,7 @@ export function LoginForm({ sandboxEnabled = false }: { sandboxEnabled?: boolean
                 className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
               >
                 Forgot password?
+                <LinkPendingSpinner className="ml-1 align-[-2px]" />
               </Link>
             </div>
             <PasswordInput

@@ -1,10 +1,7 @@
-import { ArrowRight, ChevronDown, ChevronRight } from "lucide-react";
-import Link from "next/link";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { Fragment } from "react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import type { HomeAudience } from "../audience";
-import { PRIMARY_CTA, PRIMARY_CTA_ARROW } from "./cta-styles";
+import { PrimaryCta } from "./primary-cta";
 import {
   CommissionScene,
   CreatorsJoinScene,
@@ -24,15 +21,18 @@ const CONTENT: Record<
   HomeAudience,
   {
     heading: string;
-    subtitle: string;
+    /** None on the creators page. */
+    subtitle?: string;
     steps: [Step, Step, Step];
-    /** Same targets as the hero's primary CTA; `signedOutHref` replaces `href` for visitors without a session. */
-    cta: { href: string; signedOutHref?: string; label: string };
+    /**
+     * Same targets as the hero's primary CTA; `signedOutHref` replaces `href` for visitors without a session.
+     * None on the creators page, where the calculator right below closes with the same button.
+     */
+    cta?: { href: string; signedOutHref?: string; label: string };
   }
 > = {
   creators: {
     heading: "Three steps to your first commission",
-    subtitle: "Pick an app your audience will love, share your link, and earn every month a customer stays.",
     steps: [
       {
         title: "Pick an app to promote",
@@ -50,7 +50,6 @@ const CONTENT: Record<
         Scene: RenewalScene,
       },
     ],
-    cta: { href: "/signup", label: "Start as a creator" },
   },
   apps: {
     heading: "Three steps to paying customers",
@@ -63,7 +62,7 @@ const CONTENT: Record<
       },
       {
         title: "Creators discover and share it",
-        body: "Creators who like your app join your offer and post about it.",
+        body: "Creators who like your app join your program and post about it.",
         Scene: CreatorsJoinScene,
       },
       {
@@ -92,12 +91,12 @@ function Connector() {
 
 /**
  * "How it works": a centered header, then the selected side's three steps,
- * each with a static illustration, and a CTA. Steps sit in a row from lg,
- * in one centered column below that.
+ * each with a static illustration, and a CTA on the apps page. Steps sit in a
+ * row from lg, in one centered column below that.
  */
 export function HowItWorks({ audience, signedIn = false }: { audience: HomeAudience; signedIn?: boolean }) {
   const content = CONTENT[audience];
-  const ctaHref = (!signedIn && content.cta.signedOutHref) || content.cta.href;
+  const cta = content.cta;
 
   return (
     <section
@@ -106,8 +105,8 @@ export function HowItWorks({ audience, signedIn = false }: { audience: HomeAudie
       className="flex scroll-mt-36 flex-col items-center text-center lg:scroll-mt-20"
     >
       <div className="flex max-w-3xl flex-col items-center gap-3">
-        {/* The hero's key phrase color: black on a yellow marker in light, yellow letters in dark. */}
-        <span className="rounded-[0.1em] bg-[#FFD600] px-[0.08em] text-sm font-bold text-[#111111] dark:bg-transparent dark:px-0 dark:text-primary">
+        {/* The hero's key phrase color. */}
+        <span className="text-sm font-bold text-primary">
           How it works
         </span>
         {/* At least 24px on phones, where it may wrap (balanced); one line from sm, scaling
@@ -118,7 +117,9 @@ export function HowItWorks({ audience, signedIn = false }: { audience: HomeAudie
         >
           {content.heading}
         </h2>
-        <p className="max-w-2xl text-base text-pretty text-muted-foreground sm:text-lg">{content.subtitle}</p>
+        {content.subtitle ? (
+          <p className="max-w-2xl text-base text-pretty text-muted-foreground sm:text-lg">{content.subtitle}</p>
+        ) : null}
       </div>
 
       <ol className="mt-8 flex flex-col items-center sm:mt-10 lg:grid lg:w-full lg:grid-cols-[1fr_3rem_1fr_3rem_1fr] lg:items-start lg:gap-x-3 xl:gap-x-0">
@@ -147,12 +148,11 @@ export function HowItWorks({ audience, signedIn = false }: { audience: HomeAudie
       </ol>
 
       {/* The hero's primary button; a centered pill on phones too, under the centered steps. */}
-      <Button asChild size="lg" className={cn(PRIMARY_CTA, "mt-8 max-sm:w-auto")}>
-        <Link href={ctaHref}>
-          {content.cta.label}
-          <ArrowRight aria-hidden className={PRIMARY_CTA_ARROW} />
-        </Link>
-      </Button>
+      {cta ? (
+        <PrimaryCta href={(!signedIn && cta.signedOutHref) || cta.href} className="mt-8 max-sm:w-auto">
+          {cta.label}
+        </PrimaryCta>
+      ) : null}
     </section>
   );
 }

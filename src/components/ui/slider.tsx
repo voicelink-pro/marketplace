@@ -109,4 +109,4 @@ function Slider({
   )
 }
 
-export { Slider, SliderScale, sliderPercent }
+export { Slider }

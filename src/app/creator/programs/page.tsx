@@ -1,4 +1,4 @@
-import { ArrowRight, CreditCard, Layers, Link2, Wallet } from "lucide-react";
+import { CreditCard, Layers, Link2, Wallet } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { StatStrip, StatValue, StatValueSkeleton } from "@/components/layout/stat-strip";
 import { EmptyModule } from "@/components/states/empty-module";
 import { Button } from "@/components/ui/button";
+import { LinkPendingIcon } from "@/components/ui/link-pending-icon";
 import { formatMinorCurrency } from "@/lib/money";
 import { requireViewer } from "@/modules/accounts/viewer";
 import { settled } from "@/modules/attribution/components/result-metrics";
@@ -204,7 +205,7 @@ export default function CreatorProgramsPage() {
           <Button asChild>
             <Link href="/creator/discover">
               Find another app
-              <ArrowRight data-icon="inline-end" />
+              <LinkPendingIcon data-icon="inline-end" />
             </Link>
           </Button>
         }

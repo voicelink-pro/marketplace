@@ -54,8 +54,8 @@ const COLUMN_DELAY_S = 7;
 /** Copies of each column; the loop moves by one (new-era-marquee.module.css keeps -20% → -40% in step). */
 const COPIES = 5;
 
-/** The hero's key phrase color: black on a yellow marker in light, yellow letters in dark. */
-const KEY_PHRASE = "rounded-[0.1em] bg-[#FFD600] px-[0.08em] text-[#111111] dark:bg-transparent dark:px-0 dark:text-primary";
+/** The hero's key phrase color: yellow letters. */
+const KEY_PHRASE = "text-primary";
 const LABEL = "text-xs font-semibold text-muted-foreground";
 const NAME = "text-[15px] font-bold";
 const BIG = "text-3xl leading-none font-extrabold tracking-[-0.04em]";

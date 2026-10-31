@@ -32,7 +32,7 @@ function profileUrl(platform: Platform, handle: string, link: string): string {
   return `https://${PLATFORMS.find((option) => option.value === platform)!.prefix}${clean}`;
 }
 
-/** TikTok and X glyphs: near-black on light backgrounds, white on dark (as in PlatformLogos). */
+/** TikTok and X glyphs: near-black on light backgrounds, white on dark. */
 const INK_GLYPH = "fill-[#111111] dark:fill-white";
 
 /** The platform's mark in its brand colours, on the shared Simple Icons paths. */

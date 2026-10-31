@@ -7,14 +7,14 @@ import { usePrefersReducedMotion } from "./use-media-query";
 const WORDS = ["apps", "creators"];
 
 /** The headline's lead-in, before the flipping word. */
-export const JOIN_LEAD = "Join thousands of";
+const JOIN_LEAD = "Join thousands of";
 
 /** Matches LayoutTextFlip's own lead-in text. */
 const TEXT_CLASS = "text-2xl font-bold tracking-tight drop-shadow-lg md:text-4xl";
 
 /** Yellow fails contrast on white, so the word sits on a dark chip in both themes. */
 const CHIP_CLASS =
-  "bg-neutral-950 text-primary shadow-black/20 ring-1 ring-white/10 dark:bg-neutral-900 dark:text-primary";
+  "bg-neutral-900 text-primary shadow-black/20 ring-1 ring-white/10";
 
 function JoinHeadline() {
   const reducedMotion = usePrefersReducedMotion();
@@ -26,7 +26,7 @@ function JoinHeadline() {
         {reducedMotion ? (
           <>
             <span className={TEXT_CLASS}>{JOIN_LEAD}</span>
-            <span className="rounded-md bg-neutral-950 px-4 py-2 text-2xl font-bold tracking-tight text-primary shadow-sm ring-1 ring-white/10 md:text-4xl dark:bg-neutral-900">
+            <span className="rounded-md bg-neutral-900 px-4 py-2 text-2xl font-bold tracking-tight text-primary shadow-sm ring-1 ring-white/10 md:text-4xl">
               apps and creators
             </span>
             <span className={TEXT_CLASS}>on boostlink</span>

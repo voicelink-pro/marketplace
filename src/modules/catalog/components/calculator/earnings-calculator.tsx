@@ -1,11 +1,11 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { RadioGroup } from "radix-ui";
 import { useId, useState } from "react";
 import { Field, FieldGroup, FieldLabel, FieldTitle } from "@/components/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/components/ui/input-group";
+import { LinkPendingIcon } from "@/components/ui/link-pending-icon";
 import {
   Popover,
   PopoverContent,
@@ -18,6 +18,7 @@ import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 import type { HomeAudience } from "../../audience";
 import { HeroDotGrid } from "../hero-dot-grid";
+import { PrimaryCta } from "../primary-cta";
 import { useMediaQuery } from "../use-media-query";
 import { estimateMonthly } from "./projection";
 
@@ -116,8 +117,8 @@ const formatMoney = (value: number) => moneyFormat.format(value);
 const formatCompact = (value: number) => compactFormat.format(value).replace("K", "k");
 const plural = (count: number, word: string) => `${formatNumber(count)} ${count === 1 ? word : `${word}s`}`;
 
-/** The hero's key phrase color: black on a yellow marker in light, yellow letters in dark. */
-const KEY_PHRASE = "rounded-[0.1em] bg-[#FFD600] px-[0.08em] text-[#111111] dark:bg-transparent dark:px-0 dark:text-primary";
+/** The hero's key phrase color: yellow letters. */
+const KEY_PHRASE = "text-primary";
 
 /**
  * Restyles the shared slider from outside: a 6px track, the yellow fill and a
@@ -125,7 +126,7 @@ const KEY_PHRASE = "rounded-[0.1em] bg-[#FFD600] px-[0.08em] text-[#111111] dark
  * thumb is a hit area.
  */
 const SLIDER =
-  "py-3 **:data-[slot=slider-track]:bg-foreground/15 dark:**:data-[slot=slider-track]:bg-[#2a2a2a] **:data-[slot=slider-range]:bg-primary **:data-[slot=slider-thumb]:size-[30px] **:data-[slot=slider-thumb]:border-0 **:data-[slot=slider-thumb]:bg-white **:data-[slot=slider-thumb]:shadow-[0_2px_8px_rgb(0_0_0/0.3)] **:data-[slot=slider-thumb]:transition-[box-shadow,scale] **:data-[slot=slider-thumb]:hover:scale-105";
+  "py-3 **:data-[slot=slider-track]:bg-[#2a2a2a] **:data-[slot=slider-range]:bg-primary **:data-[slot=slider-thumb]:size-[30px] **:data-[slot=slider-thumb]:border-0 **:data-[slot=slider-thumb]:bg-white **:data-[slot=slider-thumb]:shadow-[0_2px_8px_rgb(0_0_0/0.3)] **:data-[slot=slider-thumb]:transition-[box-shadow,scale] **:data-[slot=slider-thumb]:hover:scale-105";
 
 /**
  * Number field props: formatted while idle, the text as typed while editing
@@ -274,8 +275,8 @@ export function EarningsCalculator({ audience, signedIn = false }: { audience: H
       aria-labelledby="earnings-calculator-heading"
       className="relative isolate mx-auto w-full max-w-6xl overflow-hidden rounded-3xl border bg-linear-to-r from-muted to-card px-5 py-10 sm:rounded-[28px] sm:px-12 sm:py-14"
     >
-      {/* The hero's background: the same gradient and dot grid, nudged by the cursor on desktop. */}
-      <HeroDotGrid />
+      {/* The hero's background: the same gradient and dot grid, nudged by the cursor on desktop (as strongly as the hero's). */}
+      {audience === "creators" ? <HeroDotGrid reach={150} maxPush={7} tintReach={72} /> : <HeroDotGrid />}
 
       {/* relative: above the dot grid's canvas. */}
       <div className="relative flex flex-col items-center gap-[18px] text-center sm:gap-[22px]">
@@ -384,13 +385,20 @@ export function EarningsCalculator({ audience, signedIn = false }: { audience: H
           </Popover>
         </p>
 
-        <Link
-          href={ctaHref}
-          className="inline-flex items-center gap-1.5 rounded-sm text-sm font-bold underline decoration-foreground/35 underline-offset-4 outline-none hover:decoration-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
-        >
-          {content.cta.label}
-          <ArrowRight aria-hidden className="size-[17px]" />
-        </Link>
+        {audience === "creators" ? (
+          // The hero's primary button.
+          <PrimaryCta href={ctaHref} className="max-sm:w-auto">
+            {content.cta.label}
+          </PrimaryCta>
+        ) : (
+          <Link
+            href={ctaHref}
+            className="inline-flex items-center gap-1.5 rounded-sm text-sm font-bold underline decoration-foreground/35 underline-offset-4 outline-none hover:decoration-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+          >
+            {content.cta.label}
+            <LinkPendingIcon aria-hidden className="size-[17px]" />
+          </Link>
+        )}
       </div>
     </section>
   );

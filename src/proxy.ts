@@ -2,6 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 import { getPublicEnv } from "@/lib/env";
 import { LAST_CONTEXT_COOKIE } from "@/modules/accounts/home";
+import { HOME_AUDIENCE_PARAM } from "@/modules/catalog/audience";
 
 const SIGNED_IN_PREFIXES = ["/creator", "/company", "/admin", "/onboarding", "/account", "/reset-password"];
 const CACHE_HEADERS = ["cache-control", "expires", "pragma"];
@@ -28,6 +29,14 @@ function withSession(target: NextResponse, source: NextResponse): NextResponse {
  * stale cookie can never cause a redirect loop with `/dashboard`.
  */
 export async function proxy(request: NextRequest) {
+  // The apps home page used to be `/?for=apps`. Not a next.config redirect: those always carry the query over.
+  if (request.nextUrl.pathname === "/" && request.nextUrl.searchParams.get(HOME_AUDIENCE_PARAM) === "apps") {
+    const target = request.nextUrl.clone();
+    target.pathname = "/for-apps";
+    target.searchParams.delete(HOME_AUDIENCE_PARAM);
+    return NextResponse.redirect(target, 308);
+  }
+
   let response = NextResponse.next({ request });
   let signedIn = false;
 

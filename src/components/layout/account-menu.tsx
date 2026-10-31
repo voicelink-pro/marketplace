@@ -29,7 +29,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { signOut } from "@/modules/auth/actions";
 import { PANEL_LABELS, PANEL_NAV, type PanelArea } from "./nav-config";
-import { ThemeMenuRow } from "./theme-toggle";
 
 export type AccountSummary = {
   displayName: string;
@@ -184,7 +183,6 @@ export function AccountMenu({ account, area }: { account: AccountSummary; area?:
               </Link>
             </DropdownMenuItem>
           ) : null}
-          <ThemeMenuRow />
           <DropdownMenuItem asChild className={itemClassName}>
             <Link href="/support">
               <LifeBuoy />

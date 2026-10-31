@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { LinkPendingSpinner } from "@/components/ui/link-pending-icon";
 import { formatCommissionPercent } from "@/lib/money";
 import type { CardPlanInfo } from "../discover";
 import type { CatalogAppCard } from "../queries";
@@ -57,7 +58,8 @@ export function FeaturedSlide({ app, href, planInfo }: { app: CatalogAppCard; hr
 
         <Button asChild size="lg" className="mt-auto self-start">
           <Link href={href}>
-            View offer<span className="sr-only"> for {app.name}</span>
+            View program<span className="sr-only"> for {app.name}</span>
+            <LinkPendingSpinner />
           </Link>
         </Button>
       </div>

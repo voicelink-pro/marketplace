@@ -29,7 +29,7 @@ export function StickyJoinBar({ targetId, commissionLabel }: { targetId: string;
           href={`#${targetId}`}
           className="inline-flex h-10 shrink-0 items-center rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
         >
-          Join offer
+          Join program
         </a>
       </div>
     </div>

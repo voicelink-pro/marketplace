@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
  * from the bottom-right corner of each cell.
  */
 const DOTS =
-  "pointer-events-none absolute inset-0 [background-image:radial-gradient(var(--foreground)_1px,transparent_1px)] [background-size:20px_20px] opacity-[0.14] [mask-image:radial-gradient(ellipse_80%_90%_at_100%_100%,black,transparent_75%)] dark:opacity-[0.2]";
+  "pointer-events-none absolute inset-0 [background-image:radial-gradient(var(--foreground)_1px,transparent_1px)] [background-size:20px_20px] opacity-[0.2] [mask-image:radial-gradient(ellipse_80%_90%_at_100%_100%,black,transparent_75%)]";
 
 export type StatCell = { icon: LucideIcon; label: string; value: React.ReactNode };
 

@@ -1,4 +1,4 @@
-/** Who the home page speaks to. Lives in the URL as `?for=apps`; no param means creators. */
+/** Who a home page speaks to: `/` for creators, `/for-apps` for apps. Sign-up and log-in take it as `?for=apps`; no param means creators. */
 export type HomeAudience = "creators" | "apps";
 
 export const HOME_AUDIENCE_PARAM = "for";

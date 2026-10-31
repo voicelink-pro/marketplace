@@ -1,6 +1,6 @@
-import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { LinkPendingIcon } from "@/components/ui/link-pending-icon";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatMinorCurrency } from "@/lib/money";
 import { cn } from "@/lib/utils";
@@ -51,7 +51,7 @@ function Available({ amount, others, canWithdraw }: { amount: string; others: st
           <Button asChild className="h-11 w-full px-5 font-bold sm:w-auto">
             <Link href="/creator/payouts">
               Withdraw
-              <ArrowRight data-icon="inline-end" />
+              <LinkPendingIcon data-icon="inline-end" />
             </Link>
           </Button>
         </div>

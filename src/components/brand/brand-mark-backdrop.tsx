@@ -54,7 +54,7 @@ export function PageBrandMark({ className }: { className?: string }) {
     <BrandMarkBackdrop
       variant="outline"
       className={cn(
-        "absolute top-60 -right-56 -z-10 hidden size-195 rotate-[-8deg] opacity-20 md:block dark:opacity-30",
+        "absolute top-60 -right-56 -z-10 hidden size-195 rotate-[-8deg] opacity-30 md:block",
         className,
       )}
     />

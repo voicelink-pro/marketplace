@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { type Platform, PlatformLogoTile } from "../platform-logos";
 
 // Flat illustrated faces on a "7 8 50 50" box. The circle behind each one is a
-// theme token tint (see CREATORS), so the faces work in light and dark.
+// theme token tint (see CREATORS).
 
 const EYE_WHITE = "#FFFFFF";
 const INK = "#111111";

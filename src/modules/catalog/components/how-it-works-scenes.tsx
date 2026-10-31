@@ -6,13 +6,12 @@ import { CreatorAvatar } from "./new-era/creator-avatars";
 import { PlatformLogoTile } from "./platform-logos";
 
 // Static step illustrations for How it works, each drawn to sit centered in a
-// 280×190 box. Theme tokens throughout, so they work in light and dark; the
-// app icons keep their own colors. Decorative: the step title carries the meaning.
+// 280×190 box. Theme tokens throughout; the app icons keep their own colors. Decorative: the step title carries the meaning.
 
 const CARD = "rounded-[18px] border bg-card";
 const BAR = "block h-1.5 rounded-full bg-muted";
-/** The hero's key phrase color: black on a yellow marker in light, yellow letters in dark. */
-const KEY_PHRASE = "rounded-[0.1em] bg-[#FFD600] px-[0.08em] text-[#111111] dark:bg-transparent dark:px-0 dark:text-primary";
+/** The hero's key phrase color: yellow letters. */
+const KEY_PHRASE = "text-primary";
 
 const APP_CARD = cn(CARD, "absolute flex h-[148px] w-28 flex-col gap-2.5 p-3.5 text-left");
 
@@ -38,7 +37,8 @@ export function PickAppScene() {
       <SideAppCard Icon={ChatAppIcon} className="top-3 left-28 rotate-10" />
       <div className={cn(APP_CARD, "top-0 left-14 border-foreground/15")}>
         <NotesAppIcon className="size-[38px]" />
-        <span className="text-[13px] leading-tight font-bold">Lexi Notes</span>
+        {/* A real app from the catalog, at its own rate. */}
+        <span className="text-[13px] leading-tight font-bold">Draftly</span>
         <span className={cn(BAR, "w-[70px]")} />
         <span className={cn(BAR, "w-12")} />
         <span className="mt-auto inline-flex h-[22px] w-fit items-center rounded-full bg-primary px-[9px] text-[11px] font-extrabold whitespace-nowrap text-primary-foreground">
@@ -160,7 +160,7 @@ export function CreatorsJoinScene() {
         ))}
       </div>
       <span className="inline-flex h-[34px] items-center gap-2 rounded-full border bg-card px-3.5 text-[13px] font-bold">
-        <span className="size-[7px] rounded-full bg-primary" />3 creators joined your offer
+        <span className="size-[7px] rounded-full bg-primary" />3 creators joined your program
       </span>
     </div>
   );

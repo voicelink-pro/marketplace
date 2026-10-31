@@ -1,15 +1,15 @@
 import { Suspense } from "react";
 import { PageBrandMark } from "@/components/brand/brand-mark-backdrop";
+import { AudienceNavProvider } from "@/components/layout/audience-nav-provider";
 import { PublicFooter } from "@/components/layout/public-footer";
 import { PublicBrandMark } from "@/components/layout/public-brand-mark";
 import { PublicHeader } from "@/components/layout/public-header";
-import { HomeAudienceProvider } from "@/modules/catalog/components/home-audience";
 
 export default function PublicLayout({ children }: LayoutProps<"/">) {
   return (
     <div className="flex min-h-dvh flex-col">
-      {/* Header toggle and home page content share the pending audience while it loads. */}
-      <HomeAudienceProvider>
+      {/* The header pill and the label above the hero share the page being opened between `/` and `/for-apps`. */}
+      <AudienceNavProvider>
         <PublicHeader />
         <div className="relative isolate flex flex-1 flex-col overflow-clip">
           {/* The pathname suspends on routes with unresolved params; the default position is right there. */}
@@ -18,7 +18,7 @@ export default function PublicLayout({ children }: LayoutProps<"/">) {
           </Suspense>
           <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 sm:py-10">{children}</main>
         </div>
-      </HomeAudienceProvider>
+      </AudienceNavProvider>
       <PublicFooter />
     </div>
   );

@@ -18,3 +18,7 @@ export const PRIMARY_CTA = cn(
 
 /** The primary CTA's arrow: nudges right on hover, only without reduced motion. */
 export const PRIMARY_CTA_ARROW = "size-4.5 transition-transform duration-300 ease-out motion-safe:group-hover/cta:translate-x-1";
+
+/** Show more / show less toggles: an outline pill in the carousel arrows' style. */
+export const TOGGLE_PILL =
+  "inline-flex h-10 items-center gap-1.5 self-center rounded-full border border-border bg-background/70 px-4 text-sm font-semibold text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 motion-reduce:transition-none";

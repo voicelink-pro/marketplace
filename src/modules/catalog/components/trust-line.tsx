@@ -16,7 +16,7 @@ export function TrustLine({ items, className }: { items: readonly string[]; clas
         <li key={item} className="inline-flex items-center gap-[7px]">
           <span
             aria-hidden
-            className="grid size-[18px] shrink-0 place-items-center rounded-full bg-primary/15 text-primary-ink dark:text-primary"
+            className="grid size-[18px] shrink-0 place-items-center rounded-full bg-primary/15 text-primary"
           >
             <Check className="size-[11px]" strokeWidth={3.2} />
           </span>

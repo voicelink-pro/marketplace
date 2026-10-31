@@ -110,7 +110,7 @@ export const PANEL_NAV: Record<PanelArea, PanelNavConfig> = {
         items: [{ href: "/company", label: "Home", description: "Your app, its program and its results", icon: House }],
       },
       {
-        label: "Your offer",
+        label: "Your program",
         items: [
           {
             href: "/company/app",

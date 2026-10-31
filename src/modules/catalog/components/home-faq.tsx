@@ -1,13 +1,6 @@
-import { ArrowRight } from "lucide-react";
-import Link from "next/link";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import type { HomeAudience } from "../audience";
 import { FAQ } from "../faq-data";
-import { PRIMARY_CTA, PRIMARY_CTA_ARROW } from "./cta-styles";
-import { HERO_CONTENT } from "./home-hero-content";
-import { TrustLine } from "./trust-line";
+import { FaqList } from "./faq-list";
 
 const SUBTITLE: Record<HomeAudience, string> = {
   creators: "Still unsure? Start for free and see the programs yourself.",
@@ -15,13 +8,11 @@ const SUBTITLE: Record<HomeAudience, string> = {
 };
 
 /**
- * Last section of the home page: heading, the hero's primary CTA and trust
- * line on the left (sticky from lg), the audience's questions in an accordion on the right.
+ * Last section of the home page: heading and subtitle on the left (sticky from
+ * lg), the audience's questions in an accordion on the right (the first six, then "Show all questions"). No CTA: the
+ * footer's "Ready to …" panel follows.
  */
-export function HomeFaq({ audience, signedIn = false }: { audience: HomeAudience; signedIn?: boolean }) {
-  const { primary: cta, trust } = HERO_CONTENT[audience];
-  const ctaHref = (!signedIn && cta.signedOutHref) || cta.href;
-
+export function HomeFaq({ audience }: { audience: HomeAudience }) {
   return (
     <section
       id="faq"
@@ -33,27 +24,9 @@ export function HomeFaq({ audience, signedIn = false }: { audience: HomeAudience
           Questions, answered
         </h2>
         <p className="max-w-md text-base text-pretty text-muted-foreground">{SUBTITLE[audience]}</p>
-        <Button asChild size="lg" className={cn(PRIMARY_CTA, "mt-2")}>
-          <Link href={ctaHref}>
-            {cta.label}
-            <ArrowRight aria-hidden className={PRIMARY_CTA_ARROW} />
-          </Link>
-        </Button>
-        <TrustLine items={trust} />
       </div>
 
-      <Accordion type="single" collapsible className="rounded-[20px] border bg-card px-5 sm:px-6 lg:col-span-7">
-        {FAQ[audience].map((item, index) => (
-          <AccordionItem key={item.question} value={`faq-${index}`}>
-            <AccordionTrigger className="py-5 text-base font-semibold hover:no-underline">
-              {item.question}
-            </AccordionTrigger>
-            <AccordionContent className="pb-5 text-[15px] text-pretty text-muted-foreground">
-              {item.answer}
-            </AccordionContent>
-          </AccordionItem>
-        ))}
-      </Accordion>
+      <FaqList items={FAQ[audience]} />
     </section>
   );
 }

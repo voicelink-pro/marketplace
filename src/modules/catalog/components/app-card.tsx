@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LinkPendingCardOverlay } from "@/components/ui/link-pending-icon";
 import { formatCommissionRange } from "@/lib/money";
 import { cn } from "@/lib/utils";
 import { APP_CATEGORY_LABELS, BILLING_INTERVAL_LABELS } from "../constants";
@@ -87,6 +88,8 @@ export function AppCard({
       {glow ? <CardGlow /> : null}
       <article className="group relative flex w-full flex-col overflow-hidden rounded-[20px] border bg-card transition-colors focus-within:ring-3 focus-within:ring-ring/50 hover:border-foreground/25">
         <Link href={href} className="flex flex-1 flex-col outline-none">
+          {/* Dims the card with a corner spinner while the app's page loads. */}
+          <LinkPendingCardOverlay />
           <div className="relative aspect-[16/9] w-full overflow-hidden bg-muted">
             {app.coverImageUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -129,7 +132,7 @@ export function AppCard({
               <PlatformIcons platforms={app.platforms} />
               {/* The whole card is the link; this is its visible label, not a second control. */}
               <span className="inline-flex h-9 shrink-0 items-center rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors group-hover:bg-primary/85">
-                Join offer
+                Join program
               </span>
             </div>
           </div>

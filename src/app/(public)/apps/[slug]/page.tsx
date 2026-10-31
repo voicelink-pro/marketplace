@@ -7,6 +7,7 @@ import { EmptyModule } from "@/components/states/empty-module";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { LinkPendingSpinner } from "@/components/ui/link-pending-icon";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -95,6 +96,7 @@ async function AppDetailContent({
           <Link href={backHref}>
             <ArrowLeft data-icon="inline-start" />
             {hasSavedFilters ? "Back to filtered results" : "All apps"}
+            <LinkPendingSpinner />
           </Link>
         </Button>
       </div>
@@ -401,7 +403,7 @@ async function AppDetailContent({
         </div>
 
         {/* Sticky Desktop CTA */}
-        <aside aria-label="Join this offer" className="hidden lg:col-span-4 lg:block lg:sticky lg:top-24">
+        <aside aria-label="Join this program" className="hidden lg:col-span-4 lg:block lg:sticky lg:top-24">
           <PromoteCtaCard app={app} />
         </aside>
       </div>

@@ -11,7 +11,7 @@ export const SIGNUP_INTENTS: Record<
   creators: {
     option: "Promote apps",
     title: "Start earning with apps you love",
-    subtitle: "Create your account and join your first offer in minutes.",
+    subtitle: "Create your account and join your first program in minutes.",
     next: "/onboarding/creator",
   },
   apps: {
@@ -36,7 +36,7 @@ export const BRAND_PANEL: Record<HomeAudience, { heading: string; benefits: [str
     heading: "Why apps join",
     benefits: [
       "Set the commission for each plan",
-      "Creators find your offer and join on their own",
+      "Creators find your program and join on their own",
       "Pay only when their audience subscribes, nothing upfront",
     ],
   },
